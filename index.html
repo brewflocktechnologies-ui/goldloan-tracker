@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gold Loan Tracker</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #f5e6c0;
+      --gold-dark: #b08d35;
+      --sidebar-w: 260px;
+      --sidebar-collapsed-w: 75px;
+      --bg-main: #f4f6f9;
+      --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+    }
+
+    /* === PREMIUM LOGIN SCREEN UI === */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      /* Deep premium dark bg */
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    .login-card {
+      background: #ffffff;
+      padding: 45px 40px;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 420px;
+      border-top: 6px solid var(--gold);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-icon-bg {
+      position: absolute;
+      top: -30px;
+      right: -30px;
+      font-size: 8rem;
+      opacity: 0.05;
+      transform: rotate(15deg);
+      pointer-events: none;
+    }
+
+    .login-card .form-control {
+      background-color: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 12px 16px;
+    }
+
+    .login-card .form-control:focus {
+      background-color: #fff;
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.15);
+    }
+
+    .btn-gold {
+      background-color: var(--gold);
+      color: #fff;
+      border: none;
+      transition: all 0.2s;
+    }
+
+    .btn-gold:hover:not(:disabled) {
+      background-color: var(--gold-dark);
+      color: #fff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 15px rgba(201, 168, 76, 0.3);
+    }
+
+    /* Fading helper class */
+    .fade-out {
+      opacity: 0 !important;
+      visibility: hidden !important;
+    }
+
+    /* Main App Container Animation */
+    #appContainer {
+      display: none;
+      animation: fadeInApp 0.6s ease forwards;
+    }
+
+    @keyframes fadeInApp {
+      from {
+        opacity: 0;
+        transform: scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* Global Base */
+    body {
+      background: var(--bg-main);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #2c3e50;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: var(--sidebar-bg);
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 1050;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+    }
+
+    #sidebar .brand {
+      padding: 24px 20px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--gold);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    #sidebar .brand .icon {
+      font-size: 1.5rem;
+      width: 35px;
+      text-align: center;
+    }
+
+    #sidebar .brand .text {
+      margin-left: 10px;
+      transition: opacity 0.2s;
+    }
+
+    #sidebar .nav-link {
+      color: #94a3b8;
+      padding: 16px 20px;
+      border-radius: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      white-space: nowrap;
+      border-left: 4px solid transparent;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    #sidebar .nav-link .icon {
+      font-size: 1.3rem;
+      width: 35px;
+      text-align: center;
+    }
+
+    #sidebar .nav-link .text {
+      font-weight: 500;
+      transition: opacity 0.2s;
+    }
+
+    #sidebar .nav-link:hover,
+    #sidebar .nav-link.active {
+      background: rgba(201, 168, 76, .1);
+      color: var(--gold);
+      border-left: 4px solid var(--gold);
+    }
+
+    /* Backdrop for mobile */
+    .sidebar-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1040;
+    }
+
+    /* Main Content Area */
+    #main {
+      margin-left: var(--sidebar-w);
+      padding: 20px 30px;
+      min-height: 100vh;
+      transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Topbar */
+    #topbar {
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      margin-bottom: 24px;
+      background: #fff;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Grid Dashboard Cards */
+    .stat-card {
+      border-radius: 20px;
+      padding: 30px 24px;
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 180px;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+    }
+
+    .stat-card .value {
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 8px;
+      z-index: 2;
+      position: relative;
+    }
+
+    .stat-card .label {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      z-index: 2;
+      position: relative;
+    }
+
+    .stat-card .icon-bg {
+      position: absolute;
+      right: -10px;
+      bottom: -20px;
+      font-size: 7rem;
+      opacity: 0.15;
+      transform: rotate(-15deg);
+      pointer-events: none;
+      z-index: 1;
+      line-height: 1;
+    }
+
+    /* Card Colors */
+    .stat-card.blue {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+
+    .stat-card.green {
+      background: linear-gradient(135deg, #11998e, #38ef7d);
+    }
+
+    .stat-card.orange {
+      background: linear-gradient(135deg, #f7971e, #ffd200);
+    }
+
+    .stat-card.red {
+      background: linear-gradient(135deg, #d32f2f, #ef5350);
+    }
+
+    .stat-card.purple {
+      background: linear-gradient(135deg, #8e2de2, #4a00e0);
+    }
+
+    .stat-card.teal {
+      background: linear-gradient(135deg, #00c9ff, #92fe9d);
+    }
+
+    /* Layout Logic */
+    .section {
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Tables and UI Elements */
+    .card {
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-header,
+    .card-body {
+      padding: 20px;
+    }
+
+    .table-responsive {
+      border-radius: 12px;
+      overflow-x: auto;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background-color: #1e293b !important;
+      color: #f8fafc !important;
+      font-weight: 600;
+      border-bottom: none;
+      padding: 14px 16px;
+      white-space: nowrap;
+    }
+
+    .table tbody td {
+      padding: 14px 16px;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f5f9;
+    }
+
+    tr.overdue-row td {
+      background: #fff5f5 !important;
+    }
+
+    tr.pledged-row td {
+      background: #fff8e1 !important;
+    }
+
+    /* Badges */
+    .badge {
+      padding: 6px 10px;
+      font-weight: 600;
+      border-radius: 6px;
+    }
+
+    .badge-pledged {
+      background: #ff9800;
+      color: #fff;
+    }
+
+    .badge-available {
+      background: #4caf50;
+      color: #fff;
+    }
+
+    .badge-released {
+      background: #607d8b;
+      color: #fff;
+    }
+
+    .badge-active {
+      background: #1976d2;
+      color: #fff;
+    }
+
+    .badge-overdue {
+      background: #f44336;
+      color: #fff;
+    }
+
+    .badge-closed {
+      background: #9e9e9e;
+      color: #fff;
+    }
+
+    .badge-cancelled {
+      background: #757575;
+      color: #fff;
+    }
+
+    /* Overlays & Toasts */
+    #toastContainer {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 9999;
+      min-width: 300px;
+    }
+
+    .spinner-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .spinner-overlay.show {
+      display: flex;
+    }
+
+    /* Modals */
+    .modal-content {
+      border-radius: 16px;
+      border: none;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+      border-bottom: 1px solid #f1f5f9;
+      background: #f8fafc;
+      border-radius: 16px 16px 0 0;
+      padding: 20px 24px;
+    }
+
+    .modal-footer {
+      border-top: 1px solid #f1f5f9;
+      padding: 20px 24px;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #475569;
+      font-size: 0.9rem;
+    }
+
+    .form-control,
+    .form-select {
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      padding: 10px 14px;
+      box-shadow: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.15);
+    }
+
+    /* === RESPONSIVE DESIGN === */
+    @media(max-width: 991px) {
+      #sidebar {
+        transform: translateX(-100%);
+        width: var(--sidebar-w);
+      }
+
+      #main {
+        margin-left: 0;
+        padding: 16px;
+      }
+
+      #sidebar.open {
+        transform: translateX(0);
+        box-shadow: 10px 0 30px rgba(0, 0, 0, 0.2);
+      }
+
+      #sidebar.open~.sidebar-backdrop {
+        display: block;
+      }
+    }
+
+    @media(max-width: 576px) {
+      #main {
+        padding: 12px;
+      }
+
+      .stat-card {
+        padding: 25px 20px;
+        min-height: 140px;
+      }
+
+      .stat-card .value {
+        font-size: 2.2rem;
+      }
+
+      .stat-card .icon-bg {
+        font-size: 5.5rem;
+      }
+
+      #topbar {
+        padding: 10px 15px;
+        margin-bottom: 16px;
+      }
+
+      .modal-dialog {
+        margin: 0.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ================= LOGIN SCREEN ================= -->
+  <div id="loginScreen">
+    <div class="login-card">
+      <div class="login-icon-bg">🪙</div>
+      <h3 class="text-center fw-bold mb-2" style="color: var(--gold);">
+        <span class="fs-1 d-block mb-2">🪙</span> Gold Loan
+      </h3>
+      <p class="text-center text-muted mb-4 small fw-medium text-uppercase tracking-wider">Admin Portal</p>
+
+      <div id="loginError" class="alert alert-danger d-none small fw-medium"></div>
+
+      <div class="mb-3">
+        <label class="form-label fw-bold text-secondary">Username</label>
+        <input type="text" id="loginUsername" class="form-control" placeholder="Enter username" autocomplete="off">
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-bold text-secondary">Password</label>
+        <input type="password" id="loginPassword" class="form-control" placeholder="Enter password">
+      </div>
+
+      <button id="loginBtn"
+        class="btn btn-gold w-100 fw-bold py-2 shadow-sm d-flex justify-content-center align-items-center"
+        onclick="handleLogin()">
+        Secure Login
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= MAIN APP CONTAINER ================= -->
+  <div id="appContainer">
+
+    <!-- SIDEBAR -->
+    <div id="sidebar" class="d-flex flex-column">
+      <div class="brand">
+        <span class="icon">🪙</span>
+        <span class="text">Gold Loan</span>
+      </div>
+
+      <nav class="nav flex-column mt-2 flex-grow-1 mb-4">
+        <a class="nav-link active" onclick="showSection('dashboard')">
+          <span class="icon">🏠</span><span class="text">Dashboard</span>
+        </a>
+        <a class="nav-link" onclick="showSection('users')">
+          <span class="icon">👤</span><span class="text">Users</span>
+        </a>
+        <a class="nav-link" onclick="showSection('bank-accounts')">
+          <span class="icon">💳</span><span class="text">Bank Accounts</span>
+        </a>
+        <a class="nav-link" onclick="showSection('ornaments')">
+          <span class="icon">💍</span><span class="text">Ornaments</span>
+        </a>
+        <a class="nav-link" onclick="showSection('loans')">
+          <span class="icon">🏦</span><span class="text">Loans</span>
+        </a>
+        <a class="nav-link" onclick="showSection('closure')">
+          <span class="icon">🔒</span><span class="text">Loan Closure</span>
+        </a>
+
+        <a class="nav-link text-danger mt-auto border-top pt-3" onclick="handleLogout()"
+          style="border-color: rgba(255,255,255,0.05) !important;">
+          <span class="icon">🚪</span><span class="text fw-bold">Logout</span>
+        </a>
+      </nav>
+    </div>
+
+    <!-- UTILITIES -->
+    <div class="sidebar-backdrop" onclick="closeSidebar()"></div>
+    <div class="spinner-overlay" id="spinnerOverlay">
+      <div class="spinner-border text-light" style="width:3rem;height:3rem;"></div>
+    </div>
+    <div id="toastContainer"></div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main">
+
+      <!-- Topbar for mobile view -->
+      <div id="topbar" class="d-lg-none">
+        <div class="d-flex align-items-center w-100">
+          <button class="btn btn-light border shadow-sm me-3" onclick="toggleSidebar()">
+            <span class="fs-5">☰</span>
+          </button>
+          <h5 class="mb-0 fw-bold text-primary" style="color: var(--gold) !important;">Gold Loan Tracker</h5>
+        </div>
+      </div>
+
+      <!-- DASHBOARD SECTION -->
+      <div id="sec-dashboard" class="section active">
+        <h4 class="fw-bold mb-4" style="color: var(--gold-dark);">Dashboard Overview</h4>
+        <div class="row g-4">
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="stat-card blue">
+              <div class="icon-bg">👥</div>
+              <div class="value" id="d-users">—</div>
+              <div class="label">Total Users</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="stat-card green">
+              <div class="icon-bg">💳</div>
+              <div class="value" id="d-accounts">—</div>
+              <div class="label">Bank Accounts</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="stat-card purple">
+              <div class="icon-bg">💍</div>
+              <div class="value" id="d-ornaments">—</div>
+              <div class="label">Total Ornaments</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="stat-card orange">
+              <div class="icon-bg">🏦</div>
+              <div class="value" id="d-active-loans">—</div>
+              <div class="label">Active Loans</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="stat-card red">
+              <div class="icon-bg">🔒</div>
+              <div class="value" id="d-closed-loans">—</div>
+              <div class="label">Closed Loans</div>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-4">
+            <div class="stat-card teal">
+              <div class="icon-bg">💰</div>
+              <div class="value" id="d-loan-amount">—</div>
+              <div class="label">Active Loan Value</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USERS SECTION -->
+      <div id="sec-users" class="section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+          <h4 class="fw-bold mb-0">User Management</h4>
+          <button class="btn btn-warning px-4 shadow-sm fw-bold" onclick="openUserModal()">+ Add User</button>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover" id="usersTable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Mobile</th>
+                    <th>City</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BANK ACCOUNTS SECTION -->
+      <div id="sec-bank-accounts" class="section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+          <h4 class="fw-bold mb-0">Bank Account Management</h4>
+          <button class="btn btn-warning px-4 shadow-sm fw-bold" onclick="openBankAccountModal()">+ Add Account</button>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover" id="bankAccountsTable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Holder Name</th>
+                    <th>Account No.</th>
+                    <th>Bank</th>
+                    <th>User</th>
+                    <th>Max Loan (₹)</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORNAMENTS SECTION -->
+      <div id="sec-ornaments" class="section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+          <h4 class="fw-bold mb-0">Ornament Management</h4>
+          <button class="btn btn-warning px-4 shadow-sm fw-bold" onclick="openOrnamentModal()">+ Add Ornament</button>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover" id="ornamentsTable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Purity</th>
+                    <th>Gross Wt.</th>
+                    <th>Status</th>
+                    <th>User</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- LOANS SECTION -->
+      <div id="sec-loans" class="section">
+        <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+          <h4 class="fw-bold mb-0">Loan Management</h4>
+          <button class="btn btn-warning px-4 shadow-sm fw-bold" onclick="openLoanModal()">+ Add Loan</button>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover" id="loansTable">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Loan No.</th>
+                    <th>User</th>
+                    <th>Loan Date</th>
+                    <th>Amount (₹)</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLOSURE SECTION -->
+      <div id="sec-closure" class="section">
+        <h4 class="fw-bold mb-4">Loan Closure & Ornament Release</h4>
+        <div class="card mb-4">
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-12">
+                <input type="text" id="closureSearchInput" class="form-control py-2"
+                  placeholder="🔍 Search by Loan No, Customer Name, or Mobile..." onkeyup="filterClosureTable()">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover" id="closureTable">
+                <thead>
+                  <tr>
+                    <th>Loan Number</th>
+                    <th>Customer</th>
+                    <th>Mobile</th>
+                    <th>Amount</th>
+                    <th>Date</th>
+                    <th>Due Date</th>
+                    <th>Ornaments</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- END OF #main -->
+  </div> <!-- END OF #appContainer -->
+
+
+  <!-- ================= MODALS (MUST BE OUTSIDE APP CONTAINER) ================= -->
+
+  <!-- GLOBAL DETAIL VIEW MODAL -->
+  <div class="modal fade" id="detailViewModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="detailViewTitle">Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body p-0" id="detailViewBody"></div>
+        <div class="modal-footer bg-light">
+          <button class="btn btn-secondary px-4 fw-bold" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- USER MODAL -->
+  <div class="modal fade" id="userModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="userModalTitle">Add User</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editUserId" />
+          <div class="row g-4">
+            <div class="col-md-4"><label class="form-label">Full Name *</label><input type="text" id="userFullName"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Father/Husband Name</label><input type="text"
+                id="userFatherHusbandName" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Customer Code</label><input type="text"
+                id="userCustomerCode" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Mobile Number *</label><input type="text"
+                id="userMobileNumber" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Alternate Mobile</label><input type="text"
+                id="userAlternateMobileNumber" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Email</label><input type="email" id="userEmail"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Date of Birth</label><input type="date" id="userDateOfBirth"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Gender</label><select id="userGender" class="form-select">
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+              </select></div>
+            <div class="col-md-4"><label class="form-label">Occupation</label><input type="text" id="userOccupation"
+                class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Aadhaar Number</label><input type="text"
+                id="userAadhaarNumber" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">PAN Number</label><input type="text" id="userPANNumber"
+                class="form-control" /></div>
+            <div class="col-12"><label class="form-label">Address Line 1</label><input type="text" id="userAddressLine1"
+                class="form-control" /></div>
+            <div class="col-12"><label class="form-label">Address Line 2</label><input type="text" id="userAddressLine2"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">City</label><input type="text" id="userCity"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">State</label><input type="text" id="userState"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Pincode</label><input type="text" id="userPincode"
+                class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Status</label><select id="userStatus" class="form-select">
+                <option>Active</option>
+                <option>Inactive</option>
+              </select></div>
+            <div class="col-md-6"><label class="form-label">Customer Photo</label><input type="file"
+                id="userCustomerPhoto" class="form-control" accept="image/*" /></div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-warning px-4 fw-bold" onclick="submitUser(this)">Save User</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BANK ACCOUNT MODAL -->
+  <div class="modal fade" id="bankAccountModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="bankAccountModalTitle">Add Bank Account</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editBankAccountId" />
+          <div class="row g-4">
+            <div class="col-md-6"><label class="form-label">User *</label><select id="baUserId"
+                class="form-select user-dropdown"></select></div>
+            <div class="col-md-6"><label class="form-label">Account Holder Name *</label><input type="text"
+                id="baAccountHolderName" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Account Number *</label><input type="text"
+                id="baAccountNumber" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Bank Name *</label><input type="text" id="baBankName"
+                class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Branch Name</label><input type="text" id="baBranchName"
+                class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">IFSC Code</label><input type="text" id="baIFSCCode"
+                class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Account Type</label><select id="baAccountType"
+                class="form-select">
+                <option>Savings</option>
+                <option>Current</option>
+              </select></div>
+            <div class="col-md-6"><label class="form-label">UPI ID</label><input type="text" id="baUPI_ID"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Max Loan Amount (₹)</label><input type="number"
+                id="baMaxLoanAmount" class="form-control" placeholder="0" oninput="calculateAvailableLoan()" /></div>
+            <div class="col-md-4"><label class="form-label">Utilized Loan Amount (₹)</label><input type="number"
+                id="baUtilizedLoanAmount" class="form-control" placeholder="0" readonly /></div>
+            <div class="col-md-4"><label class="form-label">Available Loan Amount (₹)</label><input type="number"
+                id="baAvailableLoanAmount" class="form-control" readonly /></div>
+            <div class="col-md-6"><label class="form-label">Status</label><select id="baStatus" class="form-select">
+                <option>Active</option>
+                <option>Inactive</option>
+              </select></div>
+            <div class="col-md-6"><label class="form-label">Passbook Image</label><input type="file"
+                id="baPassbookImage" class="form-control" accept="image/*" /></div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-warning px-4 fw-bold" onclick="submitBankAccount(this)">Save Account</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORNAMENT MODAL -->
+  <div class="modal fade" id="ornamentModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="ornModalTitle">Add Ornament</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editOrnamentId" />
+          <div class="row g-4">
+            <div class="col-md-6"><label class="form-label">User *</label><select id="ornUserId"
+                class="form-select user-dropdown"></select></div>
+            <div class="col-md-6"><label class="form-label">Ornament Name *</label><input type="text" id="ornName"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Type</label><input type="text" id="ornType"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Category</label><input type="text" id="ornCategory"
+                class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Quantity</label><input type="number" id="ornQuantity"
+                class="form-control" value="1" /></div>
+            <div class="col-md-4"><label class="form-label">Gross Wt. (g)</label><input type="number" step="0.01"
+                id="ornGrossWeight" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Net Wt. (g)</label><input type="number" step="0.01"
+                id="ornNetWeight" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Stone Wt. (g)</label><input type="number" step="0.01"
+                id="ornStoneWeight" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Purity</label><select id="ornPurity" class="form-select">
+                <option>24K</option>
+                <option>22K</option>
+                <option>18K</option>
+              </select></div>
+            <div class="col-md-4"><label class="form-label">Hallmark No.</label><input type="text"
+                id="ornHallmarkNumber" class="form-control" /></div>
+            <div class="col-md-4"><label class="form-label">Estimated Value (₹)</label><input type="number"
+                id="ornEstimatedValue" class="form-control" /></div>
+            <div class="col-md-6"><label class="form-label">Market Value (₹)</label><input type="number"
+                id="ornMarketValue" class="form-control" /></div>
+            <div class="col-12"><label class="form-label">Description</label><textarea id="ornDescription"
+                class="form-control" rows="2"></textarea></div>
+            <div class="col-12"><label class="form-label">Remarks</label><textarea id="ornRemarks" class="form-control"
+                rows="2"></textarea></div>
+            <div class="col-12"><label class="form-label">Images</label><input type="file" id="ornImages" multiple
+                class="form-control" accept="image/*" /></div>
+            <div class="col-12" id="existingImagesContainer" style="display:none;">
+              <label class="form-label text-muted">Existing Images (click ❌ to remove)</label>
+              <div id="existingImagesGallery" class="d-flex gap-3 p-2 border rounded bg-light"
+                style="overflow-x: auto;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-warning px-4 fw-bold" onclick="submitOrnament(this)">Save Ornament</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOAN MODAL -->
+  <div class="modal fade" id="loanModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold" id="loanModalTitle">Add Loan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editLoanId" />
+          <div class="row g-4">
+            <div class="col-md-4"><label class="form-label">User *</label><select id="loanUserId"
+                class="form-select user-dropdown" onchange="handleLoanUserChange()"></select></div>
+            <div class="col-md-4"><label class="form-label">Bank Account *</label><select id="loanBankAccountId"
+                class="form-select"></select></div>
+            <div class="col-md-4"><label class="form-label">Loan Number *</label><input type="text" id="loanNumber"
+                class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">Loan Date *</label><input type="date" id="loanDate"
+                class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">Due Date *</label><input type="date" id="loanDueDate"
+                class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">Loan Amount (₹) *</label><input type="number"
+                id="loanAmount" class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">Interest Rate (%) *</label><input type="number" step="0.01"
+                id="loanInterestRate" class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">Interest Type</label><select id="loanInterestType"
+                class="form-select">
+                <option>Simple</option>
+                <option>Compound</option>
+              </select></div>
+            <div class="col-md-3"><label class="form-label">Loan Period (Months)</label><input type="number"
+                id="loanPeriod" class="form-control" /></div>
+            <div class="col-12 m-0">
+              <hr class="my-2" />
+            </div>
+            <div class="col-md-3"><label class="form-label">Processing Fee (₹)</label><input type="number"
+                id="loanProcessingFee" class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">Document Charge (₹)</label><input type="number"
+                id="loanDocumentCharge" class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">Insurance Charge (₹)</label><input type="number"
+                id="loanInsuranceCharge" class="form-control" /></div>
+            <div class="col-md-3"><label class="form-label">Total Charges (₹)</label><input type="number"
+                id="loanTotalCharges" class="form-control" readonly /></div>
+            <div class="col-md-4"><label class="form-label">Net Disbursement (₹)</label><input type="number"
+                id="loanNetDisbursementAmount" class="form-control" readonly /></div>
+            <div class="col-12"><label class="form-label">Remarks</label><textarea id="loanRemarks" class="form-control"
+                rows="2"></textarea></div>
+            <div class="col-12 m-0">
+              <hr class="my-2" />
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-bold text-primary">Select Available Ornaments to Pledge</label>
+              <div id="availableOrnamentsForLoan" class="p-3 border rounded bg-light"
+                style="max-height: 250px; overflow-y: auto;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer bg-light">
+          <button class="btn btn-secondary px-4" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn btn-warning px-4 fw-bold" onclick="submitLoan(this)">Save Loan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOAN DETAIL MODAL -->
+  <div class="modal fade" id="loanDetailModal" tabindex="-1">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold">Loan Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body" id="loanDetailBody"></div>
+        <div class="modal-footer bg-light" id="loanDetailFooter"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ================= SCRIPTS ================= -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Global state
+    let allUsers = [], allOrnaments = [], allLoans = [], allBankAccounts = [];
+
+    // --- INITIALIZATION ---
+    window.addEventListener('DOMContentLoaded', () => {
+      setToday('loanDate');
+
+      // 1. Check if user is already logged in (Persist on refresh)
+      const activeSession = sessionStorage.getItem('goldLoanAdmin');
+      if (activeSession) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('appContainer').style.display = 'block';
+        initializeApp();
+      }
+
+      // 2. Adding listener for Enter key on password input
+      document.getElementById('loginPassword').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') handleLogin();
+      });
+    });
+    // --- AUTHENTICATION ---
+    function handleLogin() {
+      const user = document.getElementById('loginUsername').value.trim();
+      const pass = document.getElementById('loginPassword').value.trim();
+      const errDiv = document.getElementById('loginError');
+      const loginBtn = document.getElementById('loginBtn');
+
+      if (!user || !pass) {
+        errDiv.textContent = "Please enter both username and password.";
+        errDiv.classList.remove('d-none');
+        return;
+      }
+
+      errDiv.classList.add('d-none');
+      loginBtn.disabled = true;
+      const originalBtnText = loginBtn.innerHTML;
+      loginBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Authenticating...';
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if (res.success) {
+
+            // NEW: Save the login state to browser session memory
+            sessionStorage.setItem('goldLoanAdmin', res.data.username);
+
+            const loginScreen = document.getElementById('loginScreen');
+            loginScreen.classList.add('fade-out');
+
+            setTimeout(() => {
+              loginScreen.style.display = 'none';
+              document.getElementById('appContainer').style.display = 'block';
+              initializeApp();
+              showToast('Welcome back, ' + res.data.username);
+            }, 500);
+
+          } else {
+            errDiv.textContent = res.error || "Invalid username or password.";
+            errDiv.classList.remove('d-none');
+            loginBtn.disabled = false;
+            loginBtn.innerHTML = originalBtnText;
+          }
+        })
+        .withFailureHandler(err => {
+          errDiv.textContent = "Server error. Please try again.";
+          errDiv.classList.remove('d-none');
+          loginBtn.disabled = false;
+          loginBtn.innerHTML = originalBtnText;
+        }).authenticateAdmin(user, pass);
+    }
+
+    function initializeApp() {
+      gsr('getUsers', [], (res) => {
+        allUsers = res.data || [];
+        populateUserDropdowns();
+        showSection('dashboard');
+      }, (err) => {
+        showToast('Error: Could not load user data.', 'error');
+        showSection('dashboard');
+      });
+    }
+
+    function setToday(id) {
+      const el = document.getElementById(id);
+      if (el) el.value = new Date().toISOString().split('T')[0];
+    }
+
+    // --- NAVIGATION & UI HELPERS ---
+    function showSection(name) {
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('sec-' + name).classList.add('active');
+      document.querySelectorAll('#sidebar .nav-link').forEach(l => l.classList.remove('active'));
+      const links = document.querySelectorAll('#sidebar .nav-link');
+      const map = { dashboard: 0, users: 1, 'bank-accounts': 2, ornaments: 3, loans: 4, closure: 5 };
+      if (links[map[name]]) links[map[name]].classList.add('active');
+      closeSidebar();
+
+      const loaders = { dashboard: loadDashboard, users: loadUsers, 'bank-accounts': loadBankAccounts, ornaments: loadOrnaments, loans: loadLoans, closure: loadClosureScreen };
+      if (loaders[name]) loaders[name]();
+    }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); }
+    function showSpinner() { document.getElementById('spinnerOverlay').classList.add('show'); }
+    function hideSpinner() { document.getElementById('spinnerOverlay').classList.remove('show'); }
+
+    function showToast(msg, type = 'success') {
+      const c = document.getElementById('toastContainer');
+      const div = document.createElement('div');
+      div.className = `alert alert-${type === 'error' ? 'danger' : 'success'} alert-dismissible shadow-lg`;
+      div.innerHTML = `${msg}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+      c.appendChild(div);
+      setTimeout(() => div.remove(), 4000);
+    }
+
+    function openDetailView(title, htmlContent) {
+      document.getElementById('detailViewTitle').textContent = title;
+      document.getElementById('detailViewBody').innerHTML = htmlContent;
+      new bootstrap.Modal(document.getElementById('detailViewModal')).show();
+    }
+
+    // --- UI BUTTON LOADER ---
+    function setButtonLoading(btn, isLoading) {
+      if (!btn) return;
+      if (isLoading) {
+        btn.dataset.originalText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Saving...`;
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = btn.dataset.originalText;
+      }
+    }
+
+    // --- SERVER COMMUNICATION ---
+    function gsr(fnName, args = [], onSuccess = () => { }, onError = null, silent = false) {
+      if (!silent) showSpinner();
+      google.script.run
+        .withSuccessHandler(res => {
+          if (!silent) hideSpinner();
+          if (res.success) {
+            onSuccess(res);
+          } else {
+            showToast(res.error || 'An unknown error occurred.', 'error');
+            if (onError) onError(res.error);
+          }
+        })
+        .withFailureHandler(err => {
+          if (!silent) hideSpinner();
+          showToast(err.message || String(err), 'error');
+          if (onError) onError(err);
+        })[fnName](...args);
+    }
+    // --- GENERIC HELPERS ---
+    function fmt(n) { return (parseFloat(n) || 0).toLocaleString('en-IN'); }
+    function fmtDate(val) {
+      if (!val) return '—';
+      try {
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return String(val);
+        const day = String(d.getDate()).padStart(2, '0');
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const year = d.getFullYear();
+        return `${day}-${month}-${year}`;
+      } catch { return String(val); }
+    }
+
+    async function getFilesPayload(fileInputId) {
+      const fileInput = document.getElementById(fileInputId);
+      if (!fileInput || fileInput.files.length === 0) return [];
+      const filePromises = Array.from(fileInput.files).map(file => {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve({ name: file.name, mimeType: file.type, base64: reader.result.split(',')[1] });
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      });
+      return await Promise.all(filePromises);
+    }
+
+    function populateUserDropdowns() {
+      const options = '<option value="">— Select User —</option>' + allUsers
+        .filter(u => u.Status === 'Active')
+        .map(u => `<option value="${u.UserId}">${u.FullName} (${u.UserId})</option>`).join('');
+      document.querySelectorAll('.user-dropdown').forEach(el => el.innerHTML = options);
+    }
+
+    // --- DASHBOARD ---
+    function loadDashboard() {
+      gsr('getDashboardData', [], res => {
+        const d = res.data;
+        document.getElementById('d-users').textContent = d.totalUsers;
+        document.getElementById('d-accounts').textContent = d.totalBankAccounts;
+        document.getElementById('d-ornaments').textContent = d.totalOrnaments;
+        document.getElementById('d-active-loans').textContent = d.activeLoans;
+        document.getElementById('d-closed-loans').textContent = d.closedLoans;
+        document.getElementById('d-loan-amount').textContent = '₹' + fmt(d.totalLoanAmount);
+      });
+    }
+
+    // --- USER MANAGEMENT ---
+    function loadUsers() {
+      gsr('getUsers', [], res => {
+        allUsers = res.data;
+        const tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = allUsers.map(u => `
+      <tr>
+        <td class="fw-bold">${u.UserId}</td>
+        <td>${u.FullName}</td>
+        <td>${u.MobileNumber}</td>
+        <td>${u.City}</td>
+        <td><span class="badge bg-${u.Status === 'Active' ? 'success' : 'secondary'}">${u.Status}</span></td>
+        <td>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-info px-3" onclick="viewUserDetail('${u.UserId}')">View</button>
+            <button class="btn btn-sm btn-outline-primary px-3" onclick="openUserModal('${u.UserId}')">Edit</button>
+            <button class="btn btn-sm btn-outline-danger px-3" onclick="deleteUser('${u.UserId}')">Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+        populateUserDropdowns();
+      });
+    }
+
+    function viewUserDetail(id) {
+      const u = allUsers.find(x => x.UserId === id);
+      if (!u) return;
+      const html = `
+      <table class="table table-bordered mb-0">
+          <tbody>
+              <tr><th class="bg-light w-25">User ID</th><td>${u.UserId}</td></tr>
+              <tr><th class="bg-light">Full Name</th><td>${u.FullName}</td></tr>
+              <tr><th class="bg-light">Father/Husband</th><td>${u.FatherHusbandName || '-'}</td></tr>
+              <tr><th class="bg-light">Mobile</th><td>${u.MobileNumber}</td></tr>
+              <tr><th class="bg-light">Alt. Mobile</th><td>${u.AlternateMobileNumber || '-'}</td></tr>
+              <tr><th class="bg-light">Email</th><td>${u.Email || '-'}</td></tr>
+              <tr><th class="bg-light">DOB</th><td>${u.DateOfBirth || '-'}</td></tr>
+              <tr><th class="bg-light">Occupation</th><td>${u.Occupation || '-'}</td></tr>
+              <tr><th class="bg-light">PAN Number</th><td>${u.PANNumber || '-'}</td></tr>
+              <tr><th class="bg-light">City / State</th><td>${u.City || '-'}, ${u.State || '-'}</td></tr>
+              <tr><th class="bg-light">Address</th><td>${u.AddressLine1 || ''} ${u.AddressLine2 || ''}</td></tr>
+              <tr><th class="bg-light">Status</th><td><span class="badge bg-${u.Status === 'Active' ? 'success' : 'secondary'}">${u.Status}</span></td></tr>
+          </tbody>
+      </table>`;
+      openDetailView('User Profile Details', html);
+    }
+
+    function openUserModal(userId = null) {
+      const modal = new bootstrap.Modal(document.getElementById('userModal'));
+      const title = document.getElementById('userModalTitle');
+      document.getElementById('userModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
+      document.getElementById('editUserId').value = '';
+
+      if (userId) {
+        const user = allUsers.find(u => u.UserId === userId);
+        if (user) {
+          title.textContent = 'Edit User';
+          document.getElementById('editUserId').value = user.UserId;
+          Object.keys(user).forEach(key => {
+            const el = document.getElementById(`user${key}`);
+            if (el) el.value = user[key];
+          });
+        }
+      } else {
+        title.textContent = 'Add User';
+      }
+      modal.show();
+    }
+
+    function deleteUser(userId) {
+      if (!confirm(`Are you sure you want to delete user ${userId}?`)) return;
+      gsr('deleteUser', [userId], () => { showToast('User deleted.'); loadUsers(); });
+    }
+
+    // --- BANK ACCOUNT MANAGEMENT ---
+    function calculateAvailableLoan() {
+      const maxLoan = parseFloat(document.getElementById('baMaxLoanAmount').value) || 0;
+      const utilizedLoan = parseFloat(document.getElementById('baUtilizedLoanAmount').value) || 0;
+      const availableLoan = maxLoan - utilizedLoan;
+      document.getElementById('baAvailableLoanAmount').value = availableLoan > 0 ? availableLoan.toFixed(2) : '0.00';
+    }
+
+    function loadBankAccounts() {
+      gsr('getBankAccounts', [], res => {
+        allBankAccounts = res.data;
+        const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+        const tbody = document.querySelector('#bankAccountsTable tbody');
+        tbody.innerHTML = allBankAccounts.map(acc => `
+      <tr>
+        <td class="fw-bold">${acc.BankAccountId}</td><td>${acc.AccountHolderName}</td><td>${acc.AccountNumber}</td>
+        <td>${acc.BankName}</td><td>${userMap[acc.UserId] || acc.UserId}</td>
+        <td class="fw-bold text-info">₹${fmt(acc.MaxLoanAmount)}</td>
+        <td><span class="badge bg-${acc.Status === 'Active' ? 'success' : 'secondary'}">${acc.Status}</span></td>
+        <td>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-info px-3" onclick="viewBankAccountDetail('${acc.BankAccountId}')">View</button>
+            <button class="btn btn-sm btn-outline-primary px-3" onclick="openBankAccountModal('${acc.BankAccountId}')">Edit</button>
+            <button class="btn btn-sm btn-outline-danger px-3" onclick="deleteBankAccount('${acc.BankAccountId}')">Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+      });
+    }
+
+    function viewBankAccountDetail(id) {
+      const acc = allBankAccounts.find(x => x.BankAccountId === id);
+      if (!acc) return;
+      const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+      const html = `
+      <table class="table table-bordered mb-0">
+          <tbody>
+              <tr><th class="bg-light w-25">Account ID</th><td>${acc.BankAccountId}</td></tr>
+              <tr><th class="bg-light">Linked User</th><td class="fw-bold">${userMap[acc.UserId] || acc.UserId}</td></tr>
+              <tr><th class="bg-light">Account Holder Name</th><td>${acc.AccountHolderName}</td></tr>
+              <tr><th class="bg-light">Bank Name</th><td>${acc.BankName}</td></tr>
+              <tr><th class="bg-light">Account Number</th><td class="text-primary fw-bold">${acc.AccountNumber}</td></tr>
+              <tr><th class="bg-light">Branch Name</th><td>${acc.BranchName || '-'}</td></tr>
+              <tr><th class="bg-light">IFSC Code</th><td>${acc.IFSCCode || '-'}</td></tr>
+              <tr><th class="bg-light">Account Type</th><td>${acc.AccountType || '-'}</td></tr>
+              <tr><th class="bg-light">UPI ID</th><td>${acc.UPI_ID || '-'}</td></tr>
+              <tr><th class="bg-light">Max Loan Amount</th><td class="fw-bold text-info">₹${fmt(acc.MaxLoanAmount)}</td></tr>
+              <tr><th class="bg-light">Utilized Loan Amount</th><td class="fw-bold text-warning">₹${fmt(acc.UtilizedLoanAmount)}</td></tr>
+              <tr><th class="bg-light">Status</th><td><span class="badge bg-${acc.Status === 'Active' ? 'success' : 'secondary'}">${acc.Status}</span></td></tr>
+          </tbody>
+      </table>`;
+      openDetailView('Bank Account Details', html);
+    }
+
+    function openBankAccountModal(accountId = null) {
+      const modal = new bootstrap.Modal(document.getElementById('bankAccountModal'));
+      document.getElementById('bankAccountModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
+      document.getElementById('editBankAccountId').value = '';
+
+      if (accountId) {
+        const account = allBankAccounts.find(acc => acc.BankAccountId === accountId);
+        if (account) {
+          document.getElementById('bankAccountModalTitle').textContent = 'Edit Bank Account';
+          document.getElementById('editBankAccountId').value = account.BankAccountId;
+          Object.keys(account).forEach(key => {
+            const el = document.getElementById(`ba${key}`);
+            if (el) el.value = account[key];
+          });
+        }
+      } else {
+        document.getElementById('bankAccountModalTitle').textContent = 'Add Bank Account';
+      }
+      calculateAvailableLoan();
+      modal.show();
+    }
+
+    function deleteBankAccount(accountId) {
+      if (!confirm(`Are you sure you want to delete bank account ${accountId}?`)) return;
+      gsr('deleteBankAccount', [accountId], () => { showToast('Bank account deleted.'); loadBankAccounts(); });
+    }
+
+    // --- ORNAMENT MANAGEMENT ---
+    function loadOrnaments() {
+      gsr('getOrnaments', [], res => {
+        allOrnaments = res.data;
+        const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+        const tbody = document.querySelector('#ornamentsTable tbody');
+        tbody.innerHTML = allOrnaments.map(o => `
+      <tr class="${o.Status === 'Pledged' ? 'pledged-row' : ''}">
+        <td class="fw-bold">${o.OrnamentId}</td><td>${o.OrnamentName}</td><td>${o.OrnamentType}</td>
+        <td>${o.Purity}</td><td>${o.GrossWeight}g</td>
+        <td><span class="badge badge-${o.Status.toLowerCase()} shadow-sm">${o.Status}</span></td>
+        <td>${userMap[o.UserId] || o.UserId}</td>
+        <td>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-info px-3" onclick="viewOrnamentDetail('${o.OrnamentId}')">View</button>
+            <button class="btn btn-sm btn-outline-primary px-3" onclick="openOrnamentModal('${o.OrnamentId}')">Edit</button>
+            <button class="btn btn-sm btn-outline-danger px-3" onclick="deleteOrnament('${o.OrnamentId}')">Delete</button>
+          </div>
+        </td>
+      </tr>`).join('');
+      });
+    }
+
+    function openOrnamentModal(ornamentId = null) {
+      const modal = new bootstrap.Modal(document.getElementById('ornamentModal'));
+      document.getElementById('ornamentModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
+      document.getElementById('editOrnamentId').value = '';
+
+      if (ornamentId) {
+        const ornament = allOrnaments.find(o => o.OrnamentId === ornamentId);
+        if (ornament) {
+          document.getElementById('ornModalTitle').textContent = 'Edit Ornament';
+          document.getElementById('editOrnamentId').value = ornament.OrnamentId;
+          document.getElementById('ornUserId').value = ornament.UserId;
+          document.getElementById('ornName').value = ornament.OrnamentName;
+          document.getElementById('ornType').value = ornament.OrnamentType;
+          document.getElementById('ornCategory').value = ornament.OrnamentCategory;
+          document.getElementById('ornQuantity').value = ornament.Quantity;
+          document.getElementById('ornGrossWeight').value = ornament.GrossWeight;
+          document.getElementById('ornNetWeight').value = ornament.NetWeight;
+          document.getElementById('ornStoneWeight').value = ornament.StoneWeight;
+          document.getElementById('ornPurity').value = ornament.Purity;
+          document.getElementById('ornHallmarkNumber').value = ornament.HallmarkNumber;
+          document.getElementById('ornEstimatedValue').value = ornament.EstimatedValue;
+          document.getElementById('ornMarketValue').value = ornament.MarketValue;
+          document.getElementById('ornDescription').value = ornament.Description;
+          document.getElementById('ornRemarks').value = ornament.Remarks;
+        }
+
+        const galleryContainer = document.getElementById('existingImagesContainer');
+        const gallery = document.getElementById('existingImagesGallery');
+        galleryContainer.style.display = 'none';
+        gallery.innerHTML = '';
+        if (ornament.OrnamentImages) {
+          const urls = ornament.OrnamentImages.split(' | ').filter(url => url.trim());
+          if (urls.length > 0) {
+            galleryContainer.style.display = 'block';
+            urls.forEach(url => {
+              const imgWrapper = document.createElement('div');
+              imgWrapper.className = 'position-relative';
+              imgWrapper.innerHTML = `
+              <iframe src="${url.replace('/view?usp=drivesdk', '/preview')}" style="width:100px; height:75px; border:none; border-radius: 6px; pointer-events:none;"></iframe>
+              <button type="button" class="btn btn-danger btn-sm rounded-circle position-absolute top-0 start-100 translate-middle p-0" style="width:20px;height:20px;line-height:1;" onclick="removeSingleImage('${ornament.OrnamentId}', '${url}', this.parentElement)">&times;</button>`;
+              gallery.appendChild(imgWrapper);
+            });
+          }
+        }
+      } else {
+        document.getElementById('ornModalTitle').textContent = 'Add Ornament';
+      }
+      modal.show();
+    }
+
+    function deleteOrnament(ornamentId) {
+      if (!confirm(`Are you sure you want to delete ornament ${ornamentId}? This is a soft delete.`)) return;
+      gsr('deleteOrnament', [ornamentId], () => { showToast('Ornament deleted.'); loadOrnaments(); });
+    }
+
+    function removeSingleImage(ornamentId, imageUrl, element) {
+      if (!confirm('Are you sure you want to permanently delete this image?')) return;
+      element.style.opacity = '0.5';
+      gsr('deleteOrnamentImage', [ornamentId, imageUrl], (res) => {
+        if (res.success) {
+          showToast('Image deleted successfully.');
+          element.remove();
+          const orn = allOrnaments.find(o => o.OrnamentId === ornamentId);
+          if (orn) {
+            orn.OrnamentImages = (orn.OrnamentImages || '').split(' | ').filter(u => u.trim() !== imageUrl.trim()).join(' | ');
+          }
+        } else { element.style.opacity = '1'; }
+      });
+    }
+
+    // --- LOAN MANAGEMENT ---
+    function loadLoans() {
+      gsr('getLoans', [], res => {
+        allLoans = res.data;
+        const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        const tbody = document.querySelector('#loansTable tbody');
+        tbody.innerHTML = allLoans.map(l => {
+          const dueDate = new Date(l.DueDate);
+          const isOverdue = l.LoanStatus === 'Active' && dueDate < today;
+          return `<tr class="${isOverdue ? 'overdue-row' : ''}">
+        <td class="fw-bold">${l.LoanId}</td><td>${l.LoanNumber}</td><td>${userMap[l.UserId] || l.UserId}</td>
+        <td>${fmtDate(l.LoanDate)}</td><td class="fw-bold text-success">₹${fmt(l.LoanAmount)}</td>
+        <td class="${isOverdue ? 'text-danger fw-bold' : ''}">${fmtDate(l.DueDate)}</td>
+        <td><span class="badge ${isOverdue ? 'badge-overdue' : `badge-${l.LoanStatus.toLowerCase()}`} shadow-sm">${isOverdue ? 'OVERDUE' : l.LoanStatus}</span></td>
+        <td>
+          <div class="d-flex gap-1">
+            <button class="btn btn-sm btn-outline-info px-3" onclick="viewLoanDetail('${l.LoanId}')">View</button>
+          </div>
+        </td>
+      </tr>`;
+        }).join('');
+      });
+    }
+    function viewLoanDetail(loanId) {
+      gsr('getLoanDetails', [loanId], res => {
+        const { loan, ornaments, payments } = res.data;
+        const ornamentsHtml = ornaments.length > 0 ? ornaments.map(o => `
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom">
+          <span class="fw-medium">${o.OrnamentName} (${o.OrnamentId})</span>
+          <span class="badge badge-${o.Status.toLowerCase()}">${o.Status}</span>
+        </div>`).join('') : '<p class="text-muted p-3">No ornaments linked.</p>';
+
+        const paymentsHtml = payments.length > 0 ? payments.map(p => `
+        <div class="d-flex justify-content-between align-items-center p-3 border-bottom small">
+          <span>${fmtDate(p.PaymentDate)} &bull; <span class="text-muted">${p.PaymentMethod}</span></span>
+          <span class="fw-bold text-success">₹${fmt(p.TotalPaidAmount)}</span>
+        </div>`).join('') : '<p class="text-muted p-3">No payments made.</p>';
+
+        const html = `
+        <div class="p-4">
+          <h5 class="fw-bold mb-4 text-primary">Loan Reference: ${loan.LoanNumber}</h5>
+          <div class="row g-4">
+            <div class="col-md-6">
+              <h6 class="fw-bold text-muted text-uppercase mb-3">Loan Info</h6>
+              <div class="table-responsive border rounded"><table class="table table-sm table-borderless mb-0"><tbody>
+                <tr><td class="text-muted">User ID</td><td class="fw-bold text-end">${loan.UserId}</td></tr>
+                <tr class="bg-light"><td class="text-muted">Loan Amount</td><td class="fw-bold text-success text-end">₹${fmt(loan.LoanAmount)}</td></tr>
+                <tr><td class="text-muted">Loan Date</td><td class="text-end">${fmtDate(loan.LoanDate)}</td></tr>
+                <tr class="bg-light"><td class="text-muted">Due Date</td><td class="text-end">${fmtDate(loan.DueDate)}</td></tr>
+                <tr><td class="text-muted">Status</td><td class="text-end"><span class="badge badge-${loan.LoanStatus.toLowerCase()}">${loan.LoanStatus}</span></td></tr>
+              </tbody></table></div>
+            </div>
+            <div class="col-md-6"><h6 class="fw-bold text-muted text-uppercase mb-3">Pledged Ornaments</h6><div class="border rounded bg-white shadow-sm">${ornamentsHtml}</div></div>
+            <div class="col-md-12"><h6 class="fw-bold text-muted text-uppercase mb-3 mt-2">Payment History</h6><div class="border rounded bg-white shadow-sm">${paymentsHtml}</div></div>
+          </div></div>`;
+        openDetailView('Loan Details', html);
+      });
+    }
+
+    function viewOrnamentDetail(id) {
+      const o = allOrnaments.find(x => x.OrnamentId === id);
+      if (!o) return;
+      const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+
+      let galleryHtml = '<div class="p-3"><p class="text-muted mb-0">No images available</p></div>';
+      if (o.OrnamentImages) {
+        const urls = o.OrnamentImages.split(' | ').filter(u => u.trim() !== "");
+        if (urls.length > 0) {
+          galleryHtml = `<div class="d-flex gap-3 overflow-auto p-3">
+          ${urls.map(url => `
+            <a href="${url}" target="_blank" class="d-block border rounded bg-light flex-shrink-0" style="width:200px; height:150px;">
+              <iframe src="${url.replace('/view?usp=drivesdk', '/preview')}" style="width:100%;height:100%;border:none;pointer-events:none; border-radius: .375rem;"></iframe>
+            </a>`).join('')}
+          </div>`;
+        }
+      }
+
+      const html = `
+      <div class="p-4">
+        <div class="row g-4">
+          <div class="col-md-6"><h6 class="fw-bold text-muted text-uppercase mb-3">Primary Details</h6><table class="table table-sm table-bordered"><tbody>
+            <tr><td class="w-50 bg-light">Ornament ID</td><td class="fw-bold">${o.OrnamentId}</td></tr>
+            <tr><td class="bg-light">Name</td><td>${o.OrnamentName}</td></tr>
+            <tr><td class="bg-light">Owner</td><td>${userMap[o.UserId] || o.UserId}</td></tr>
+            <tr><td class="bg-light">Status</td><td><span class="badge badge-${o.Status.toLowerCase()} shadow-sm">${o.Status}</span></td></tr>
+          </tbody></table></div>
+          <div class="col-md-6"><h6 class="fw-bold text-muted text-uppercase mb-3">Physical Details</h6><table class="table table-sm table-bordered"><tbody>
+            <tr><td class="w-50 bg-light">Gross Weight</td><td>${o.GrossWeight}g</td></tr>
+            <tr><td class="bg-light">Purity</td><td>${o.Purity}</td></tr>
+            <tr><td class="bg-light">Hallmark No.</td><td>${o.HallmarkNumber || '-'}</td></tr>
+          </tbody></table></div>
+          <div class="col-12"><h6 class="fw-bold text-muted text-uppercase mb-3">Images</h6><div class="border rounded shadow-sm">${galleryHtml}</div></div>
+        </div></div>`;
+      openDetailView(`Ornament: ${o.OrnamentName}`, html);
+    }
+
+    function openLoanModal(loanId = null) {
+      const modal = new bootstrap.Modal(document.getElementById('loanModal'));
+      document.getElementById('loanModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
+      document.getElementById('editLoanId').value = '';
+      document.getElementById('loanModalTitle').textContent = 'Add Loan';
+
+      // Reset the bank and ornament areas until a user is selected
+      document.getElementById('loanBankAccountId').innerHTML = '<option value="">— Select a User First —</option>';
+      document.getElementById('availableOrnamentsForLoan').innerHTML = '<p class="text-muted mb-0">Please select a user first.</p>';
+
+      modal.show();
+    }
+
+    // NEW: Master handler for when the User dropdown changes
+    function handleLoanUserChange() {
+      loadUserBankAccounts();
+      loadUserAvailableOrnaments();
+    }
+
+    // NEW: Fetches and filters ornaments by the selected user
+    function loadUserAvailableOrnaments() {
+      const userId = document.getElementById('loanUserId').value;
+      const container = document.getElementById('availableOrnamentsForLoan');
+
+      if (!userId) {
+        container.innerHTML = '<p class="text-muted mb-0">Please select a user first.</p>';
+        return;
+      }
+
+      container.innerHTML = '<p class="text-muted mb-0">Loading ornaments...</p>';
+
+      gsr('getAvailableOrnaments', [], res => {
+        // Filter the incoming data so it ONLY matches the selected user
+        const userOrnaments = res.data.filter(o => String(o.UserId) === String(userId));
+
+        if (userOrnaments.length > 0) {
+          container.innerHTML = userOrnaments.map(o => `
+          <div class="form-check mb-2 custom-check">
+            <input class="form-check-input" type="checkbox" value="${o.OrnamentId}" id="chk-orn-${o.OrnamentId}">
+            <label class="form-check-label" for="chk-orn-${o.OrnamentId}">
+              <strong>${o.OrnamentName}</strong> (${o.OrnamentId}) &mdash; ${o.GrossWeight}g, ${o.Purity}
+            </label>
+          </div>
+          `).join('');
+        } else {
+          container.innerHTML = '<p class="text-muted mb-0">No available ornaments for this user.</p>';
+        }
+      });
+    }
+    function loadUserBankAccounts() {
+      const userId = document.getElementById('loanUserId').value;
+      const selectEl = document.getElementById('loanBankAccountId');
+      selectEl.innerHTML = '<option value="">Loading...</option>';
+      if (!userId) { selectEl.innerHTML = '<option value="">— Select a User First —</option>'; return; }
+      gsr('getBankAccounts', [userId], res => {
+        allBankAccounts = res.data || [];
+        if (res.data.length > 0) {
+          selectEl.innerHTML = '<option value="">— Select Bank Account —</option>' + res.data.map(acc => `<option value="${acc.BankAccountId}">${acc.BankName} - ${acc.AccountNumber}</option>`).join('');
+        } else {
+          selectEl.innerHTML = '<option value="">No bank accounts for this user</option>';
+        }
+      });
+    }
+
+    function confirmCloseAndRelease(loanId, customerName) {
+      const remarks = prompt(`Enter closure remarks for ${customerName}'s loan (${loanId}):`, "");
+      if (remarks === null) return;
+      if (confirm(`Are you sure you want to CLOSE loan ${loanId} and RELEASE all associated ornaments? This action cannot be undone.`)) {
+        gsr('closeAndReleaseLoan', [loanId, remarks], () => {
+          showToast('Loan closed successfully!');
+          if (document.getElementById('sec-closure').classList.contains('active')) loadClosureScreen();
+          if (document.getElementById('sec-loans').classList.contains('active')) loadLoans();
+        });
+      }
+    }
+
+    // --- LOAN CLOSURE ---
+    function loadClosureScreen() {
+      gsr('getActiveLoansForClosure', [], res => {
+        const tbody = document.querySelector('#closureTable tbody');
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        tbody.innerHTML = res.data.map(loan => {
+          const dueDate = new Date(loan.DueDate);
+          const isOverdue = dueDate < today;
+          const ornamentCount = loan.linkedOrnaments ? loan.linkedOrnaments.split(',').length : 0;
+          return `
+          <tr data-search-terms="${(loan.LoanNumber + ' ' + loan.customerName + ' ' + loan.mobileNumber).toLowerCase()}">
+            <td class="fw-bold">${loan.LoanNumber} ${isOverdue ? '<span class="badge bg-danger ms-2 shadow-sm">OVERDUE</span>' : ''}</td>
+            <td>${loan.customerName}</td><td>${loan.mobileNumber}</td>
+            <td class="text-success fw-bold">₹${fmt(loan.LoanAmount)}</td>
+            <td>${fmtDate(loan.LoanDate)}</td><td class="${isOverdue ? 'text-danger fw-bold' : ''}">${fmtDate(loan.DueDate)}</td>
+            <td><span class="badge bg-secondary shadow-sm" title="${loan.linkedOrnaments}">${ornamentCount} item(s)</span></td>
+            <td><button class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="confirmCloseAndRelease('${loan.LoanId}', '${loan.customerName}')">Close & Release</button></td>
+          </tr>`;
+        }).join('');
+      });
+    }
+
+    function filterClosureTable() {
+      const query = document.getElementById('closureSearchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#closureTable tbody tr');
+      rows.forEach(row => {
+        const terms = row.dataset.searchTerms;
+        row.style.display = terms.includes(query) ? '' : 'none';
+      });
+    }
+
+    // --- LOGOUT LOGIC ---
+    function handleLogout() {
+      // 1. Clear the session memory
+      sessionStorage.removeItem('goldLoanAdmin');
+
+      // 2. Reset the Login UI
+      const loginScreen = document.getElementById('loginScreen');
+      loginScreen.classList.remove('fade-out');
+      loginScreen.style.display = 'flex';
+
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+
+      // 3. Hide the main app and clear sidebar toggle (if on mobile)
+      document.getElementById('appContainer').style.display = 'none';
+      closeSidebar();
+
+      showToast('Logged out successfully.');
+    }
+    // Submit functions
+
+    async function submitUser(btn) {
+      const id = document.getElementById('editUserId').value;
+      const fullName = document.getElementById('userFullName').value.trim();
+      if (!fullName) { showToast('Full Name is required.', 'error'); return; }
+
+      setButtonLoading(btn, true); // Trigger spinner immediately
+
+      try {
+        const filesPayload = await getFilesPayload('userCustomerPhoto');
+
+        const userData = {
+          FullName: fullName, FatherHusbandName: document.getElementById('userFatherHusbandName').value,
+          CustomerCode: document.getElementById('userCustomerCode').value, MobileNumber: document.getElementById('userMobileNumber').value,
+          AlternateMobileNumber: document.getElementById('userAlternateMobileNumber').value, Email: document.getElementById('userEmail').value,
+          DateOfBirth: document.getElementById('userDateOfBirth').value, Gender: document.getElementById('userGender').value,
+          Occupation: document.getElementById('userOccupation').value, AadhaarNumber: document.getElementById('userAadhaarNumber').value,
+          PANNumber: document.getElementById('userPANNumber').value, AddressLine1: document.getElementById('userAddressLine1').value,
+          AddressLine2: document.getElementById('userAddressLine2').value, City: document.getElementById('userCity').value,
+          State: document.getElementById('userState').value, Pincode: document.getElementById('userPincode').value,
+          Status: document.getElementById('userStatus').value, files: filesPayload
+        };
+
+        const fn = id ? 'updateUser' : 'addUser';
+        const args = id ? [id, userData] : [userData];
+
+        // Notice the 'true' at the end to make the server call silent
+        gsr(fn, args, () => {
+          showToast(`User ${id ? 'updated' : 'added'} successfully.`);
+          bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+          loadUsers();
+          setButtonLoading(btn, false);
+        }, () => { setButtonLoading(btn, false); }, true);
+      } catch (err) {
+        showToast('Error processing files.', 'error');
+        setButtonLoading(btn, false);
+      }
+    }
+
+    async function submitBankAccount(btn) {
+      const id = document.getElementById('editBankAccountId').value;
+      const holderName = document.getElementById('baAccountHolderName').value.trim();
+      if (!holderName) { showToast('Account Holder Name is required.', 'error'); return; }
+
+      setButtonLoading(btn, true);
+
+      try {
+        const filesPayload = await getFilesPayload('baPassbookImage');
+        const accountData = {
+          UserId: document.getElementById('baUserId').value, AccountHolderName: holderName,
+          AccountNumber: document.getElementById('baAccountNumber').value, BankName: document.getElementById('baBankName').value,
+          BranchName: document.getElementById('baBranchName').value, IFSCCode: document.getElementById('baIFSCCode').value,
+          AccountType: document.getElementById('baAccountType').value, UPI_ID: document.getElementById('baUPI_ID').value,
+          Status: document.getElementById('baStatus').value, files: filesPayload,
+          MaxLoanAmount: document.getElementById('baMaxLoanAmount').value, UtilizedLoanAmount: document.getElementById('baUtilizedLoanAmount').value
+        };
+
+        const fn = id ? 'updateBankAccount' : 'addBankAccount';
+        const args = id ? [id, accountData] : [accountData];
+
+        gsr(fn, args, () => {
+          showToast(`Bank account ${id ? 'updated' : 'added'} successfully.`);
+          bootstrap.Modal.getInstance(document.getElementById('bankAccountModal')).hide();
+          loadBankAccounts();
+          setButtonLoading(btn, false);
+        }, () => { setButtonLoading(btn, false); }, true);
+      } catch (err) {
+        showToast('Error processing files.', 'error');
+        setButtonLoading(btn, false);
+      }
+    }
+
+    async function submitOrnament(btn) {
+      const id = document.getElementById('editOrnamentId').value;
+      const name = document.getElementById('ornName').value.trim();
+      if (!name) { showToast('Ornament Name is required.', 'error'); return; }
+
+      setButtonLoading(btn, true);
+
+      try {
+        const filesPayload = await getFilesPayload('ornImages');
+        const ornamentData = {
+          UserId: document.getElementById('ornUserId').value, OrnamentName: name, OrnamentType: document.getElementById('ornType').value,
+          OrnamentCategory: document.getElementById('ornCategory').value, Description: document.getElementById('ornDescription').value,
+          GrossWeight: document.getElementById('ornGrossWeight').value, NetWeight: document.getElementById('ornNetWeight').value,
+          StoneWeight: document.getElementById('ornStoneWeight').value, Purity: document.getElementById('ornPurity').value,
+          HallmarkNumber: document.getElementById('ornHallmarkNumber').value, Quantity: document.getElementById('ornQuantity').value,
+          EstimatedValue: document.getElementById('ornEstimatedValue').value, MarketValue: document.getElementById('ornMarketValue').value,
+          Remarks: document.getElementById('ornRemarks').value, files: filesPayload
+        };
+
+        const fn = id ? 'updateOrnament' : 'addOrnament';
+        const args = id ? [id, ornamentData] : [ornamentData];
+
+        gsr(fn, args, () => {
+          showToast(`Ornament ${id ? 'updated' : 'added'} successfully.`);
+          bootstrap.Modal.getInstance(document.getElementById('ornamentModal')).hide();
+          loadOrnaments();
+          setButtonLoading(btn, false);
+        }, () => { setButtonLoading(btn, false); }, true);
+      } catch (err) {
+        showToast('Error processing files.', 'error');
+        setButtonLoading(btn, false);
+      }
+    }
+
+    async function submitLoan(btn) {
+      const id = document.getElementById('editLoanId').value;
+      if (id) { showToast('Editing loans is not supported from this form.', 'error'); return; }
+
+      const selectedOrnaments = Array.from(document.querySelectorAll('#availableOrnamentsForLoan input:checked')).map(el => el.value);
+      if (selectedOrnaments.length === 0) { showToast('You must select at least one ornament to pledge.', 'error'); return; }
+
+      const bankAccountId = document.getElementById('loanBankAccountId').value;
+      const selectedAccount = allBankAccounts.find(acc => acc.BankAccountId === bankAccountId);
+      const loanAmount = parseFloat(document.getElementById('loanAmount').value) || 0;
+      const availableAmount = (selectedAccount.MaxLoanAmount || 0) - (selectedAccount.UtilizedLoanAmount || 0);
+      if (loanAmount > availableAmount) {
+        showToast(`Loan amount of ₹${fmt(loanAmount)} exceeds the available limit of ₹${fmt(availableAmount)} for this account.`, 'error');
+        return;
+      }
+
+      setButtonLoading(btn, true);
+
+      const loanData = {
+        UserId: document.getElementById('loanUserId').value, BankAccountId: document.getElementById('loanBankAccountId').value,
+        LoanNumber: document.getElementById('loanNumber').value, LoanDate: document.getElementById('loanDate').value,
+        LoanAmount: document.getElementById('loanAmount').value, InterestRate: document.getElementById('loanInterestRate').value,
+        InterestType: document.getElementById('loanInterestType').value, LoanPeriod: document.getElementById('loanPeriod').value,
+        ProcessingFee: document.getElementById('loanProcessingFee').value, DocumentCharge: document.getElementById('loanDocumentCharge').value,
+        InsuranceCharge: document.getElementById('loanInsuranceCharge').value, TotalCharges: document.getElementById('loanTotalCharges').value,
+        NetDisbursementAmount: document.getElementById('loanNetDisbursementAmount').value, DueDate: document.getElementById('loanDueDate').value,
+        Remarks: document.getElementById('loanRemarks').value, ornamentIds: selectedOrnaments
+      };
+
+      if (!loanData.UserId || !loanData.BankAccountId || !loanData.LoanNumber || !loanData.LoanDate || !loanData.DueDate || !loanData.LoanAmount) {
+        showToast('Please fill all required (*) fields.', 'error');
+        setButtonLoading(btn, false);
+        return;
+      }
+
+      gsr('addLoan', [loanData], () => {
+        showToast('Loan added successfully.');
+        bootstrap.Modal.getInstance(document.getElementById('loanModal')).hide();
+        loadLoans(); loadOrnaments();
+        setButtonLoading(btn, false);
+      }, () => { setButtonLoading(btn, false); }, true);
+    }
+  </script>
+</body>
+
+</html>
