@@ -23,7 +23,6 @@
       position: fixed;
       inset: 0;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      /* Deep premium dark bg */
       z-index: 2000;
       display: flex;
       align-items: center;
@@ -532,7 +531,6 @@
 
 <body>
 
-  <!-- ================= LOGIN SCREEN ================= -->
   <div id="loginScreen">
     <div class="login-card">
       <div class="login-icon-bg">🪙</div>
@@ -560,10 +558,8 @@
     </div>
   </div>
 
-  <!-- ================= MAIN APP CONTAINER ================= -->
   <div id="appContainer">
 
-    <!-- SIDEBAR -->
     <div id="sidebar" class="d-flex flex-column">
       <div class="brand">
         <span class="icon">🪙</span>
@@ -597,17 +593,14 @@
       </nav>
     </div>
 
-    <!-- UTILITIES -->
     <div class="sidebar-backdrop" onclick="closeSidebar()"></div>
     <div class="spinner-overlay" id="spinnerOverlay">
       <div class="spinner-border text-light" style="width:3rem;height:3rem;"></div>
     </div>
     <div id="toastContainer"></div>
 
-    <!-- MAIN CONTENT -->
     <div id="main">
 
-      <!-- Topbar for mobile view -->
       <div id="topbar" class="d-lg-none">
         <div class="d-flex align-items-center w-100">
           <button class="btn btn-light border shadow-sm me-3" onclick="toggleSidebar()">
@@ -617,7 +610,6 @@
         </div>
       </div>
 
-      <!-- DASHBOARD SECTION -->
       <div id="sec-dashboard" class="section active">
         <h4 class="fw-bold mb-4" style="color: var(--gold-dark);">Dashboard Overview</h4>
         <div class="row g-4">
@@ -666,7 +658,6 @@
         </div>
       </div>
 
-      <!-- USERS SECTION -->
       <div id="sec-users" class="section">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
           <h4 class="fw-bold mb-0">User Management</h4>
@@ -693,7 +684,6 @@
         </div>
       </div>
 
-      <!-- BANK ACCOUNTS SECTION -->
       <div id="sec-bank-accounts" class="section">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
           <h4 class="fw-bold mb-0">Bank Account Management</h4>
@@ -722,7 +712,6 @@
         </div>
       </div>
 
-      <!-- ORNAMENTS SECTION -->
       <div id="sec-ornaments" class="section">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
           <h4 class="fw-bold mb-0">Ornament Management</h4>
@@ -751,7 +740,6 @@
         </div>
       </div>
 
-      <!-- LOANS SECTION -->
       <div id="sec-loans" class="section">
         <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
           <h4 class="fw-bold mb-0">Loan Management</h4>
@@ -780,7 +768,6 @@
         </div>
       </div>
 
-      <!-- CLOSURE SECTION -->
       <div id="sec-closure" class="section">
         <h4 class="fw-bold mb-4">Loan Closure & Ornament Release</h4>
         <div class="card mb-4">
@@ -816,13 +803,8 @@
         </div>
       </div>
 
-    </div> <!-- END OF #main -->
-  </div> <!-- END OF #appContainer -->
-
-
-  <!-- ================= MODALS (MUST BE OUTSIDE APP CONTAINER) ================= -->
-
-  <!-- GLOBAL DETAIL VIEW MODAL -->
+    </div>
+  </div>
   <div class="modal fade" id="detailViewModal" tabindex="-1">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
       <div class="modal-content">
@@ -838,7 +820,6 @@
     </div>
   </div>
 
-  <!-- USER MODAL -->
   <div class="modal fade" id="userModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
@@ -888,8 +869,6 @@
                 <option>Active</option>
                 <option>Inactive</option>
               </select></div>
-            <div class="col-md-6"><label class="form-label">Customer Photo</label><input type="file"
-                id="userCustomerPhoto" class="form-control" accept="image/*" /></div>
           </div>
         </div>
         <div class="modal-footer bg-light">
@@ -900,7 +879,6 @@
     </div>
   </div>
 
-  <!-- BANK ACCOUNT MODAL -->
   <div class="modal fade" id="bankAccountModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -940,8 +918,6 @@
                 <option>Active</option>
                 <option>Inactive</option>
               </select></div>
-            <div class="col-md-6"><label class="form-label">Passbook Image</label><input type="file"
-                id="baPassbookImage" class="form-control" accept="image/*" /></div>
           </div>
         </div>
         <div class="modal-footer bg-light">
@@ -952,7 +928,6 @@
     </div>
   </div>
 
-  <!-- ORNAMENT MODAL -->
   <div class="modal fade" id="ornamentModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
       <div class="modal-content">
@@ -1011,7 +986,6 @@
     </div>
   </div>
 
-  <!-- LOAN MODAL -->
   <div class="modal fade" id="loanModal" tabindex="-1">
     <div class="modal-dialog modal-xl">
       <div class="modal-content">
@@ -1076,7 +1050,6 @@
     </div>
   </div>
 
-  <!-- LOAN DETAIL MODAL -->
   <div class="modal fade" id="loanDetailModal" tabindex="-1">
     <div class="modal-dialog modal-xl modal-dialog-scrollable">
       <div class="modal-content">
@@ -1091,7 +1064,6 @@
   </div>
 
 
-  <!-- ================= SCRIPTS ================= -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
     // Global state
@@ -1101,7 +1073,6 @@
     window.addEventListener('DOMContentLoaded', () => {
       setToday('loanDate');
 
-      // 1. Check if user is already logged in (Persist on refresh)
       const activeSession = sessionStorage.getItem('goldLoanAdmin');
       if (activeSession) {
         document.getElementById('loginScreen').style.display = 'none';
@@ -1109,11 +1080,17 @@
         initializeApp();
       }
 
-      // 2. Adding listener for Enter key on password input
       document.getElementById('loginPassword').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') handleLogin();
       });
     });
+
+    // --- HELPER: GET RAW DIRECT IMAGE ---
+    function getRawImageUrl(driveUrl) {
+      if (!driveUrl) return '';
+      return driveUrl.replace('file/d/', 'uc?id=').replace('/view?usp=drivesdk', '');
+    }
+
     // --- AUTHENTICATION ---
     function handleLogin() {
       const user = document.getElementById('loginUsername').value.trim();
@@ -1135,10 +1112,7 @@
       google.script.run
         .withSuccessHandler(res => {
           if (res.success) {
-
-            // NEW: Save the login state to browser session memory
             sessionStorage.setItem('goldLoanAdmin', res.data.username);
-
             const loginScreen = document.getElementById('loginScreen');
             loginScreen.classList.add('fade-out');
 
@@ -1162,6 +1136,18 @@
           loginBtn.disabled = false;
           loginBtn.innerHTML = originalBtnText;
         }).authenticateAdmin(user, pass);
+    }
+
+    function handleLogout() {
+      sessionStorage.removeItem('goldLoanAdmin');
+      const loginScreen = document.getElementById('loginScreen');
+      loginScreen.classList.remove('fade-out');
+      loginScreen.style.display = 'flex';
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('appContainer').style.display = 'none';
+      closeSidebar();
+      showToast('Logged out successfully.');
     }
 
     function initializeApp() {
@@ -1214,7 +1200,6 @@
       new bootstrap.Modal(document.getElementById('detailViewModal')).show();
     }
 
-    // --- UI BUTTON LOADER ---
     function setButtonLoading(btn, isLoading) {
       if (!btn) return;
       if (isLoading) {
@@ -1227,7 +1212,6 @@
       }
     }
 
-    // --- SERVER COMMUNICATION ---
     function gsr(fnName, args = [], onSuccess = () => { }, onError = null, silent = false) {
       if (!silent) showSpinner();
       google.script.run
@@ -1246,7 +1230,7 @@
           if (onError) onError(err);
         })[fnName](...args);
     }
-    // --- GENERIC HELPERS ---
+
     function fmt(n) { return (parseFloat(n) || 0).toLocaleString('en-IN'); }
     function fmtDate(val) {
       if (!val) return '—';
@@ -1321,23 +1305,27 @@
     function viewUserDetail(id) {
       const u = allUsers.find(x => x.UserId === id);
       if (!u) return;
+
       const html = `
-      <table class="table table-bordered mb-0">
-          <tbody>
-              <tr><th class="bg-light w-25">User ID</th><td>${u.UserId}</td></tr>
-              <tr><th class="bg-light">Full Name</th><td>${u.FullName}</td></tr>
-              <tr><th class="bg-light">Father/Husband</th><td>${u.FatherHusbandName || '-'}</td></tr>
-              <tr><th class="bg-light">Mobile</th><td>${u.MobileNumber}</td></tr>
-              <tr><th class="bg-light">Alt. Mobile</th><td>${u.AlternateMobileNumber || '-'}</td></tr>
-              <tr><th class="bg-light">Email</th><td>${u.Email || '-'}</td></tr>
-              <tr><th class="bg-light">DOB</th><td>${u.DateOfBirth || '-'}</td></tr>
-              <tr><th class="bg-light">Occupation</th><td>${u.Occupation || '-'}</td></tr>
-              <tr><th class="bg-light">PAN Number</th><td>${u.PANNumber || '-'}</td></tr>
-              <tr><th class="bg-light">City / State</th><td>${u.City || '-'}, ${u.State || '-'}</td></tr>
-              <tr><th class="bg-light">Address</th><td>${u.AddressLine1 || ''} ${u.AddressLine2 || ''}</td></tr>
-              <tr><th class="bg-light">Status</th><td><span class="badge bg-${u.Status === 'Active' ? 'success' : 'secondary'}">${u.Status}</span></td></tr>
-          </tbody>
-      </table>`;
+      <div class="p-4">
+        <table class="table table-bordered mb-0">
+            <tbody>
+                <tr><th class="bg-light w-25">User ID</th><td class="fw-bold text-primary">${u.UserId}</td></tr>
+                <tr><th class="bg-light">Full Name</th><td class="fw-bold">${u.FullName}</td></tr>
+                <tr><th class="bg-light">Father/Husband</th><td>${u.FatherHusbandName || '-'}</td></tr>
+                <tr><th class="bg-light">Mobile</th><td>${u.MobileNumber}</td></tr>
+                <tr><th class="bg-light">Alt. Mobile</th><td>${u.AlternateMobileNumber || '-'}</td></tr>
+                <tr><th class="bg-light">Email</th><td>${u.Email || '-'}</td></tr>
+                <tr><th class="bg-light">DOB</th><td>${u.DateOfBirth || '-'}</td></tr>
+                <tr><th class="bg-light">Occupation</th><td>${u.Occupation || '-'}</td></tr>
+                <tr><th class="bg-light">PAN Number</th><td>${u.PANNumber || '-'}</td></tr>
+                <tr><th class="bg-light">City / State</th><td>${u.City || '-'}, ${u.State || '-'}</td></tr>
+                <tr><th class="bg-light">Address</th><td>${u.AddressLine1 || ''} ${u.AddressLine2 || ''}</td></tr>
+                <tr><th class="bg-light">Status</th><td><span class="badge bg-${u.Status === 'Active' ? 'success' : 'secondary'}">${u.Status}</span></td></tr>
+            </tbody>
+        </table>
+      </div>`;
+
       openDetailView('User Profile Details', html);
     }
 
@@ -1354,13 +1342,50 @@
           document.getElementById('editUserId').value = user.UserId;
           Object.keys(user).forEach(key => {
             const el = document.getElementById(`user${key}`);
-            if (el) el.value = user[key];
+            if (el && el.type !== 'file') {
+              el.value = user[key];
+            }
           });
         }
       } else {
         title.textContent = 'Add User';
       }
       modal.show();
+    }
+
+    async function submitUser(btn) {
+      const id = document.getElementById('editUserId').value;
+      const fullName = document.getElementById('userFullName').value.trim();
+      if (!fullName) { showToast('Full Name is required.', 'error'); return; }
+
+      setButtonLoading(btn, true);
+
+      try {
+        const userData = {
+          FullName: fullName, FatherHusbandName: document.getElementById('userFatherHusbandName').value,
+          CustomerCode: document.getElementById('userCustomerCode').value, MobileNumber: document.getElementById('userMobileNumber').value,
+          AlternateMobileNumber: document.getElementById('userAlternateMobileNumber').value, Email: document.getElementById('userEmail').value,
+          DateOfBirth: document.getElementById('userDateOfBirth').value, Gender: document.getElementById('userGender').value,
+          Occupation: document.getElementById('userOccupation').value, AadhaarNumber: document.getElementById('userAadhaarNumber').value,
+          PANNumber: document.getElementById('userPANNumber').value, AddressLine1: document.getElementById('userAddressLine1').value,
+          AddressLine2: document.getElementById('userAddressLine2').value, City: document.getElementById('userCity').value,
+          State: document.getElementById('userState').value, Pincode: document.getElementById('userPincode').value,
+          Status: document.getElementById('userStatus').value
+        };
+
+        const fn = id ? 'updateUser' : 'addUser';
+        const args = id ? [id, userData] : [userData];
+
+        gsr(fn, args, () => {
+          showToast(`User ${id ? 'updated' : 'added'} successfully.`);
+          bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
+          loadUsers();
+          setButtonLoading(btn, false);
+        }, () => { setButtonLoading(btn, false); }, true);
+      } catch (err) {
+        showToast('Error processing user.', 'error');
+        setButtonLoading(btn, false);
+      }
     }
 
     function deleteUser(userId) {
@@ -1402,23 +1427,27 @@
       const acc = allBankAccounts.find(x => x.BankAccountId === id);
       if (!acc) return;
       const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+
       const html = `
-      <table class="table table-bordered mb-0">
-          <tbody>
-              <tr><th class="bg-light w-25">Account ID</th><td>${acc.BankAccountId}</td></tr>
-              <tr><th class="bg-light">Linked User</th><td class="fw-bold">${userMap[acc.UserId] || acc.UserId}</td></tr>
-              <tr><th class="bg-light">Account Holder Name</th><td>${acc.AccountHolderName}</td></tr>
-              <tr><th class="bg-light">Bank Name</th><td>${acc.BankName}</td></tr>
-              <tr><th class="bg-light">Account Number</th><td class="text-primary fw-bold">${acc.AccountNumber}</td></tr>
-              <tr><th class="bg-light">Branch Name</th><td>${acc.BranchName || '-'}</td></tr>
-              <tr><th class="bg-light">IFSC Code</th><td>${acc.IFSCCode || '-'}</td></tr>
-              <tr><th class="bg-light">Account Type</th><td>${acc.AccountType || '-'}</td></tr>
-              <tr><th class="bg-light">UPI ID</th><td>${acc.UPI_ID || '-'}</td></tr>
-              <tr><th class="bg-light">Max Loan Amount</th><td class="fw-bold text-info">₹${fmt(acc.MaxLoanAmount)}</td></tr>
-              <tr><th class="bg-light">Utilized Loan Amount</th><td class="fw-bold text-warning">₹${fmt(acc.UtilizedLoanAmount)}</td></tr>
-              <tr><th class="bg-light">Status</th><td><span class="badge bg-${acc.Status === 'Active' ? 'success' : 'secondary'}">${acc.Status}</span></td></tr>
-          </tbody>
-      </table>`;
+      <div class="p-4">
+        <table class="table table-bordered mb-0">
+            <tbody>
+                <tr><th class="bg-light w-25">Account ID</th><td class="fw-bold">${acc.BankAccountId}</td></tr>
+                <tr><th class="bg-light">Linked User</th><td class="fw-bold text-primary">${userMap[acc.UserId] || acc.UserId}</td></tr>
+                <tr><th class="bg-light">Account Holder Name</th><td>${acc.AccountHolderName}</td></tr>
+                <tr><th class="bg-light">Bank Name</th><td>${acc.BankName}</td></tr>
+                <tr><th class="bg-light">Account Number</th><td class="text-primary fw-bold">${acc.AccountNumber}</td></tr>
+                <tr><th class="bg-light">Branch Name</th><td>${acc.BranchName || '-'}</td></tr>
+                <tr><th class="bg-light">IFSC Code</th><td>${acc.IFSCCode || '-'}</td></tr>
+                <tr><th class="bg-light">Account Type</th><td>${acc.AccountType || '-'}</td></tr>
+                <tr><th class="bg-light">UPI ID</th><td>${acc.UPI_ID || '-'}</td></tr>
+                <tr><th class="bg-light">Max Loan Amount</th><td class="fw-bold text-info">₹${fmt(acc.MaxLoanAmount)}</td></tr>
+                <tr><th class="bg-light">Utilized Loan Amount</th><td class="fw-bold text-warning">₹${fmt(acc.UtilizedLoanAmount)}</td></tr>
+                <tr><th class="bg-light">Status</th><td><span class="badge bg-${acc.Status === 'Active' ? 'success' : 'secondary'}">${acc.Status}</span></td></tr>
+            </tbody>
+        </table>
+      </div>`;
+
       openDetailView('Bank Account Details', html);
     }
 
@@ -1434,7 +1463,9 @@
           document.getElementById('editBankAccountId').value = account.BankAccountId;
           Object.keys(account).forEach(key => {
             const el = document.getElementById(`ba${key}`);
-            if (el) el.value = account[key];
+            if (el && el.type !== 'file') {
+              el.value = account[key];
+            }
           });
         }
       } else {
@@ -1442,6 +1473,38 @@
       }
       calculateAvailableLoan();
       modal.show();
+    }
+
+    async function submitBankAccount(btn) {
+      const id = document.getElementById('editBankAccountId').value;
+      const holderName = document.getElementById('baAccountHolderName').value.trim();
+      if (!holderName) { showToast('Account Holder Name is required.', 'error'); return; }
+
+      setButtonLoading(btn, true);
+
+      try {
+        const accountData = {
+          UserId: document.getElementById('baUserId').value, AccountHolderName: holderName,
+          AccountNumber: document.getElementById('baAccountNumber').value, BankName: document.getElementById('baBankName').value,
+          BranchName: document.getElementById('baBranchName').value, IFSCCode: document.getElementById('baIFSCCode').value,
+          AccountType: document.getElementById('baAccountType').value, UPI_ID: document.getElementById('baUPI_ID').value,
+          Status: document.getElementById('baStatus').value,
+          MaxLoanAmount: document.getElementById('baMaxLoanAmount').value, UtilizedLoanAmount: document.getElementById('baUtilizedLoanAmount').value
+        };
+
+        const fn = id ? 'updateBankAccount' : 'addBankAccount';
+        const args = id ? [id, accountData] : [accountData];
+
+        gsr(fn, args, () => {
+          showToast(`Bank account ${id ? 'updated' : 'added'} successfully.`);
+          bootstrap.Modal.getInstance(document.getElementById('bankAccountModal')).hide();
+          loadBankAccounts();
+          setButtonLoading(btn, false);
+        }, () => { setButtonLoading(btn, false); }, true);
+      } catch (err) {
+        showToast('Error processing bank account.', 'error');
+        setButtonLoading(btn, false);
+      }
     }
 
     function deleteBankAccount(accountId) {
@@ -1522,6 +1585,40 @@
       modal.show();
     }
 
+    async function submitOrnament(btn) {
+      const id = document.getElementById('editOrnamentId').value;
+      const name = document.getElementById('ornName').value.trim();
+      if (!name) { showToast('Ornament Name is required.', 'error'); return; }
+
+      setButtonLoading(btn, true);
+
+      try {
+        const filesPayload = await getFilesPayload('ornImages');
+        const ornamentData = {
+          UserId: document.getElementById('ornUserId').value, OrnamentName: name, OrnamentType: document.getElementById('ornType').value,
+          OrnamentCategory: document.getElementById('ornCategory').value, Description: document.getElementById('ornDescription').value,
+          GrossWeight: document.getElementById('ornGrossWeight').value, NetWeight: document.getElementById('ornNetWeight').value,
+          StoneWeight: document.getElementById('ornStoneWeight').value, Purity: document.getElementById('ornPurity').value,
+          HallmarkNumber: document.getElementById('ornHallmarkNumber').value, Quantity: document.getElementById('ornQuantity').value,
+          EstimatedValue: document.getElementById('ornEstimatedValue').value, MarketValue: document.getElementById('ornMarketValue').value,
+          Remarks: document.getElementById('ornRemarks').value, files: filesPayload
+        };
+
+        const fn = id ? 'updateOrnament' : 'addOrnament';
+        const args = id ? [id, ornamentData] : [ornamentData];
+
+        gsr(fn, args, () => {
+          showToast(`Ornament ${id ? 'updated' : 'added'} successfully.`);
+          bootstrap.Modal.getInstance(document.getElementById('ornamentModal')).hide();
+          loadOrnaments();
+          setButtonLoading(btn, false);
+        }, () => { setButtonLoading(btn, false); }, true);
+      } catch (err) {
+        showToast('Error processing files.', 'error');
+        setButtonLoading(btn, false);
+      }
+    }
+
     function deleteOrnament(ornamentId) {
       if (!confirm(`Are you sure you want to delete ornament ${ornamentId}? This is a soft delete.`)) return;
       gsr('deleteOrnament', [ornamentId], () => { showToast('Ornament deleted.'); loadOrnaments(); });
@@ -1566,6 +1663,7 @@
         }).join('');
       });
     }
+
     function viewLoanDetail(loanId) {
       gsr('getLoanDetails', [loanId], res => {
         const { loan, ornaments, payments } = res.data;
@@ -1644,21 +1742,16 @@
       document.getElementById('loanModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
       document.getElementById('editLoanId').value = '';
       document.getElementById('loanModalTitle').textContent = 'Add Loan';
-
-      // Reset the bank and ornament areas until a user is selected
       document.getElementById('loanBankAccountId').innerHTML = '<option value="">— Select a User First —</option>';
       document.getElementById('availableOrnamentsForLoan').innerHTML = '<p class="text-muted mb-0">Please select a user first.</p>';
-
       modal.show();
     }
 
-    // NEW: Master handler for when the User dropdown changes
     function handleLoanUserChange() {
       loadUserBankAccounts();
       loadUserAvailableOrnaments();
     }
 
-    // NEW: Fetches and filters ornaments by the selected user
     function loadUserAvailableOrnaments() {
       const userId = document.getElementById('loanUserId').value;
       const container = document.getElementById('availableOrnamentsForLoan');
@@ -1671,9 +1764,7 @@
       container.innerHTML = '<p class="text-muted mb-0">Loading ornaments...</p>';
 
       gsr('getAvailableOrnaments', [], res => {
-        // Filter the incoming data so it ONLY matches the selected user
         const userOrnaments = res.data.filter(o => String(o.UserId) === String(userId));
-
         if (userOrnaments.length > 0) {
           container.innerHTML = userOrnaments.map(o => `
           <div class="form-check mb-2 custom-check">
@@ -1688,6 +1779,7 @@
         }
       });
     }
+
     function loadUserBankAccounts() {
       const userId = document.getElementById('loanUserId').value;
       const selectEl = document.getElementById('loanBankAccountId');
@@ -1701,175 +1793,6 @@
           selectEl.innerHTML = '<option value="">No bank accounts for this user</option>';
         }
       });
-    }
-
-    function confirmCloseAndRelease(loanId, customerName) {
-      const remarks = prompt(`Enter closure remarks for ${customerName}'s loan (${loanId}):`, "");
-      if (remarks === null) return;
-      if (confirm(`Are you sure you want to CLOSE loan ${loanId} and RELEASE all associated ornaments? This action cannot be undone.`)) {
-        gsr('closeAndReleaseLoan', [loanId, remarks], () => {
-          showToast('Loan closed successfully!');
-          if (document.getElementById('sec-closure').classList.contains('active')) loadClosureScreen();
-          if (document.getElementById('sec-loans').classList.contains('active')) loadLoans();
-        });
-      }
-    }
-
-    // --- LOAN CLOSURE ---
-    function loadClosureScreen() {
-      gsr('getActiveLoansForClosure', [], res => {
-        const tbody = document.querySelector('#closureTable tbody');
-        const today = new Date(); today.setHours(0, 0, 0, 0);
-        tbody.innerHTML = res.data.map(loan => {
-          const dueDate = new Date(loan.DueDate);
-          const isOverdue = dueDate < today;
-          const ornamentCount = loan.linkedOrnaments ? loan.linkedOrnaments.split(',').length : 0;
-          return `
-          <tr data-search-terms="${(loan.LoanNumber + ' ' + loan.customerName + ' ' + loan.mobileNumber).toLowerCase()}">
-            <td class="fw-bold">${loan.LoanNumber} ${isOverdue ? '<span class="badge bg-danger ms-2 shadow-sm">OVERDUE</span>' : ''}</td>
-            <td>${loan.customerName}</td><td>${loan.mobileNumber}</td>
-            <td class="text-success fw-bold">₹${fmt(loan.LoanAmount)}</td>
-            <td>${fmtDate(loan.LoanDate)}</td><td class="${isOverdue ? 'text-danger fw-bold' : ''}">${fmtDate(loan.DueDate)}</td>
-            <td><span class="badge bg-secondary shadow-sm" title="${loan.linkedOrnaments}">${ornamentCount} item(s)</span></td>
-            <td><button class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="confirmCloseAndRelease('${loan.LoanId}', '${loan.customerName}')">Close & Release</button></td>
-          </tr>`;
-        }).join('');
-      });
-    }
-
-    function filterClosureTable() {
-      const query = document.getElementById('closureSearchInput').value.toLowerCase();
-      const rows = document.querySelectorAll('#closureTable tbody tr');
-      rows.forEach(row => {
-        const terms = row.dataset.searchTerms;
-        row.style.display = terms.includes(query) ? '' : 'none';
-      });
-    }
-
-    // --- LOGOUT LOGIC ---
-    function handleLogout() {
-      // 1. Clear the session memory
-      sessionStorage.removeItem('goldLoanAdmin');
-
-      // 2. Reset the Login UI
-      const loginScreen = document.getElementById('loginScreen');
-      loginScreen.classList.remove('fade-out');
-      loginScreen.style.display = 'flex';
-
-      document.getElementById('loginUsername').value = '';
-      document.getElementById('loginPassword').value = '';
-
-      // 3. Hide the main app and clear sidebar toggle (if on mobile)
-      document.getElementById('appContainer').style.display = 'none';
-      closeSidebar();
-
-      showToast('Logged out successfully.');
-    }
-    // Submit functions
-
-    async function submitUser(btn) {
-      const id = document.getElementById('editUserId').value;
-      const fullName = document.getElementById('userFullName').value.trim();
-      if (!fullName) { showToast('Full Name is required.', 'error'); return; }
-
-      setButtonLoading(btn, true); // Trigger spinner immediately
-
-      try {
-        const filesPayload = await getFilesPayload('userCustomerPhoto');
-
-        const userData = {
-          FullName: fullName, FatherHusbandName: document.getElementById('userFatherHusbandName').value,
-          CustomerCode: document.getElementById('userCustomerCode').value, MobileNumber: document.getElementById('userMobileNumber').value,
-          AlternateMobileNumber: document.getElementById('userAlternateMobileNumber').value, Email: document.getElementById('userEmail').value,
-          DateOfBirth: document.getElementById('userDateOfBirth').value, Gender: document.getElementById('userGender').value,
-          Occupation: document.getElementById('userOccupation').value, AadhaarNumber: document.getElementById('userAadhaarNumber').value,
-          PANNumber: document.getElementById('userPANNumber').value, AddressLine1: document.getElementById('userAddressLine1').value,
-          AddressLine2: document.getElementById('userAddressLine2').value, City: document.getElementById('userCity').value,
-          State: document.getElementById('userState').value, Pincode: document.getElementById('userPincode').value,
-          Status: document.getElementById('userStatus').value, files: filesPayload
-        };
-
-        const fn = id ? 'updateUser' : 'addUser';
-        const args = id ? [id, userData] : [userData];
-
-        // Notice the 'true' at the end to make the server call silent
-        gsr(fn, args, () => {
-          showToast(`User ${id ? 'updated' : 'added'} successfully.`);
-          bootstrap.Modal.getInstance(document.getElementById('userModal')).hide();
-          loadUsers();
-          setButtonLoading(btn, false);
-        }, () => { setButtonLoading(btn, false); }, true);
-      } catch (err) {
-        showToast('Error processing files.', 'error');
-        setButtonLoading(btn, false);
-      }
-    }
-
-    async function submitBankAccount(btn) {
-      const id = document.getElementById('editBankAccountId').value;
-      const holderName = document.getElementById('baAccountHolderName').value.trim();
-      if (!holderName) { showToast('Account Holder Name is required.', 'error'); return; }
-
-      setButtonLoading(btn, true);
-
-      try {
-        const filesPayload = await getFilesPayload('baPassbookImage');
-        const accountData = {
-          UserId: document.getElementById('baUserId').value, AccountHolderName: holderName,
-          AccountNumber: document.getElementById('baAccountNumber').value, BankName: document.getElementById('baBankName').value,
-          BranchName: document.getElementById('baBranchName').value, IFSCCode: document.getElementById('baIFSCCode').value,
-          AccountType: document.getElementById('baAccountType').value, UPI_ID: document.getElementById('baUPI_ID').value,
-          Status: document.getElementById('baStatus').value, files: filesPayload,
-          MaxLoanAmount: document.getElementById('baMaxLoanAmount').value, UtilizedLoanAmount: document.getElementById('baUtilizedLoanAmount').value
-        };
-
-        const fn = id ? 'updateBankAccount' : 'addBankAccount';
-        const args = id ? [id, accountData] : [accountData];
-
-        gsr(fn, args, () => {
-          showToast(`Bank account ${id ? 'updated' : 'added'} successfully.`);
-          bootstrap.Modal.getInstance(document.getElementById('bankAccountModal')).hide();
-          loadBankAccounts();
-          setButtonLoading(btn, false);
-        }, () => { setButtonLoading(btn, false); }, true);
-      } catch (err) {
-        showToast('Error processing files.', 'error');
-        setButtonLoading(btn, false);
-      }
-    }
-
-    async function submitOrnament(btn) {
-      const id = document.getElementById('editOrnamentId').value;
-      const name = document.getElementById('ornName').value.trim();
-      if (!name) { showToast('Ornament Name is required.', 'error'); return; }
-
-      setButtonLoading(btn, true);
-
-      try {
-        const filesPayload = await getFilesPayload('ornImages');
-        const ornamentData = {
-          UserId: document.getElementById('ornUserId').value, OrnamentName: name, OrnamentType: document.getElementById('ornType').value,
-          OrnamentCategory: document.getElementById('ornCategory').value, Description: document.getElementById('ornDescription').value,
-          GrossWeight: document.getElementById('ornGrossWeight').value, NetWeight: document.getElementById('ornNetWeight').value,
-          StoneWeight: document.getElementById('ornStoneWeight').value, Purity: document.getElementById('ornPurity').value,
-          HallmarkNumber: document.getElementById('ornHallmarkNumber').value, Quantity: document.getElementById('ornQuantity').value,
-          EstimatedValue: document.getElementById('ornEstimatedValue').value, MarketValue: document.getElementById('ornMarketValue').value,
-          Remarks: document.getElementById('ornRemarks').value, files: filesPayload
-        };
-
-        const fn = id ? 'updateOrnament' : 'addOrnament';
-        const args = id ? [id, ornamentData] : [ornamentData];
-
-        gsr(fn, args, () => {
-          showToast(`Ornament ${id ? 'updated' : 'added'} successfully.`);
-          bootstrap.Modal.getInstance(document.getElementById('ornamentModal')).hide();
-          loadOrnaments();
-          setButtonLoading(btn, false);
-        }, () => { setButtonLoading(btn, false); }, true);
-      } catch (err) {
-        showToast('Error processing files.', 'error');
-        setButtonLoading(btn, false);
-      }
     }
 
     async function submitLoan(btn) {
@@ -1913,6 +1836,49 @@
         loadLoans(); loadOrnaments();
         setButtonLoading(btn, false);
       }, () => { setButtonLoading(btn, false); }, true);
+    }
+
+    function confirmCloseAndRelease(loanId, customerName) {
+      const remarks = prompt(`Enter closure remarks for ${customerName}'s loan (${loanId}):`, "");
+      if (remarks === null) return;
+      if (confirm(`Are you sure you want to CLOSE loan ${loanId} and RELEASE all associated ornaments? This action cannot be undone.`)) {
+        gsr('closeAndReleaseLoan', [loanId, remarks], () => {
+          showToast('Loan closed successfully!');
+          if (document.getElementById('sec-closure').classList.contains('active')) loadClosureScreen();
+          if (document.getElementById('sec-loans').classList.contains('active')) loadLoans();
+        });
+      }
+    }
+
+    // --- LOAN CLOSURE ---
+    function loadClosureScreen() {
+      gsr('getActiveLoansForClosure', [], res => {
+        const tbody = document.querySelector('#closureTable tbody');
+        const today = new Date(); today.setHours(0, 0, 0, 0);
+        tbody.innerHTML = res.data.map(loan => {
+          const dueDate = new Date(loan.DueDate);
+          const isOverdue = dueDate < today;
+          const ornamentCount = loan.linkedOrnaments ? loan.linkedOrnaments.split(',').length : 0;
+          return `
+          <tr data-search-terms="${(loan.LoanNumber + ' ' + loan.customerName + ' ' + loan.mobileNumber).toLowerCase()}">
+            <td class="fw-bold">${loan.LoanNumber} ${isOverdue ? '<span class="badge bg-danger ms-2 shadow-sm">OVERDUE</span>' : ''}</td>
+            <td>${loan.customerName}</td><td>${loan.mobileNumber}</td>
+            <td class="text-success fw-bold">₹${fmt(loan.LoanAmount)}</td>
+            <td>${fmtDate(loan.LoanDate)}</td><td class="${isOverdue ? 'text-danger fw-bold' : ''}">${fmtDate(loan.DueDate)}</td>
+            <td><span class="badge bg-secondary shadow-sm" title="${loan.linkedOrnaments}">${ornamentCount} item(s)</span></td>
+            <td><button class="btn btn-sm btn-success fw-bold px-3 shadow-sm" onclick="confirmCloseAndRelease('${loan.LoanId}', '${loan.customerName}')">Close & Release</button></td>
+          </tr>`;
+        }).join('');
+      });
+    }
+
+    function filterClosureTable() {
+      const query = document.getElementById('closureSearchInput').value.toLowerCase();
+      const rows = document.querySelectorAll('#closureTable tbody tr');
+      rows.forEach(row => {
+        const terms = row.dataset.searchTerms;
+        row.style.display = terms.includes(query) ? '' : 'none';
+      });
     }
   </script>
 </body>
