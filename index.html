@@ -725,7 +725,10 @@
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Mobile</th><td class="p-3">${u.MobileNumber}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Alt. Mobile</th><td class="p-3">${u.AlternateMobileNumber || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Email</th><td class="p-3">${u.Email || '-'}</td></tr>
-                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">DOB</th><td class="p-3">${u.DateOfBirth || '-'}</td></tr>
+                <tr>
+                  <th class="bg-gray-50 dark:bg-slate-800/50 p-3">DOB</th>
+                  <td class="p-3">${u.DateOfBirth ? u.DateOfBirth.split('T')[0] : '-'}</td>
+                </tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Occupation</th><td class="p-3">${u.Occupation || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">PAN Number</th><td class="p-3">${u.PANNumber || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">City / State</th><td class="p-3">${u.City || '-'}, ${u.State || '-'}</td></tr>
