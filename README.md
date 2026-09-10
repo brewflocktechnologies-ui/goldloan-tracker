@@ -4,10 +4,11 @@ A web-based gold loan management system built on **Google Apps Script + Google S
 
 ## Live URLs
 
-| What | URL |
-| --- | --- |
-| Apps Script web app (backend + UI served by Google) | https://script.google.com/macros/s/AKfycbyReA2hwoWcTOlPH9qwHrCD2FW7y8MC2UNX2KXTMD0b7f9uCXSYsMNV8JWvEwO5Bg8/exec |
-| Front-end domain (Gold Loan Tracker portal) | https://goldloan.brewflock.com/ |
+**Front-end domain (Gold Loan Tracker portal):** https://goldloan.brewflock.com/
+
+**Apps Script web app URL:** https://script.google.com/macros/s/AKfycbyReA2hwoWcTOlPH9qwHrCD2FW7y8MC2UNX2KXTMD0b7f9uCXSYsMNV8JWvEwO5Bg8/exec
+
+Currently, `goldloan.brewflock.com` loads the Apps Script web app inside an iframe. The web app is deployed with `XFrameOptionsMode.ALLOWALL`, so it can be embedded on any domain.
 
 > The domain `https://goldloan.brewflock.com/` loads the Apps Script web app inside an iframe. The web app is deployed with `XFrameOptionsMode.ALLOWALL`, so it is embeddable on any domain.
 
