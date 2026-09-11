@@ -282,7 +282,7 @@
   </div>
 
   <div id="detailViewModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
       <div class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
         <h3 class="text-lg font-bold dark:text-white" id="detailViewTitle">Details</h3>
         <button onclick="hideModal('detailViewModal')" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
@@ -368,7 +368,7 @@
       <div class="p-6 overflow-y-auto custom-scrollbar">
         <input type="hidden" id="editOrnamentId" />
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">User *</label><select id="ornUserId" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 user-dropdown"></select></div>
+          <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Owner / User (Optional)</label><select id="ornUserId" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 user-dropdown"></select></div>
           <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Ornament Name *</label><input type="text" id="ornName" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Type</label><input type="text" id="ornType" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Category</label><input type="text" id="ornCategory" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
@@ -404,22 +404,23 @@
       </div>
       <div class="p-6 overflow-y-auto custom-scrollbar">
         <input type="hidden" id="editLoanId" />
+        <div id="loanModalAlert" class="hidden mb-4 p-3 rounded-xl text-sm"></div>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">User *</label><select id="loanUserId" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 user-dropdown" onchange="handleLoanUserChange()"></select></div>
           <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Bank Account *</label><select id="loanBankAccountId" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"></select></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Number *</label><input type="text" id="loanNumber" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Date *</label><input type="date" id="loanDate" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Due Date *</label><input type="date" id="loanDueDate" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Amount (₹) *</label><input type="number" id="loanAmount" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Amount (₹) *</label><input type="number" id="loanAmount" oninput="calculateLoanCharges()" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Interest Rate (%) *</label><input type="number" step="0.01" id="loanInterestRate" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Interest Type</label><select id="loanInterestType" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"><option>Simple</option><option>Compound</option></select></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Period (Months)</label><input type="number" id="loanPeriod" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
           
           <div class="col-span-full border-t border-gray-200 dark:border-slate-700 my-2"></div>
           
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Processing Fee (₹)</label><input type="number" id="loanProcessingFee" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Document Charge (₹)</label><input type="number" id="loanDocumentCharge" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Insurance Charge (₹)</label><input type="number" id="loanInsuranceCharge" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Processing Fee (₹)</label><input type="number" id="loanProcessingFee" oninput="calculateLoanCharges()" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Document Charge (₹)</label><input type="number" id="loanDocumentCharge" oninput="calculateLoanCharges()" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Insurance Charge (₹)</label><input type="number" id="loanInsuranceCharge" oninput="calculateLoanCharges()" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Total Charges (₹)</label><input type="number" id="loanTotalCharges" class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none" readonly /></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Net Disbursement (₹)</label><input type="number" id="loanNetDisbursementAmount" class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none" readonly /></div>
           <div class="col-span-full"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Remarks</label><textarea id="loanRemarks" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" rows="2"></textarea></div>
@@ -427,7 +428,13 @@
           <div class="col-span-full border-t border-gray-200 dark:border-slate-700 my-2"></div>
           
           <div class="col-span-full">
-            <label class="block text-sm font-bold mb-2 text-brand-600 dark:text-brand-400">Select Available Ornaments to Pledge</label>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
+              <label class="text-sm font-bold text-brand-600 dark:text-brand-400">Select Available Ornaments to Pledge</label>
+              <div class="relative w-full sm:w-64">
+                <input type="text" id="loanOrnamentSearch" oninput="filterLoanOrnaments()" placeholder="Search ornaments..." class="w-full bg-white dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-brand-500 pl-8" />
+                <svg class="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+            </div>
             <div id="availableOrnamentsForLoan" class="p-4 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50 max-h-[250px] overflow-y-auto custom-scrollbar"></div>
           </div>
         </div>
@@ -671,10 +678,16 @@
     }
 
     function populateUserDropdowns() {
-      const options = '<option value="">— Select User —</option>' + allUsers
+      const userOptions = allUsers
         .filter(u => u.Status === 'Active')
         .map(u => `<option value="${u.UserId}">${u.FullName} (${u.UserId})</option>`).join('');
-      document.querySelectorAll('.user-dropdown').forEach(el => el.innerHTML = options);
+      document.querySelectorAll('.user-dropdown').forEach(el => {
+        if (el.id === 'ornUserId') {
+          el.innerHTML = '<option value="">— No Owner / Unassigned (Optional) —</option>' + userOptions;
+        } else {
+          el.innerHTML = '<option value="">— Select User —</option>' + userOptions;
+        }
+      });
     }
 
     // --- DASHBOARD ---
@@ -932,7 +945,7 @@
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${o.Purity}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${o.GrossWeight}g</td>
         <td class="px-4 py-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${badgeClass}">${o.Status}</span></td>
-        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${userMap[o.UserId] || o.UserId}</td>
+        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${userMap[o.UserId] || o.UserId || '<span class="text-gray-400 italic">None</span>'}</td>
         <td class="px-4 py-3 flex gap-2">
             <button onclick="viewOrnamentDetail('${o.OrnamentId}')" class="p-1.5 text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-300 dark:bg-brand-900/30 rounded-lg" title="View"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
             <button onclick="openOrnamentModal('${o.OrnamentId}')" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30 rounded-lg" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
@@ -1022,7 +1035,7 @@
                 <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
                     <tr><td class="w-1/2 bg-gray-50 dark:bg-slate-800/50 p-2.5">Ornament ID</td><td class="p-2.5 fw-bold">${o.OrnamentId}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5">Name</td><td class="p-2.5">${o.OrnamentName}</td></tr>
-                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5">Owner</td><td class="p-2.5">${userMap[o.UserId] || o.UserId}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5">Owner</td><td class="p-2.5">${userMap[o.UserId] || o.UserId || '<span class="text-gray-400 italic">Unassigned</span>'}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5">Status</td><td class="p-2.5"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${badgeClass}">${o.Status}</span></td></tr>
                 </tbody>
             </table>
@@ -1130,6 +1143,7 @@
         <td class="px-4 py-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${statusBadgeClass}">${isOverdue ? 'OVERDUE' : l.LoanStatus}</span></td>
         <td class="px-4 py-3 flex gap-2">
             <button onclick="viewLoanDetail('${l.LoanId}')" class="p-1.5 text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-300 dark:bg-brand-900/30 rounded-lg" title="View"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
+            <button onclick="openLoanModal('${l.LoanId}')" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30 rounded-lg" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
         </td>
       </tr>`;
         }).join('');
@@ -1138,89 +1152,330 @@
 
     function viewLoanDetail(loanId) {
       gsr('getLoanDetails', [loanId], res => {
-        const { loan, ornaments, payments } = res.data;
-        
-        const ornamentsHtml = ornaments.length > 0 ? ornaments.map(o => `
-        <div class="flex justify-between items-center p-3 border-b border-gray-100 dark:border-slate-700 last:border-0">
-          <span class="font-medium text-sm dark:text-gray-200">${o.OrnamentName} (${o.OrnamentId})</span>
-          <span class="px-2 py-1 text-[10px] font-bold rounded-full ${o.Status === 'Pledged' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'}">${o.Status}</span>
-        </div>`).join('') : '<p class="text-sm text-gray-500 dark:text-gray-400 p-3">No ornaments linked.</p>';
+        const { loan, bankAccount, ornaments, payments } = res.data;
+        const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+        const customerName = userMap[loan.UserId] || loan.UserId;
 
-        const paymentsHtml = payments.length > 0 ? payments.map(p => `
-        <div class="flex justify-between items-center p-3 border-b border-gray-100 dark:border-slate-700 last:border-0 text-sm">
-          <span class="dark:text-gray-200">${fmtDate(p.PaymentDate)} <span class="text-gray-400 mx-1">•</span> <span class="text-gray-500 dark:text-gray-400">${p.PaymentMethod}</span></span>
-          <span class="font-bold text-green-600 dark:text-green-400">₹${fmt(p.TotalPaidAmount)}</span>
-        </div>`).join('') : '<p class="text-sm text-gray-500 dark:text-gray-400 p-3">No payments made.</p>';
+        const bank = bankAccount || allBankAccounts.find(b => String(b.BankAccountId) === String(loan.BankAccountId));
+        const bankText = bank
+          ? `${bank.BankName} - ${bank.AccountNumber} <span class="text-xs text-gray-400 font-normal block">${bank.AccountHolderName ? 'Holder: ' + bank.AccountHolderName : ''}${bank.IFSCCode ? ' • IFSC: ' + bank.IFSCCode : ''}</span>`
+          : (loan.BankAccountId || '—');
+        
+        const ornamentsHtml = ornaments.length > 0 ? ornaments.map(o => {
+          const images = o.OrnamentImages ? o.OrnamentImages.split(' | ').filter(u => u.trim() !== '') : [];
+          let galleryHtml = '<div class="p-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-0">No images available</p></div>';
+          if (images.length > 0) {
+            galleryHtml = `
+              <div class="flex gap-3 overflow-x-auto p-3 custom-scrollbar">
+                ${images.map(url => `
+                  <a href="${url}" target="_blank" class="block border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50 flex-shrink-0 shadow-sm hover:shadow-md transition-shadow" style="width:200px; height:150px;" title="Click to view full image">
+                    <iframe src="${url.replace('/view?usp=drivesdk', '/preview')}" style="width:100%;height:100%;border:none;pointer-events:none; border-radius: .75rem;"></iframe>
+                  </a>`).join('')}
+              </div>`;
+          }
+
+          return `
+          <div class="border border-gray-100 dark:border-slate-700 rounded-xl bg-white dark:bg-dark-card shadow-sm overflow-hidden mb-4 last:mb-0">
+            <div class="p-3.5 bg-gray-50/50 dark:bg-slate-800/40 border-b border-gray-100 dark:border-slate-700 flex flex-wrap justify-between items-center gap-2">
+              <div>
+                <span class="font-bold text-sm text-gray-800 dark:text-white">${o.OrnamentName}</span>
+                <span class="text-xs text-gray-400 ml-1.5 font-mono">(${o.OrnamentId})</span>
+                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1 flex flex-wrap gap-x-3 gap-y-1">
+                  <span>Gross: <strong>${o.GrossWeight || 0}g</strong></span> • <span>Net: <strong>${o.NetWeight || 0}g</strong></span> • <span>Purity: <strong>${o.Purity || '22K'}</strong></span>
+                  ${o.HallmarkNumber ? `• <span>Hallmark: <strong>${o.HallmarkNumber}</strong></span>` : ''}
+                  ${o.EstimatedValue ? `• <span>Est. Value: <strong>₹${fmt(o.EstimatedValue)}</strong></span>` : ''}
+                </div>
+              </div>
+              <span class="px-2.5 py-1 text-xs font-bold rounded-full ${o.Status === 'Pledged' ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'}">${o.Status}</span>
+            </div>
+            <div>
+              ${galleryHtml}
+            </div>
+          </div>`;
+        }).join('') : '<p class="text-sm text-gray-500 dark:text-gray-400 p-4 border border-gray-100 dark:border-slate-700 rounded-xl bg-white dark:bg-dark-card">No ornaments linked.</p>';
+
+        const totalPaidSoFar = payments.reduce((sum, p) => sum + (parseFloat(p.TotalPaidAmount) || 0), 0);
+        const paymentsHtml = payments.length > 0 ? `
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm text-left whitespace-nowrap">
+              <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50/50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-700">
+                <tr>
+                  <th class="px-3 py-2.5">Date</th>
+                  <th class="px-3 py-2.5">Type</th>
+                  <th class="px-3 py-2.5">Method</th>
+                  <th class="px-3 py-2.5">Principal (₹)</th>
+                  <th class="px-3 py-2.5">Interest (₹)</th>
+                  <th class="px-3 py-2.5">Penalty (₹)</th>
+                  <th class="px-3 py-2.5 font-bold">Total Paid (₹)</th>
+                  <th class="px-3 py-2.5">Ref / Remarks</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
+                ${payments.map(p => `
+                  <tr class="hover:bg-gray-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                    <td class="px-3 py-2.5 text-gray-700 dark:text-gray-200">${fmtDate(p.PaymentDate)}</td>
+                    <td class="px-3 py-2.5"><span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">${p.PaymentType || 'Payment'}</span></td>
+                    <td class="px-3 py-2.5 text-gray-600 dark:text-gray-300">${p.PaymentMethod || 'Cash'}</td>
+                    <td class="px-3 py-2.5 text-gray-600 dark:text-gray-300">₹${fmt(p.PrincipalAmount || 0)}</td>
+                    <td class="px-3 py-2.5 text-gray-600 dark:text-gray-300">₹${fmt(p.InterestAmount || 0)}</td>
+                    <td class="px-3 py-2.5 text-gray-600 dark:text-gray-300">₹${fmt(p.PenaltyAmount || 0)}</td>
+                    <td class="px-3 py-2.5 font-bold text-green-600 dark:text-green-400">₹${fmt(p.TotalPaidAmount)}</td>
+                    <td class="px-3 py-2.5 text-xs text-gray-400 max-w-[160px] truncate">${p.TransactionReference || p.Remarks || '—'}</td>
+                  </tr>`).join('')}
+              </tbody>
+            </table>
+          </div>` : '<p class="text-sm text-gray-500 dark:text-gray-400 p-4">No payments made yet.</p>';
 
         const html = `
-          <h5 class="font-bold mb-4 text-brand-600 dark:text-brand-400 text-lg">Loan Reference: ${loan.LoanNumber}</h5>
+          <div class="flex justify-between items-center mb-4">
+            <h5 class="font-bold text-brand-600 dark:text-brand-400 text-lg">Loan Reference: ${loan.LoanNumber}</h5>
+            <button onclick="hideModal('detailViewModal'); openLoanModal('${loan.LoanId}')" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg shadow-sm transition-all" title="Edit Loan">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+              Edit Loan
+            </button>
+          </div>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h6 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Loan Info</h6>
               <table class="w-full text-sm text-left border border-gray-100 dark:border-slate-700 rounded-xl overflow-hidden">
                 <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
-                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">User ID</td><td class="p-2.5 font-bold text-right dark:text-white">${loan.UserId}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Customer</td><td class="p-2.5 font-bold text-right dark:text-white">${customerName} <span class="text-xs text-gray-400 font-normal">(${loan.UserId})</span></td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Bank Account</td><td class="p-2.5 font-bold text-right dark:text-white">${bankText}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Loan Amount</td><td class="p-2.5 font-bold text-brand-600 dark:text-brand-400 text-right">₹${fmt(loan.LoanAmount)}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Interest Rate</td><td class="p-2.5 text-right dark:text-gray-200">${loan.InterestRate}% (${loan.InterestType || 'Simple'})</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Loan Period</td><td class="p-2.5 text-right dark:text-gray-200">${loan.LoanPeriod ? loan.LoanPeriod + ' Month(s)' : '—'}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Loan Date</td><td class="p-2.5 text-right dark:text-gray-200">${fmtDate(loan.LoanDate)}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Due Date</td><td class="p-2.5 text-right dark:text-gray-200">${fmtDate(loan.DueDate)}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Total Charges</td><td class="p-2.5 text-right dark:text-gray-200">₹${fmt(loan.TotalCharges || 0)}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Net Disbursement</td><td class="p-2.5 text-right font-bold text-green-600 dark:text-green-400">₹${fmt(loan.NetDisbursementAmount || loan.LoanAmount)}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Status</td><td class="p-2.5 text-right"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${loan.LoanStatus === 'Active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300'}">${loan.LoanStatus}</span></td></tr>
                 </tbody>
               </table>
             </div>
             <div>
-              <h6 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Pledged Ornaments</h6>
-              <div class="border border-gray-100 dark:border-slate-700 rounded-xl bg-white dark:bg-dark-card shadow-sm">${ornamentsHtml}</div>
+              <h6 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Pledged Ornaments (${ornaments.length})</h6>
+              <div class="space-y-4 max-h-[460px] overflow-y-auto custom-scrollbar pr-1">${ornamentsHtml}</div>
             </div>
-            <div class="md:col-span-2">
-              <h6 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 mt-2">Payment History</h6>
-              <div class="border border-gray-100 dark:border-slate-700 rounded-xl bg-white dark:bg-dark-card shadow-sm">${paymentsHtml}</div>
+            <div class="md:col-span-2 mt-2">
+              <div class="flex justify-between items-center mb-3">
+                <h6 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Payments Made (${payments.length})</h6>
+                ${payments.length > 0 ? `<span class="text-xs font-bold text-green-600 dark:text-green-400">Total Paid: ₹${fmt(totalPaidSoFar)}</span>` : ''}
+              </div>
+              <div class="border border-gray-100 dark:border-slate-700 rounded-xl bg-white dark:bg-dark-card shadow-sm overflow-hidden">${paymentsHtml}</div>
             </div>
           </div>`;
         openDetailView('Loan Details', html);
       });
     }
 
+    let currentUserBankAccounts = [];
+
+    function calculateLoanCharges() {
+      const amount = parseFloat(document.getElementById('loanAmount').value) || 0;
+      const procFee = parseFloat(document.getElementById('loanProcessingFee').value) || 0;
+      const docCharge = parseFloat(document.getElementById('loanDocumentCharge').value) || 0;
+      const insCharge = parseFloat(document.getElementById('loanInsuranceCharge').value) || 0;
+      const totalCharges = procFee + docCharge + insCharge;
+      document.getElementById('loanTotalCharges').value = totalCharges > 0 ? totalCharges.toFixed(2) : '0';
+      document.getElementById('loanNetDisbursementAmount').value = (amount - totalCharges).toFixed(2);
+    }
+
+    function toInputDateFormat(val) {
+      if (!val) return '';
+      try {
+        const d = new Date(val);
+        if (isNaN(d.getTime())) return String(val).split('T')[0] || '';
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+      } catch (e) {
+        return '';
+      }
+    }
+
     function openLoanModal(loanId = null) {
       document.getElementById('loanModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
       document.getElementById('editLoanId').value = '';
-      document.getElementById('loanModalTitle').textContent = 'Add Loan';
-      document.getElementById('loanBankAccountId').innerHTML = '<option value="">— Select a User First —</option>';
-      document.getElementById('availableOrnamentsForLoan').innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">Please select a user first.</p>';
-      showModal('loanModal');
+      const alertEl = document.getElementById('loanModalAlert');
+      if (alertEl) { alertEl.classList.add('hidden'); alertEl.innerHTML = ''; }
+      const bankSelect = document.getElementById('loanBankAccountId');
+      bankSelect.disabled = false;
+
+      if (loanId) {
+        document.getElementById('loanModalTitle').textContent = 'Edit Loan';
+        document.getElementById('editLoanId').value = loanId;
+        bankSelect.innerHTML = '<option value="">Loading accounts...</option>';
+        document.getElementById('availableOrnamentsForLoan').innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">Loading loan details...</p>';
+        showModal('loanModal');
+
+        gsr('getLoanDetails', [loanId], res => {
+          if (!res || !res.success || !res.data) {
+            showToast('Failed to load loan details', 'error');
+            hideModal('loanModal');
+            return;
+          }
+
+          const loan = res.data.loan;
+          const pledgedOrnaments = res.data.ornaments || [];
+          const isClosed = loan.LoanStatus === 'Closed';
+          const isCancelled = loan.LoanStatus === 'Cancelled';
+
+          document.getElementById('loanModalTitle').textContent = `Edit Loan (${loan.LoanNumber})`;
+          document.getElementById('loanUserId').value = loan.UserId || '';
+          document.getElementById('loanNumber').value = loan.LoanNumber || '';
+          document.getElementById('loanDate').value = toInputDateFormat(loan.LoanDate);
+          document.getElementById('loanDueDate').value = toInputDateFormat(loan.DueDate);
+          document.getElementById('loanAmount').value = loan.LoanAmount || '';
+          document.getElementById('loanInterestRate').value = loan.InterestRate || '';
+          document.getElementById('loanInterestType').value = loan.InterestType || 'Simple';
+          document.getElementById('loanPeriod').value = loan.LoanPeriod || '';
+          document.getElementById('loanProcessingFee').value = loan.ProcessingFee || '';
+          document.getElementById('loanDocumentCharge').value = loan.DocumentCharge || '';
+          document.getElementById('loanInsuranceCharge').value = loan.InsuranceCharge || '';
+          document.getElementById('loanTotalCharges').value = loan.TotalCharges || '';
+          document.getElementById('loanNetDisbursementAmount').value = loan.NetDisbursementAmount || '';
+          document.getElementById('loanRemarks').value = loan.Remarks || '';
+
+          calculateLoanCharges();
+
+          if (isClosed || isCancelled) {
+            if (alertEl) {
+              alertEl.className = 'mb-4 p-3 rounded-xl text-sm bg-yellow-50 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-800';
+              alertEl.innerHTML = `<strong>Note:</strong> This loan is <strong>${loan.LoanStatus}</strong>. Ornament pledges and bank limits cannot be modified.`;
+              alertEl.classList.remove('hidden');
+            }
+          }
+
+          // Load Bank Accounts for this user
+          if (loan.UserId) {
+            gsr('getBankAccounts', [loan.UserId], bRes => {
+              currentUserBankAccounts = bRes.data || [];
+              if (currentUserBankAccounts.length > 0) {
+                bankSelect.innerHTML = '<option value="">— Select Bank Account —</option>' + 
+                  currentUserBankAccounts.map(acc => `<option value="${acc.BankAccountId}" ${String(acc.BankAccountId) === String(loan.BankAccountId) ? 'selected' : ''}>${acc.BankName} - ${acc.AccountNumber}</option>`).join('');
+              } else {
+                bankSelect.innerHTML = '<option value="">No bank accounts for this user</option>';
+              }
+              if (isClosed || isCancelled) bankSelect.disabled = true;
+            });
+
+            // Load ornaments: currently pledged + all available unpledged ornaments
+            if (isClosed || isCancelled) {
+              const container = document.getElementById('availableOrnamentsForLoan');
+              const searchInput = document.getElementById('loanOrnamentSearch');
+              if (searchInput) searchInput.value = '';
+              if (pledgedOrnaments.length > 0) {
+                container.innerHTML = pledgedOrnaments.map(o => `
+                  <div class="flex items-start gap-3 p-3 border border-gray-200 dark:border-slate-600 rounded-xl mb-2 bg-gray-50/50 dark:bg-slate-800/30 opacity-75">
+                    <input type="checkbox" class="w-4 h-4 mt-1" checked disabled />
+                    <div class="flex flex-col flex-1">
+                      <div class="flex justify-between items-center">
+                        <span class="text-sm font-bold dark:text-white">${o.OrnamentName} <span class="text-gray-400 font-normal">(${o.OrnamentId})</span></span>
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300">${o.Status}</span>
+                      </div>
+                      <span class="text-xs text-gray-500 dark:text-gray-400">${o.GrossWeight}g, ${o.Purity}</span>
+                    </div>
+                  </div>
+                `).join('');
+              } else {
+                container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No ornaments linked to this loan.</p>';
+              }
+            } else {
+              loadAvailableOrnamentsForLoan(pledgedOrnaments.map(o => o.OrnamentId), pledgedOrnaments);
+            }
+          }
+        });
+      } else {
+        document.getElementById('loanModalTitle').textContent = 'Add Loan';
+        setToday('loanDate');
+        bankSelect.innerHTML = '<option value="">— Select a User First —</option>';
+        loadAvailableOrnamentsForLoan([], []);
+        showModal('loanModal');
+      }
     }
 
     function handleLoanUserChange() {
       loadUserBankAccounts();
-      loadUserAvailableOrnaments();
     }
 
-    function loadUserAvailableOrnaments() {
-      const userId = document.getElementById('loanUserId').value;
+    function loadAvailableOrnamentsForLoan(preSelectedIds = [], pledgedOrnaments = []) {
       const container = document.getElementById('availableOrnamentsForLoan');
+      const searchInput = document.getElementById('loanOrnamentSearch');
+      if (searchInput) searchInput.value = '';
 
-      if (!userId) {
-        container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">Please select a user first.</p>';
-        return;
-      }
+      container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">Loading available ornaments...</p>';
 
-      container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">Loading ornaments...</p>';
+      gsr('getAvailableOrnaments', [], oRes => {
+        const available = oRes.data || [];
+        const pledgedIds = new Set(pledgedOrnaments.map(o => String(o.OrnamentId)));
 
-      gsr('getAvailableOrnaments', [], res => {
-        const userOrnaments = res.data.filter(o => String(o.UserId) === String(userId));
-        if (userOrnaments.length > 0) {
-          container.innerHTML = userOrnaments.map(o => `
-          <label class="flex items-start gap-3 p-3 border border-gray-200 dark:border-slate-600 rounded-xl mb-2 cursor-pointer hover:bg-white dark:hover:bg-slate-700 transition-colors">
-            <input type="checkbox" class="w-4 h-4 mt-1 text-brand-600 rounded border-gray-300 focus:ring-brand-500 dark:bg-slate-800 dark:border-slate-500" value="${o.OrnamentId}" id="chk-orn-${o.OrnamentId}">
-            <div class="flex flex-col">
-              <span class="text-sm font-bold dark:text-white">${o.OrnamentName} <span class="text-gray-400 font-normal">(${o.OrnamentId})</span></span>
-              <span class="text-xs text-gray-500 dark:text-gray-400">${o.GrossWeight}g, ${o.Purity}</span>
+        // Combine currently pledged with all available unpledged ornaments across the entire system
+        const combined = [...pledgedOrnaments];
+        available.forEach(avail => {
+          if (!pledgedIds.has(String(avail.OrnamentId))) {
+            combined.push(avail);
+          }
+        });
+
+        if (combined.length === 0) {
+          container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">No ornaments available for pledging.</p>';
+          return;
+        }
+
+        const userMap = Object.fromEntries((allUsers || []).map(u => [u.UserId, u.FullName]));
+        const preSelectedSet = new Set(preSelectedIds.map(String));
+
+        container.innerHTML = combined.map(o => {
+          const isChecked = pledgedIds.has(String(o.OrnamentId)) || preSelectedSet.has(String(o.OrnamentId));
+          const ownerName = o.UserId ? (userMap[o.UserId] || o.UserId) : '';
+          const ownerBadge = ownerName 
+            ? `<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Owner: ${ownerName}</span>` 
+            : `<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-400">Unassigned</span>`;
+          const statusBadge = isChecked 
+            ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">Pledged</span>` 
+            : `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Available</span>`;
+          const searchStr = `${o.OrnamentName || ''} ${o.OrnamentId || ''} ${o.OrnamentType || ''} ${o.Purity || ''} ${ownerName}`.toLowerCase();
+
+          return `
+          <label class="ornament-loan-item flex items-start gap-3 p-3 border border-gray-200 dark:border-slate-600 rounded-xl mb-2 cursor-pointer hover:bg-white dark:hover:bg-slate-700 transition-colors" data-search="${searchStr}">
+            <input type="checkbox" class="w-4 h-4 mt-1 text-brand-600 rounded border-gray-300 focus:ring-brand-500 dark:bg-slate-800 dark:border-slate-500" value="${o.OrnamentId}" id="chk-orn-${o.OrnamentId}" ${isChecked ? 'checked' : ''}>
+            <div class="flex flex-col flex-1">
+              <div class="flex justify-between items-center flex-wrap gap-1">
+                <span class="text-sm font-bold dark:text-white">${o.OrnamentName} <span class="text-gray-400 font-normal">(${o.OrnamentId})</span></span>
+                <div class="flex items-center gap-1.5">
+                  ${ownerBadge}
+                  ${statusBadge}
+                </div>
+              </div>
+              <div class="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <span><strong>Gross:</strong> ${o.GrossWeight}g</span>
+                <span><strong>Purity:</strong> ${o.Purity}</span>
+                ${o.OrnamentType ? `<span><strong>Type:</strong> ${o.OrnamentType}</span>` : ''}
+              </div>
             </div>
-          </label>
-          `).join('');
+          </label>`;
+        }).join('') + '<p id="noMatchingOrnamentsNotice" class="text-sm text-gray-500 dark:text-gray-400 text-center py-4" style="display:none;">No ornaments match your search.</p>';
+      });
+    }
+
+    function filterLoanOrnaments() {
+      const query = (document.getElementById('loanOrnamentSearch')?.value || '').toLowerCase().trim();
+      const items = document.querySelectorAll('#availableOrnamentsForLoan .ornament-loan-item');
+      let visibleCount = 0;
+      items.forEach(item => {
+        const text = item.getAttribute('data-search') || '';
+        if (!query || text.includes(query)) {
+          item.style.display = '';
+          visibleCount++;
         } else {
-          container.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400">No available ornaments for this user.</p>';
+          item.style.display = 'none';
         }
       });
+      const noMatchEl = document.getElementById('noMatchingOrnamentsNotice');
+      if (noMatchEl) {
+        noMatchEl.style.display = (visibleCount === 0 && items.length > 0) ? 'block' : 'none';
+      }
     }
 
     function loadUserBankAccounts() {
@@ -1229,9 +1484,9 @@
       selectEl.innerHTML = '<option value="">Loading...</option>';
       if (!userId) { selectEl.innerHTML = '<option value="">— Select a User First —</option>'; return; }
       gsr('getBankAccounts', [userId], res => {
-        allBankAccounts = res.data || [];
-        if (res.data.length > 0) {
-          selectEl.innerHTML = '<option value="">— Select Bank Account —</option>' + res.data.map(acc => `<option value="${acc.BankAccountId}">${acc.BankName} - ${acc.AccountNumber}</option>`).join('');
+        currentUserBankAccounts = res.data || [];
+        if (currentUserBankAccounts.length > 0) {
+          selectEl.innerHTML = '<option value="">— Select Bank Account —</option>' + currentUserBankAccounts.map(acc => `<option value="${acc.BankAccountId}">${acc.BankName} - ${acc.AccountNumber}</option>`).join('');
         } else {
           selectEl.innerHTML = '<option value="">No bank accounts for this user</option>';
         }
@@ -1240,31 +1495,59 @@
 
     async function submitLoan(btn) {
       const id = document.getElementById('editLoanId').value;
-      if (id) { showToast('Editing loans is not supported from this form.', 'error'); return; }
+      const originalLoan = id ? allLoans.find(l => String(l.LoanId) === String(id)) : null;
+      const isClosedOrCancelled = originalLoan && (originalLoan.LoanStatus === 'Closed' || originalLoan.LoanStatus === 'Cancelled');
 
-      const selectedOrnaments = Array.from(document.querySelectorAll('#availableOrnamentsForLoan input:checked')).map(el => el.value);
-      if (selectedOrnaments.length === 0) { showToast('You must select at least one ornament to pledge.', 'error'); return; }
+      let selectedOrnaments = [];
+      if (isClosedOrCancelled) {
+        selectedOrnaments = [];
+      } else {
+        selectedOrnaments = Array.from(document.querySelectorAll('#availableOrnamentsForLoan input:checked')).map(el => el.value);
+        if (selectedOrnaments.length === 0) { showToast('You must select at least one ornament to pledge.', 'error'); return; }
+      }
 
       const bankAccountId = document.getElementById('loanBankAccountId').value;
-      const selectedAccount = allBankAccounts.find(acc => acc.BankAccountId === bankAccountId);
+      const accountList = (currentUserBankAccounts && currentUserBankAccounts.length > 0) ? currentUserBankAccounts : allBankAccounts;
+      const selectedAccount = accountList.find(acc => String(acc.BankAccountId) === String(bankAccountId));
       const loanAmount = parseFloat(document.getElementById('loanAmount').value) || 0;
-      const availableAmount = (selectedAccount.MaxLoanAmount || 0) - (selectedAccount.UtilizedLoanAmount || 0);
-      if (loanAmount > availableAmount) {
-        showToast(`Loan amount of ₹${fmt(loanAmount)} exceeds the available limit of ₹${fmt(availableAmount)} for this account.`, 'error');
-        return;
+
+      if (!isClosedOrCancelled && selectedAccount) {
+        const maxLoan = parseFloat(selectedAccount.MaxLoanAmount) || 0;
+        const currentUtilized = parseFloat(selectedAccount.UtilizedLoanAmount) || 0;
+        let availableAmount = maxLoan - currentUtilized;
+
+        // When editing an active loan on the same bank account,
+        // subtract the original loan amount from utilized before checking limit
+        if (id && originalLoan && originalLoan.LoanStatus === 'Active' && String(originalLoan.BankAccountId) === String(bankAccountId)) {
+          const originalAmount = parseFloat(originalLoan.LoanAmount) || 0;
+          availableAmount = maxLoan - Math.max(0, currentUtilized - originalAmount);
+        }
+
+        if (maxLoan > 0 && loanAmount > availableAmount) {
+          showToast(`Loan amount of ₹${fmt(loanAmount)} exceeds the available limit of ₹${fmt(availableAmount)} for this account.`, 'error');
+          return;
+        }
       }
 
       setButtonLoading(btn, true);
 
       const loanData = {
-        UserId: document.getElementById('loanUserId').value, BankAccountId: document.getElementById('loanBankAccountId').value,
-        LoanNumber: document.getElementById('loanNumber').value, LoanDate: document.getElementById('loanDate').value,
-        LoanAmount: document.getElementById('loanAmount').value, InterestRate: document.getElementById('loanInterestRate').value,
-        InterestType: document.getElementById('loanInterestType').value, LoanPeriod: document.getElementById('loanPeriod').value,
-        ProcessingFee: document.getElementById('loanProcessingFee').value, DocumentCharge: document.getElementById('loanDocumentCharge').value,
-        InsuranceCharge: document.getElementById('loanInsuranceCharge').value, TotalCharges: document.getElementById('loanTotalCharges').value,
-        NetDisbursementAmount: document.getElementById('loanNetDisbursementAmount').value, DueDate: document.getElementById('loanDueDate').value,
-        Remarks: document.getElementById('loanRemarks').value, ornamentIds: selectedOrnaments
+        UserId: document.getElementById('loanUserId').value,
+        BankAccountId: bankAccountId,
+        LoanNumber: document.getElementById('loanNumber').value.trim(),
+        LoanDate: document.getElementById('loanDate').value,
+        LoanAmount: document.getElementById('loanAmount').value,
+        InterestRate: document.getElementById('loanInterestRate').value,
+        InterestType: document.getElementById('loanInterestType').value,
+        LoanPeriod: document.getElementById('loanPeriod').value,
+        ProcessingFee: document.getElementById('loanProcessingFee').value,
+        DocumentCharge: document.getElementById('loanDocumentCharge').value,
+        InsuranceCharge: document.getElementById('loanInsuranceCharge').value,
+        TotalCharges: document.getElementById('loanTotalCharges').value,
+        NetDisbursementAmount: document.getElementById('loanNetDisbursementAmount').value,
+        DueDate: document.getElementById('loanDueDate').value,
+        Remarks: document.getElementById('loanRemarks').value,
+        ornamentIds: selectedOrnaments
       };
 
       if (!loanData.UserId || !loanData.BankAccountId || !loanData.LoanNumber || !loanData.LoanDate || !loanData.DueDate || !loanData.LoanAmount) {
@@ -1273,10 +1556,15 @@
         return;
       }
 
-      gsr('addLoan', [loanData], () => {
-        showToast('Loan added successfully.');
+      const fn = id ? 'updateLoan' : 'addLoan';
+      const args = id ? [id, loanData] : [loanData];
+
+      gsr(fn, args, () => {
+        showToast(`Loan ${id ? 'updated' : 'added'} successfully.`);
         hideModal('loanModal');
-        loadLoans(); loadOrnaments();
+        loadLoans();
+        loadOrnaments();
+        loadBankAccounts();
         setButtonLoading(btn, false);
       }, () => { setButtonLoading(btn, false); }, true);
     }

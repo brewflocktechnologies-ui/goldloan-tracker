@@ -508,10 +508,144 @@ function updateLoanStatus(loanId, status) {
   }
 }
 
+function updateLoan(loanId, loanData) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const loans = getSheetData("Loans");
+    const existingLoan = loans.find(l => String(l.LoanId) === String(loanId));
+    if (!existingLoan) return { success: false, error: "Loan not found" };
+
+    // Check duplicate loan number if changed
+    if (loanData.LoanNumber && String(loanData.LoanNumber) !== String(existingLoan.LoanNumber)) {
+      const duplicate = loans.find(l =>
+        String(l.LoanNumber) === String(loanData.LoanNumber) &&
+        String(l.LoanId) !== String(loanId) &&
+        l.LoanStatus !== "Cancelled"
+      );
+      if (duplicate) return { success: false, error: "Loan number already exists" };
+    }
+
+    const oldBankAccountId = existingLoan.BankAccountId;
+    const newBankAccountId = loanData.BankAccountId || oldBankAccountId;
+    const oldLoanAmount = parseFloat(existingLoan.LoanAmount) || 0;
+    const newLoanAmount = parseFloat(loanData.LoanAmount) || 0;
+    const isLoanActive = existingLoan.LoanStatus === "Active";
+
+    // Update bank account utilized amount if loan is Active
+    if (isLoanActive) {
+      if (String(oldBankAccountId) === String(newBankAccountId)) {
+        // Same bank account: adjust difference
+        const bankAccounts = getSheetData("BankAccounts");
+        const acc = bankAccounts.find(a => String(a.BankAccountId) === String(newBankAccountId));
+        if (acc) {
+          const currentUtilized = parseFloat(acc.UtilizedLoanAmount) || 0;
+          const newUtilized = Math.max(0, currentUtilized - oldLoanAmount + newLoanAmount);
+          updateRow("BankAccounts", "BankAccountId", newBankAccountId, { UtilizedLoanAmount: newUtilized });
+        }
+      } else {
+        // Bank account changed:
+        // 1. Revert from old bank account
+        if (oldBankAccountId) {
+          const bankAccounts = getSheetData("BankAccounts");
+          const oldAcc = bankAccounts.find(a => String(a.BankAccountId) === String(oldBankAccountId));
+          if (oldAcc) {
+            const oldUtilized = parseFloat(oldAcc.UtilizedLoanAmount) || 0;
+            updateRow("BankAccounts", "BankAccountId", oldBankAccountId, { UtilizedLoanAmount: Math.max(0, oldUtilized - oldLoanAmount) });
+          }
+        }
+        // 2. Add to new bank account
+        if (newBankAccountId) {
+          const bankAccounts = getSheetData("BankAccounts");
+          const newAcc = bankAccounts.find(a => String(a.BankAccountId) === String(newBankAccountId));
+          if (newAcc) {
+            const currentUtilized = parseFloat(newAcc.UtilizedLoanAmount) || 0;
+            updateRow("BankAccounts", "BankAccountId", newBankAccountId, { UtilizedLoanAmount: currentUtilized + newLoanAmount });
+          }
+        }
+      }
+    }
+
+    // Update Ornaments and LoanOrnaments mappings if loan is Active
+    if (isLoanActive && loanData.ornamentIds) {
+      const allMappings = getSheetData("LoanOrnaments");
+      const currentMappings = allMappings.filter(m => String(m.LoanId) === String(loanId) && m.Status === "Pledged");
+      const currentOrnamentIds = currentMappings.map(m => String(m.OrnamentId));
+      const newOrnamentIds = (loanData.ornamentIds || []).map(String);
+
+      // Ornaments to unpledge
+      const ornamentsToRemove = currentOrnamentIds.filter(id => !newOrnamentIds.includes(id));
+      // Ornaments to newly pledge
+      const ornamentsToAdd = newOrnamentIds.filter(id => !currentOrnamentIds.includes(id));
+
+      if (ornamentsToRemove.length > 0) {
+        const mappingSheet = ss.getSheetByName("LoanOrnaments");
+        if (mappingSheet) {
+          const mappingData = mappingSheet.getDataRange().getValues();
+          const headers = SHEET_HEADERS["LoanOrnaments"];
+          const loanIdCol = headers.indexOf("LoanId");
+          const ornIdCol = headers.indexOf("OrnamentId");
+          const statusCol = headers.indexOf("Status");
+
+          for (let i = mappingData.length - 1; i >= 1; i--) {
+            const rowLoanId = String(mappingData[i][loanIdCol]);
+            const rowOrnId = String(mappingData[i][ornIdCol]);
+            const rowStatus = String(mappingData[i][statusCol]);
+            if (rowLoanId === String(loanId) && ornamentsToRemove.includes(rowOrnId) && rowStatus === "Pledged") {
+              mappingSheet.deleteRow(i + 1);
+            }
+          }
+        }
+
+        ornamentsToRemove.forEach(ornId => {
+          updateRow("Ornaments", "OrnamentId", ornId, {
+            Status: "Available",
+            ReleaseDate: "",
+            ReleasedLoanId: ""
+          });
+        });
+      }
+
+      ornamentsToAdd.forEach(ornId => {
+        const mappingId = generateId("MAP", "LoanOrnaments", "MappingId");
+        appendRow("LoanOrnaments", { MappingId: mappingId, LoanId: loanId, OrnamentId: ornId, Status: "Pledged" });
+        updateRow("Ornaments", "OrnamentId", ornId, { Status: "Pledged" });
+      });
+    }
+
+    // Update Loan Record
+    const updateRecord = {
+      LoanNumber: loanData.LoanNumber || existingLoan.LoanNumber,
+      UserId: loanData.UserId || existingLoan.UserId,
+      BankAccountId: newBankAccountId,
+      LoanDate: loanData.LoanDate || existingLoan.LoanDate,
+      LoanAmount: newLoanAmount,
+      InterestRate: parseFloat(loanData.InterestRate) || 0,
+      InterestType: loanData.InterestType || "Simple",
+      LoanPeriod: loanData.LoanPeriod || "",
+      ProcessingFee: parseFloat(loanData.ProcessingFee) || 0,
+      DocumentCharge: parseFloat(loanData.DocumentCharge) || 0,
+      InsuranceCharge: parseFloat(loanData.InsuranceCharge) || 0,
+      TotalCharges: parseFloat(loanData.TotalCharges) || 0,
+      NetDisbursementAmount: parseFloat(loanData.NetDisbursementAmount) || 0,
+      DueDate: loanData.DueDate || existingLoan.DueDate,
+      Remarks: loanData.Remarks !== undefined ? loanData.Remarks : existingLoan.Remarks,
+      UpdatedDate: new Date().toISOString()
+    };
+
+    updateRow("Loans", "LoanId", loanId, updateRecord);
+
+    return { success: true, data: { ...existingLoan, ...updateRecord } };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
 function getLoanDetails(loanId) {
   try {
     const loan = getSheetData("Loans").find(l => String(l.LoanId) === String(loanId));
     if (!loan) return { success: false, error: "Loan not found" };
+
+    const bankAccount = loan.BankAccountId ? getSheetData("BankAccounts").find(b => String(b.BankAccountId) === String(loan.BankAccountId)) : null;
 
     const mappings = getSheetData("LoanOrnaments").filter(
       m => String(m.LoanId) === String(loanId)
@@ -525,7 +659,7 @@ function getLoanDetails(loanId) {
     const payments = getSheetData("Payments").filter(p => String(p.LoanId) === String(loanId));
     const releases = getSheetData("Releases").filter(r => String(r.LoanId) === String(loanId));
 
-    return { success: true, data: { loan, ornaments, payments, releases } };
+    return { success: true, data: { loan, bankAccount, ornaments, payments, releases } };
   } catch (e) {
     return { success: false, error: e.message };
   }
