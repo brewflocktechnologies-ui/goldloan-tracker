@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en" class="light">
 
@@ -15,15 +14,15 @@
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: { 
-        extend: { 
-          fontFamily: { sans: ['Inter', 'sans-serif'] }, 
-          colors: { 
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
             // Brand mapped to gold/yellow hues
-            brand: { 50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15', 500: '#eab308', 600: '#ca8a04', 700: '#a16207', 800: '#854d0e', 900: '#713f12' }, 
-            dark: { bg: '#0f172a', card: '#1e293b', border: '#334155' } 
-          } 
-        } 
+            brand: { 50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15', 500: '#eab308', 600: '#ca8a04', 700: '#a16207', 800: '#854d0e', 900: '#713f12' },
+            dark: { bg: '#0f172a', card: '#1e293b', border: '#334155' }
+          }
+        }
       }
     }
   </script>
@@ -34,35 +33,114 @@
       backdrop-filter: blur(12px);
       border-bottom: 1px solid rgba(255, 255, 255, 0.3);
     }
+
     .dark .glass {
       background: rgba(30, 41, 59, 0.85);
       border-color: #334155;
     }
+
     .view-section {
       display: none;
       opacity: 0;
       transition: opacity 0.3s ease-in-out;
     }
+
     .nav-item.active {
       pointer-events: none;
       cursor: default;
     }
+
     .view-section.active {
       display: block;
       opacity: 1;
       animation: slideUp 0.4s ease forwards;
     }
+
     @keyframes slideUp {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    .dark ::-webkit-scrollbar-thumb { background: #475569; }
-    .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-    
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .dark ::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Table Scroll Container with Sticky Header */
+    .table-scroll-container {
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: clamp(380px, 60vh, 560px);
+      position: relative;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .table-scroll-container::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .table-scroll-container::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .table-scroll-container::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+
+    .dark .table-scroll-container::-webkit-scrollbar-thumb {
+      background: #475569;
+    }
+
+    /* Sticky Table Header */
+    .table-scroll-container table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    .table-scroll-container table thead th {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      background-color: #f8fafc;
+      box-shadow: inset 0 -1px 0 0 #e2e8f0;
+    }
+
+    .dark .table-scroll-container table thead th {
+      background-color: #1e293b;
+      box-shadow: inset 0 -1px 0 0 #334155;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 4px;
+    }
+
     /* Login Premium Icon */
     .login-icon-bg {
       position: absolute;
@@ -73,24 +151,101 @@
       transform: rotate(15deg);
       pointer-events: none;
     }
+
+    /* Table Sorting Styles */
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.15s ease, color 0.15s ease;
+    }
+
+    th.sortable:hover {
+      background-color: #f1f5f9 !important;
+    }
+
+    .dark th.sortable:hover {
+      background-color: #334155 !important;
+    }
+
+    .sort-icon {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 0.35rem;
+      opacity: 0.35;
+      transition: opacity 0.15s, color 0.15s, transform 0.15s;
+      vertical-align: middle;
+      font-size: 0.75rem;
+      line-height: 1;
+    }
+
+    th.sortable:hover .sort-icon {
+      opacity: 0.75;
+    }
+
+    th.sort-asc .sort-icon,
+    th.sort-desc .sort-icon {
+      opacity: 1;
+      color: #ca8a04;
+    }
+
+    .dark th.sort-asc .sort-icon,
+    .dark th.sort-desc .sort-icon {
+      color: #facc15;
+    }
+
+    /* Pagination Button Styles */
+    .pagination-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 2rem;
+      height: 2rem;
+      padding: 0 0.5rem;
+      border-radius: 0.5rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .pagination-btn:disabled,
+    .pagination-btn.disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .pagination-btn-active {
+      background-color: #ca8a04 !important;
+      color: #ffffff !important;
+      border-color: #ca8a04 !important;
+    }
   </style>
 </head>
 
 <body class="bg-gray-50 text-gray-800 dark:bg-dark-bg dark:text-gray-50 transition-colors duration-200">
 
-  <div id="global-loader" class="fixed inset-0 z-[9999] flex flex-col items-center justify-center hidden bg-white/50 dark:bg-dark-bg/50 backdrop-blur-sm">
-    <div class="animate-spin rounded-full h-14 w-14 border-4 border-gray-200 dark:border-gray-700 border-t-brand-600 dark:border-t-brand-500 mb-4"></div>
+  <div id="global-loader"
+    class="fixed inset-0 z-[9999] flex flex-col items-center justify-center hidden bg-white/50 dark:bg-dark-bg/50 backdrop-blur-sm">
+    <div
+      class="animate-spin rounded-full h-14 w-14 border-4 border-gray-200 dark:border-gray-700 border-t-brand-600 dark:border-t-brand-500 mb-4">
+    </div>
     <p class="text-sm font-medium text-gray-600 dark:text-gray-200">Loading...</p>
   </div>
 
   <div id="view-login" class="fixed inset-0 z-[100] flex items-center justify-center bg-gray-50 dark:bg-dark-bg">
-    <div class="w-full max-w-4xl bg-white dark:bg-dark-card rounded-2xl shadow-2xl flex overflow-hidden border border-gray-100 dark:border-dark-border m-4">
-      <div class="hidden md:flex w-1/2 bg-gradient-to-br from-brand-600 to-brand-900 p-12 flex-col justify-between relative">
+    <div
+      class="w-full max-w-4xl bg-white dark:bg-dark-card rounded-2xl shadow-2xl flex overflow-hidden border border-gray-100 dark:border-dark-border m-4">
+      <div
+        class="hidden md:flex w-1/2 bg-gradient-to-br from-brand-600 to-brand-900 p-12 flex-col justify-between relative">
         <div class="login-icon-bg text-white">🪙</div>
         <div class="relative z-10">
           <div class="flex items-center gap-2 mb-8">
-            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-brand-600 font-bold text-2xl shadow-lg">🪙</div>
-            <span class="text-2xl font-bold tracking-tight text-white">Gold<span class="text-brand-200">Loan</span></span>
+            <div
+              class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-brand-600 font-bold text-2xl shadow-lg">
+              🪙</div>
+            <span class="text-2xl font-bold tracking-tight text-white">Gold<span
+                class="text-brand-200">Loan</span></span>
           </div>
           <h2 class="text-3xl font-bold text-white mb-4 mt-12 leading-tight">Empower Your Asset Management.</h2>
         </div>
@@ -98,7 +253,8 @@
       <div class="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center">
         <h3 class="text-2xl font-bold mb-2 dark:text-white">Admin Portal</h3>
         <p class="text-sm text-gray-500 dark:text-gray-300 mb-8">Secure login to manage users and assets.</p>
-        <div id="loginError" class="hidden mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100"></div>
+        <div id="loginError"
+          class="hidden mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm font-medium border border-red-100"></div>
         <form onsubmit="event.preventDefault(); handleLogin();" class="space-y-5">
           <div>
             <label class="block text-sm font-medium mb-1 dark:text-gray-200">Username</label>
@@ -122,158 +278,437 @@
   </div>
 
   <div id="main-layout" class="hidden h-screen overflow-hidden flex-col md:flex-row">
-    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 z-40 hidden md:hidden"></div>
-    
-    <aside id="sidebar" class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 w-64 glass bg-white dark:bg-dark-card border-r border-gray-200 dark:border-dark-border flex flex-col transition-transform duration-300 z-50 h-full">
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 z-40 hidden md:hidden">
+    </div>
+
+    <aside id="sidebar"
+      class="fixed inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 w-64 glass bg-white dark:bg-dark-card border-r border-gray-200 dark:border-dark-border flex flex-col transition-transform duration-300 z-50 h-full">
       <div class="h-16 flex items-center justify-between px-6 border-b border-gray-200 dark:border-dark-border">
         <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-bold text-xl">🪙</div>
+          <div
+            class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-bold text-xl">
+            🪙</div>
           <span class="text-xl font-bold tracking-tight dark:text-white">GoldLoan</span>
         </div>
         <button onclick="toggleSidebar()" class="md:hidden text-gray-500 dark:text-gray-300">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
         </button>
       </div>
       <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
-        <button onclick="showSection('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
+        <button onclick="showSection('dashboard')" id="nav-dashboard"
+          class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
           <span class="text-lg">🏠</span> Dashboard
         </button>
-        <button onclick="showSection('users')" id="nav-users" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
+        <button onclick="showSection('users')" id="nav-users"
+          class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
           <span class="text-lg">👥</span> Users
         </button>
-        <button onclick="showSection('bank-accounts')" id="nav-bank-accounts" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
+        <button onclick="showSection('bank-accounts')" id="nav-bank-accounts"
+          class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
           <span class="text-lg">💳</span> Bank Accounts
         </button>
-        <button onclick="showSection('ornaments')" id="nav-ornaments" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
+        <button onclick="showSection('ornaments')" id="nav-ornaments"
+          class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
           <span class="text-lg">💍</span> Ornaments
         </button>
-        <button onclick="showSection('loans')" id="nav-loans" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
+        <button onclick="showSection('loans')" id="nav-loans"
+          class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
           <span class="text-lg">🏦</span> Loans
         </button>
-        <button onclick="showSection('closure')" id="nav-closure" class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
+        <button onclick="showSection('closure')" id="nav-closure"
+          class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
           <span class="text-lg">🔒</span> Loan Closure
         </button>
       </nav>
       <div class="p-4 border-t border-gray-200 dark:border-dark-border">
-        <button onclick="handleLogout()" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-all">
+        <button onclick="handleLogout()"
+          class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20 transition-all">
           <span class="text-lg">🚪</span> Logout
         </button>
       </div>
     </aside>
 
     <div class="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-      <header class="h-16 glass bg-white/90 dark:bg-dark-card/90 border-b border-gray-200 dark:border-dark-border flex items-center justify-between px-4 sm:px-6 z-30">
+      <header
+        class="h-16 glass bg-white/90 dark:bg-dark-card/90 border-b border-gray-200 dark:border-dark-border flex items-center justify-between px-4 sm:px-6 z-30">
         <div class="flex items-center gap-3">
           <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
           </button>
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white" id="header-title">Dashboard</h2>
         </div>
         <div class="flex items-center gap-3">
-          <button onclick="toggleTheme()" class="p-2 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <button onclick="toggleTheme()"
+            class="p-2 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+            </svg>
           </button>
         </div>
       </header>
 
       <main class="flex-1 overflow-y-auto p-4 sm:p-6" id="views-container">
-        
+
         <div id="view-dashboard" class="view-section space-y-6 active">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
-              <div><p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Users</p><h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-users">—</h4></div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div
+              class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Users</p>
+                <h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-users">—</h4>
+              </div>
               <div class="p-3 bg-brand-50 text-brand-600 dark:bg-brand-900/30 rounded-xl text-2xl">👥</div>
             </div>
-            <div class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
-              <div><p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Bank Accounts</p><h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-accounts">—</h4></div>
+            <div
+              class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Bank Accounts</p>
+                <h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-accounts">—</h4>
+              </div>
               <div class="p-3 bg-green-50 text-green-600 dark:bg-green-900/30 rounded-xl text-2xl">💳</div>
             </div>
-            <div class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
-              <div><p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Ornaments</p><h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-ornaments">—</h4></div>
+            <div
+              class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Ornaments</p>
+                <h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-ornaments">—</h4>
+              </div>
               <div class="p-3 bg-purple-50 text-purple-600 dark:bg-purple-900/30 rounded-xl text-2xl">💍</div>
             </div>
-            <div class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
-              <div><p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Loans</p><h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-active-loans">—</h4></div>
+            <div
+              class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Pledged Ornaments</p>
+                <div class="flex items-baseline gap-2 mt-1">
+                  <h4 class="text-3xl font-bold text-amber-600 dark:text-amber-400" id="d-pledged-grams">—g</h4>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium" id="d-pledged-count">— item(s) pledged</p>
+              </div>
+              <div class="p-3 bg-amber-50 text-amber-600 dark:bg-amber-900/30 rounded-xl text-2xl">⚖️</div>
+            </div>
+            <div
+              class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Loans</p>
+                <h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-active-loans">—</h4>
+              </div>
               <div class="p-3 bg-orange-50 text-orange-600 dark:bg-orange-900/30 rounded-xl text-2xl">🏦</div>
             </div>
-            <div class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
-              <div><p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Closed Loans</p><h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-closed-loans">—</h4></div>
+            <div
+              class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Closed Loans</p>
+                <h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-closed-loans">—</h4>
+              </div>
               <div class="p-3 bg-red-50 text-red-600 dark:bg-red-900/30 rounded-xl text-2xl">🔒</div>
             </div>
-            <div class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
-              <div><p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Loan Value</p><h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-loan-amount">—</h4></div>
+            <div
+              class="bg-white dark:bg-dark-card p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between">
+              <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Loan Value</p>
+                <h4 class="text-3xl font-bold text-gray-800 dark:text-white mt-1" id="d-loan-amount">—</h4>
+              </div>
               <div class="p-3 bg-teal-50 text-teal-600 dark:bg-teal-900/30 rounded-xl text-2xl">💰</div>
             </div>
           </div>
         </div>
 
         <div id="view-users" class="view-section space-y-4">
-          <div class="flex flex-col sm:flex-row justify-end items-center gap-4">
-            <button onclick="openUserModal()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all">+ Add User</button>
+          <div class="flex justify-end items-center">
+            <button onclick="openUserModal()"
+              class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>Add User</span>
+            </button>
           </div>
-          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm table-container">
-            <table class="w-full text-sm text-left whitespace-nowrap" id="usersTable">
-              <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50/50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-700">
-                <tr><th class="px-4 py-3">ID</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">City</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr>
-              </thead>
-              <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
-            </table>
+          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex flex-col overflow-hidden">
+            <!-- Table Controls Toolbar -->
+            <div class="p-3.5 sm:p-4 border-b border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20">
+              <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                <span>Show</span>
+                <select id="usersTable-pageSize" onchange="tablePagination.setPageSize('usersTable', this.value)"
+                  class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all cursor-pointer shadow-sm">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="15">15</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span>entries</span>
+              </div>
+              <div class="relative w-full sm:w-64">
+                <input type="text" id="usersTable-search" oninput="tablePagination.search('usersTable', this.value)"
+                  placeholder="Search users..."
+                  class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all shadow-sm" />
+                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+            </div>
+
+            <!-- Scroll Container with Sticky Header -->
+            <div class="table-scroll-container">
+              <table class="w-full text-sm text-left whitespace-nowrap" id="usersTable">
+                <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-800">
+                  <tr>
+                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">Name</th>
+                    <th class="px-4 py-3">Mobile</th>
+                    <th class="px-4 py-3">City</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="p-3.5 sm:p-4 border-t border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20 text-xs sm:text-sm">
+              <div id="usersTable-info" class="text-gray-500 dark:text-gray-400 font-medium">
+                Showing 0 to 0 of 0 entries
+              </div>
+              <div id="usersTable-pagination" class="flex items-center gap-1 select-none flex-wrap"></div>
+            </div>
           </div>
         </div>
 
         <div id="view-bank-accounts" class="view-section space-y-4">
-          <div class="flex flex-col sm:flex-row justify-end items-center gap-4">
-            <button onclick="openBankAccountModal()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all">+ Add Account</button>
+          <div class="flex justify-end items-center">
+            <button onclick="openBankAccountModal()"
+              class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>Add Account</span>
+            </button>
           </div>
-          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm table-container">
-            <table class="w-full text-sm text-left whitespace-nowrap" id="bankAccountsTable">
-              <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50/50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-700">
-                <tr><th class="px-4 py-3">ID</th><th class="px-4 py-3">Holder Name</th><th class="px-4 py-3">Account No.</th><th class="px-4 py-3">Bank</th><th class="px-4 py-3">User</th><th class="px-4 py-3">Max Loan (₹)</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr>
-              </thead>
-              <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
-            </table>
+          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex flex-col overflow-hidden">
+            <!-- Table Controls Toolbar -->
+            <div class="p-3.5 sm:p-4 border-b border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20">
+              <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                <span>Show</span>
+                <select id="bankAccountsTable-pageSize" onchange="tablePagination.setPageSize('bankAccountsTable', this.value)"
+                  class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all cursor-pointer shadow-sm">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="15">15</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span>entries</span>
+              </div>
+              <div class="relative w-full sm:w-64">
+                <input type="text" id="bankAccountsTable-search" oninput="tablePagination.search('bankAccountsTable', this.value)"
+                  placeholder="Search bank accounts..."
+                  class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all shadow-sm" />
+                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+            </div>
+
+            <!-- Scroll Container with Sticky Header -->
+            <div class="table-scroll-container">
+              <table class="w-full text-sm text-left whitespace-nowrap" id="bankAccountsTable">
+                <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-800">
+                  <tr>
+                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">Holder Name</th>
+                    <th class="px-4 py-3">Account No.</th>
+                    <th class="px-4 py-3">Bank</th>
+                    <th class="px-4 py-3">User</th>
+                    <th class="px-4 py-3">Max Loan (₹)</th>
+                    <th class="px-4 py-3">Utilized (₹)</th>
+                    <th class="px-4 py-3">Available (₹)</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="p-3.5 sm:p-4 border-t border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20 text-xs sm:text-sm">
+              <div id="bankAccountsTable-info" class="text-gray-500 dark:text-gray-400 font-medium">
+                Showing 0 to 0 of 0 entries
+              </div>
+              <div id="bankAccountsTable-pagination" class="flex items-center gap-1 select-none flex-wrap"></div>
+            </div>
           </div>
         </div>
 
         <div id="view-ornaments" class="view-section space-y-4">
-          <div class="flex flex-col sm:flex-row justify-end items-center gap-4">
-            <button onclick="openOrnamentModal()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all">+ Add Ornament</button>
+          <div class="flex justify-end items-center">
+            <button onclick="openOrnamentModal()"
+              class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>Add Ornament</span>
+            </button>
           </div>
-          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm table-container">
-            <table class="w-full text-sm text-left whitespace-nowrap" id="ornamentsTable">
-              <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50/50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-700">
-                <tr><th class="px-4 py-3">ID</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Type</th><th class="px-4 py-3">Purity</th><th class="px-4 py-3">Gross Wt.</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">User</th><th class="px-4 py-3">Actions</th></tr>
-              </thead>
-              <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
-            </table>
+          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex flex-col overflow-hidden">
+            <!-- Table Controls Toolbar -->
+            <div class="p-3.5 sm:p-4 border-b border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20">
+              <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                <span>Show</span>
+                <select id="ornamentsTable-pageSize" onchange="tablePagination.setPageSize('ornamentsTable', this.value)"
+                  class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all cursor-pointer shadow-sm">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="15">15</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span>entries</span>
+              </div>
+              <div class="relative w-full sm:w-64">
+                <input type="text" id="ornamentsTable-search" oninput="tablePagination.search('ornamentsTable', this.value)"
+                  placeholder="Search ornaments..."
+                  class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all shadow-sm" />
+                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+            </div>
+
+            <!-- Scroll Container with Sticky Header -->
+            <div class="table-scroll-container">
+              <table class="w-full text-sm text-left whitespace-nowrap" id="ornamentsTable">
+                <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-800">
+                  <tr>
+                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">Name</th>
+                    <th class="px-4 py-3">Type</th>
+                    <th class="px-4 py-3">Purity</th>
+                    <th class="px-4 py-3">Gross Wt.</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">User</th>
+                    <th class="px-4 py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="p-3.5 sm:p-4 border-t border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20 text-xs sm:text-sm">
+              <div id="ornamentsTable-info" class="text-gray-500 dark:text-gray-400 font-medium">
+                Showing 0 to 0 of 0 entries
+              </div>
+              <div id="ornamentsTable-pagination" class="flex items-center gap-1 select-none flex-wrap"></div>
+            </div>
           </div>
         </div>
 
         <div id="view-loans" class="view-section space-y-4">
-          <div class="flex flex-col sm:flex-row justify-end items-center gap-4">
-            <button onclick="openLoanModal()" class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all">+ Add Loan</button>
+          <div class="flex justify-end items-center">
+            <button onclick="openLoanModal()"
+              class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>Add Loan</span>
+            </button>
           </div>
-          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm table-container">
-            <table class="w-full text-sm text-left whitespace-nowrap" id="loansTable">
-              <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50/50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-700">
-                <tr><th class="px-4 py-3">ID</th><th class="px-4 py-3">Loan No.</th><th class="px-4 py-3">User</th><th class="px-4 py-3">Loan Date</th><th class="px-4 py-3">Amount (₹)</th><th class="px-4 py-3">Due Date</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr>
-              </thead>
-              <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
-            </table>
+          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex flex-col overflow-hidden">
+            <!-- Table Controls Toolbar -->
+            <div class="p-3.5 sm:p-4 border-b border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20">
+              <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                <span>Show</span>
+                <select id="loansTable-pageSize" onchange="tablePagination.setPageSize('loansTable', this.value)"
+                  class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all cursor-pointer shadow-sm">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="15">15</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span>entries</span>
+              </div>
+              <div class="relative w-full sm:w-64">
+                <input type="text" id="loansTable-search" oninput="tablePagination.search('loansTable', this.value)"
+                  placeholder="Search loans..."
+                  class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all shadow-sm" />
+                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+            </div>
+
+            <!-- Scroll Container with Sticky Header -->
+            <div class="table-scroll-container">
+              <table class="w-full text-sm text-left whitespace-nowrap" id="loansTable">
+                <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-800">
+                  <tr>
+                    <th class="px-4 py-3">ID</th>
+                    <th class="px-4 py-3">Loan No.</th>
+                    <th class="px-4 py-3">User</th>
+                    <th class="px-4 py-3">Bank Name</th>
+                    <th class="px-4 py-3">Loan Date</th>
+                    <th class="px-4 py-3">Amount (₹)</th>
+                    <th class="px-4 py-3">Due Date</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="p-3.5 sm:p-4 border-t border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20 text-xs sm:text-sm">
+              <div id="loansTable-info" class="text-gray-500 dark:text-gray-400 font-medium">
+                Showing 0 to 0 of 0 entries
+              </div>
+              <div id="loansTable-pagination" class="flex items-center gap-1 select-none flex-wrap"></div>
+            </div>
           </div>
         </div>
 
         <div id="view-closure" class="view-section space-y-4">
-          <div class="bg-white dark:bg-dark-card p-4 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm">
-             <input type="text" id="closureSearchInput" onkeyup="filterClosureTable()" placeholder="🔍 Search by Loan No, Customer Name, or Mobile..." class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-500">
-          </div>
-          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm table-container">
-            <table class="w-full text-sm text-left whitespace-nowrap" id="closureTable">
-              <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50/50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-700">
-                <tr><th class="px-4 py-3">Loan Number</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Date</th><th class="px-4 py-3">Due Date</th><th class="px-4 py-3">Ornaments</th><th class="px-4 py-3">Action</th></tr>
-              </thead>
-              <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
-            </table>
+          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex flex-col overflow-hidden">
+            <!-- Table Controls Toolbar -->
+            <div class="p-3.5 sm:p-4 border-b border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20">
+              <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                <span>Show</span>
+                <select id="closureTable-pageSize" onchange="tablePagination.setPageSize('closureTable', this.value)"
+                  class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all cursor-pointer shadow-sm">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="15">15</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+                <span>entries</span>
+              </div>
+              <div class="relative w-full sm:w-72">
+                <input type="text" id="closureSearchInput" oninput="filterClosureTable()"
+                  placeholder="🔍 Search by Loan No, Customer, Mobile..."
+                  class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all shadow-sm" />
+                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+              </div>
+            </div>
+
+            <!-- Scroll Container with Sticky Header -->
+            <div class="table-scroll-container">
+              <table class="w-full text-sm text-left whitespace-nowrap" id="closureTable">
+                <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-800">
+                  <tr>
+                    <th class="px-4 py-3">Loan Number</th>
+                    <th class="px-4 py-3">Customer</th>
+                    <th class="px-4 py-3">Mobile</th>
+                    <th class="px-4 py-3">Amount</th>
+                    <th class="px-4 py-3">Date</th>
+                    <th class="px-4 py-3">Due Date</th>
+                    <th class="px-4 py-3">Ornaments</th>
+                    <th class="px-4 py-3">Action</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="p-3.5 sm:p-4 border-t border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20 text-xs sm:text-sm">
+              <div id="closureTable-info" class="text-gray-500 dark:text-gray-400 font-medium">
+                Showing 0 to 0 of 0 entries
+              </div>
+              <div id="closureTable-pagination" class="flex items-center gap-1 select-none flex-wrap"></div>
+            </div>
           </div>
         </div>
 
@@ -281,167 +716,424 @@
     </div>
   </div>
 
-  <div id="detailViewModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
+  <div id="detailViewModal"
+    class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div
+        class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
         <h3 class="text-lg font-bold dark:text-white" id="detailViewTitle">Details</h3>
-        <button onclick="hideModal('detailViewModal')" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        <button onclick="hideModal('detailViewModal')"
+          class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg></button>
       </div>
       <div class="p-6 overflow-y-auto custom-scrollbar dark:text-gray-200" id="detailViewBody"></div>
-      <div class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end">
-        <button onclick="hideModal('detailViewModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Close</button>
+      <div
+        class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end">
+        <button onclick="hideModal('detailViewModal')"
+          class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Close</button>
       </div>
     </div>
   </div>
 
-  <div id="userModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
+  <div id="userModal"
+    class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div
+        class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
         <h3 class="text-lg font-bold dark:text-white" id="userModalTitle">Add User</h3>
-        <button onclick="hideModal('userModal')" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        <button onclick="hideModal('userModal')"
+          class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg></button>
       </div>
       <div class="p-6 overflow-y-auto custom-scrollbar">
         <input type="hidden" id="editUserId" />
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Full Name *</label><input type="text" id="userFullName" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Father/Husband Name</label><input type="text" id="userFatherHusbandName" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Customer Code</label><input type="text" id="userCustomerCode" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Mobile Number *</label><input type="text" id="userMobileNumber" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Alternate Mobile</label><input type="text" id="userAlternateMobileNumber" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Email</label><input type="email" id="userEmail" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Date of Birth</label><input type="date" id="userDateOfBirth" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Gender</label><select id="userGender" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"><option>Male</option><option>Female</option><option>Other</option></select></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Occupation</label><input type="text" id="userOccupation" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Aadhaar Number</label><input type="text" id="userAadhaarNumber" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">PAN Number</label><input type="text" id="userPANNumber" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Status</label><select id="userStatus" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"><option>Active</option><option>Inactive</option></select></div>
-          <div class="md:col-span-3"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Address Line 1</label><input type="text" id="userAddressLine1" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div class="md:col-span-3"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Address Line 2</label><input type="text" id="userAddressLine2" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">City</label><input type="text" id="userCity" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">State</label><input type="text" id="userState" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Pincode</label><input type="text" id="userPincode" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Full Name *</label><input type="text"
+              id="userFullName"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Father/Husband Name</label><input
+              type="text" id="userFatherHusbandName"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Customer Code</label><input type="text"
+              id="userCustomerCode"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Mobile Number *</label><input
+              type="text" id="userMobileNumber"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Alternate Mobile</label><input
+              type="text" id="userAlternateMobileNumber"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Email</label><input type="email"
+              id="userEmail"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Date of Birth</label><input type="date"
+              id="userDateOfBirth"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Gender</label><select id="userGender"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+              <option>Male</option>
+              <option>Female</option>
+              <option>Other</option>
+            </select></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Occupation</label><input type="text"
+              id="userOccupation"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Aadhaar
+              Number</label><input type="text" id="userAadhaarNumber"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">PAN
+              Number</label><input type="text" id="userPANNumber"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="md:col-span-1"><label
+              class="block text-sm font-medium mb-1 dark:text-gray-200">Status</label><select id="userStatus"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+              <option>Active</option>
+              <option>Inactive</option>
+            </select></div>
+          <div class="md:col-span-3"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Address Line
+              1</label><input type="text" id="userAddressLine1"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="md:col-span-3"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Address Line
+              2</label><input type="text" id="userAddressLine2"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">City</label><input type="text"
+              id="userCity"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">State</label><input type="text"
+              id="userState"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Pincode</label><input type="text"
+              id="userPincode"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
         </div>
       </div>
-      <div class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end gap-3">
-        <button onclick="hideModal('userModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Cancel</button>
-        <button onclick="submitUser(this)" class="px-5 py-2.5 text-sm font-medium bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg transition-all">Save User</button>
+      <div
+        class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end gap-3">
+        <button onclick="hideModal('userModal')"
+          class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Cancel</button>
+        <button onclick="submitUser(this)"
+          class="px-5 py-2.5 text-sm font-medium bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg transition-all">Save
+          User</button>
       </div>
     </div>
   </div>
 
-  <div id="bankAccountModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
+  <div id="bankAccountModal"
+    class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div
+        class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
         <h3 class="text-lg font-bold dark:text-white" id="bankAccountModalTitle">Add Bank Account</h3>
-        <button onclick="hideModal('bankAccountModal')" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        <button onclick="hideModal('bankAccountModal')"
+          class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg></button>
       </div>
       <div class="p-6 overflow-y-auto custom-scrollbar">
         <input type="hidden" id="editBankAccountId" />
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">User *</label><select id="baUserId" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 user-dropdown"></select></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Account Holder Name *</label><input type="text" id="baAccountHolderName" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Account Number *</label><input type="text" id="baAccountNumber" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Bank Name *</label><input type="text" id="baBankName" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Branch Name</label><input type="text" id="baBranchName" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">IFSC Code</label><input type="text" id="baIFSCCode" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Account Type</label><select id="baAccountType" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"><option>Savings</option><option>Current</option></select></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">UPI ID</label><input type="text" id="baUPI_ID" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Max Loan Amount (₹)</label><input type="number" id="baMaxLoanAmount" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" placeholder="0" oninput="calculateAvailableLoan()" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Utilized Loan Amount (₹)</label><input type="number" id="baUtilizedLoanAmount" class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none" placeholder="0" readonly /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Available Loan Amount (₹)</label><input type="number" id="baAvailableLoanAmount" class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none" readonly /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Status</label><select id="baStatus" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"><option>Active</option><option>Inactive</option></select></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">User *</label><select id="baUserId"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 user-dropdown"></select>
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Account Holder Name *</label><input
+              type="text" id="baAccountHolderName"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Account Number *</label><input
+              type="text" id="baAccountNumber"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Bank Name *</label><input type="text"
+              id="baBankName"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Branch Name</label><input type="text"
+              id="baBranchName"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">IFSC Code</label><input type="text"
+              id="baIFSCCode"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Account Type</label><select
+              id="baAccountType"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+              <option>Savings</option>
+              <option>Current</option>
+            </select></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">UPI ID</label><input type="text"
+              id="baUPI_ID"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Max Loan Amount (₹)</label><input
+              type="number" id="baMaxLoanAmount"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"
+              placeholder="0" oninput="calculateAvailableLoan()" /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Utilized Loan Amount (₹)</label><input
+              type="number" id="baUtilizedLoanAmount"
+              class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none"
+              placeholder="0" readonly /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Available Loan Amount (₹)</label><input
+              type="number" id="baAvailableLoanAmount"
+              class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none"
+              readonly /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Status</label><select id="baStatus"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+              <option>Active</option>
+              <option>Inactive</option>
+            </select></div>
         </div>
       </div>
-      <div class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end gap-3">
-        <button onclick="hideModal('bankAccountModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Cancel</button>
-        <button onclick="submitBankAccount(this)" class="px-5 py-2.5 text-sm font-medium bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg transition-all">Save Account</button>
+      <div
+        class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end gap-3">
+        <button onclick="hideModal('bankAccountModal')"
+          class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Cancel</button>
+        <button onclick="submitBankAccount(this)"
+          class="px-5 py-2.5 text-sm font-medium bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg transition-all">Save
+          Account</button>
       </div>
     </div>
   </div>
 
-  <div id="ornamentModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
+  <div id="ornamentModal"
+    class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-4xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div
+        class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
         <h3 class="text-lg font-bold dark:text-white" id="ornModalTitle">Add Ornament</h3>
-        <button onclick="hideModal('ornamentModal')" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        <button onclick="hideModal('ornamentModal')"
+          class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg></button>
       </div>
       <div class="p-6 overflow-y-auto custom-scrollbar">
         <input type="hidden" id="editOrnamentId" />
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Owner / User (Optional)</label><select id="ornUserId" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 user-dropdown"></select></div>
-          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Ornament Name *</label><input type="text" id="ornName" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Type</label><input type="text" id="ornType" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Category</label><input type="text" id="ornCategory" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Quantity</label><input type="number" id="ornQuantity" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" value="1" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Gross Wt. (g)</label><input type="number" step="0.01" id="ornGrossWeight" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Net Wt. (g)</label><input type="number" step="0.01" id="ornNetWeight" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Stone Wt. (g)</label><input type="number" step="0.01" id="ornStoneWeight" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Purity</label><select id="ornPurity" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"><option>24K</option><option>22K</option><option>18K</option></select></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Hallmark No.</label><input type="text" id="ornHallmarkNumber" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Estimated Value (₹)</label><input type="number" id="ornEstimatedValue" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Market Value (₹)</label><input type="number" id="ornMarketValue" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div class="md:col-span-3"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Description</label><textarea id="ornDescription" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" rows="2"></textarea></div>
-          <div class="md:col-span-3"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Remarks</label><textarea id="ornRemarks" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" rows="2"></textarea></div>
-          <div class="md:col-span-3"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Images</label><input type="file" id="ornImages" multiple class="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100" accept="image/*" /></div>
+          <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Owner / User
+              (Optional)</label><select id="ornUserId"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 user-dropdown"></select>
+          </div>
+          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Ornament Name
+              *</label><input type="text" id="ornName"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Type</label><input type="text"
+              id="ornType"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Category</label><input type="text"
+              id="ornCategory"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Quantity</label><input type="number"
+              id="ornQuantity"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"
+              value="1" /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Gross Wt. (g)</label><input
+              type="number" step="0.01" id="ornGrossWeight"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Net Wt. (g)</label><input type="number"
+              step="0.01" id="ornNetWeight"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Stone Wt. (g)</label><input
+              type="number" step="0.01" id="ornStoneWeight"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Purity</label><select id="ornPurity"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+              <option>24K</option>
+              <option>22K</option>
+              <option>18K</option>
+            </select></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Hallmark No.</label><input type="text"
+              id="ornHallmarkNumber"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Estimated Value (₹)</label><input
+              type="number" id="ornEstimatedValue"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Market Value
+              (₹)</label><input type="number" id="ornMarketValue"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div class="md:col-span-3"><label
+              class="block text-sm font-medium mb-1 dark:text-gray-200">Description</label><textarea id="ornDescription"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"
+              rows="2"></textarea></div>
+          <div class="md:col-span-3"><label
+              class="block text-sm font-medium mb-1 dark:text-gray-200">Remarks</label><textarea id="ornRemarks"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"
+              rows="2"></textarea></div>
+          <div class="md:col-span-3"><label
+              class="block text-sm font-medium mb-1 dark:text-gray-200">Images</label><input type="file" id="ornImages"
+              multiple
+              class="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100"
+              accept="image/*" /></div>
           <div class="md:col-span-3" id="existingImagesContainer" style="display:none;">
-            <label class="block text-sm font-medium mb-1 dark:text-gray-200">Existing Images (click &times; to remove)</label>
-            <div id="existingImagesGallery" class="flex gap-3 p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50 overflow-x-auto custom-scrollbar"></div>
+            <label class="block text-sm font-medium mb-1 dark:text-gray-200">Existing Images (click &times; to
+              remove)</label>
+            <div id="existingImagesGallery"
+              class="flex gap-3 p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50 overflow-x-auto custom-scrollbar">
+            </div>
           </div>
         </div>
       </div>
-      <div class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end gap-3">
-        <button onclick="hideModal('ornamentModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Cancel</button>
-        <button onclick="submitOrnament(this)" class="px-5 py-2.5 text-sm font-medium bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg transition-all">Save Ornament</button>
+      <div
+        class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end gap-3">
+        <button onclick="hideModal('ornamentModal')"
+          class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Cancel</button>
+        <button onclick="submitOrnament(this)"
+          class="px-5 py-2.5 text-sm font-medium bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg transition-all">Save
+          Ornament</button>
       </div>
     </div>
   </div>
 
-  <div id="loanModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
-    <div class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
+  <div id="loanModal"
+    class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div
+        class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
         <h3 class="text-lg font-bold dark:text-white" id="loanModalTitle">Add Loan</h3>
-        <button onclick="hideModal('loanModal')" class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+        <button onclick="hideModal('loanModal')"
+          class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg></button>
       </div>
       <div class="p-6 overflow-y-auto custom-scrollbar">
         <input type="hidden" id="editLoanId" />
         <div id="loanModalAlert" class="hidden mb-4 p-3 rounded-xl text-sm"></div>
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">User *</label><select id="loanUserId" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 user-dropdown" onchange="handleLoanUserChange()"></select></div>
-          <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Bank Account *</label><select id="loanBankAccountId" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"></select></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Number *</label><input type="text" id="loanNumber" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Date *</label><input type="date" id="loanDate" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Due Date *</label><input type="date" id="loanDueDate" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Amount (₹) *</label><input type="number" id="loanAmount" oninput="calculateLoanCharges()" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Interest Rate (%) *</label><input type="number" step="0.01" id="loanInterestRate" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Interest Type</label><select id="loanInterestType" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"><option>Simple</option><option>Compound</option></select></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Period (Months)</label><input type="number" id="loanPeriod" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          
+          <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">User
+              *</label><select id="loanUserId"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500 user-dropdown"
+              onchange="handleLoanUserChange()"></select></div>
+          <div class="md:col-span-2"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Bank Account
+              *</label><select id="loanBankAccountId"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"
+              onchange="handleLoanBankChange()"></select>
+            <div id="loanBankLimitInfo"
+              class="hidden mt-1.5 text-xs rounded-xl p-2.5 bg-blue-50/80 dark:bg-slate-800/80 border border-blue-100 dark:border-slate-700 flex flex-wrap gap-x-3 gap-y-1">
+            </div>
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Number *</label><input type="text"
+              id="loanNumber"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Date *</label><input type="date"
+              id="loanDate"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Due Date *</label><input type="date"
+              id="loanDueDate"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Amount (₹) *</label><input
+              type="number" id="loanAmount" oninput="calculateLoanCharges()"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Interest Rate (%) *</label><input
+              type="number" step="0.01" id="loanInterestRate"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Interest Type</label><select
+              id="loanInterestType"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+              <option>Simple</option>
+              <option>Compound</option>
+            </select></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Period (Months)</label><input
+              type="number" id="loanPeriod"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+
           <div class="col-span-full border-t border-gray-200 dark:border-slate-700 my-2"></div>
-          
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Processing Fee (₹)</label><input type="number" id="loanProcessingFee" oninput="calculateLoanCharges()" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Document Charge (₹)</label><input type="number" id="loanDocumentCharge" oninput="calculateLoanCharges()" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Insurance Charge (₹)</label><input type="number" id="loanInsuranceCharge" oninput="calculateLoanCharges()" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Total Charges (₹)</label><input type="number" id="loanTotalCharges" class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none" readonly /></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Net Disbursement (₹)</label><input type="number" id="loanNetDisbursementAmount" class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none" readonly /></div>
-          <div class="col-span-full"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Remarks</label><textarea id="loanRemarks" class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" rows="2"></textarea></div>
-          
+
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Processing Fee (₹)</label><input
+              type="number" id="loanProcessingFee" oninput="calculateLoanCharges()"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Document Charge (₹)</label><input
+              type="number" id="loanDocumentCharge" oninput="calculateLoanCharges()"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Insurance Charge (₹)</label><input
+              type="number" id="loanInsuranceCharge" oninput="calculateLoanCharges()"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Total Charges (₹)</label><input
+              type="number" id="loanTotalCharges"
+              class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none"
+              readonly /></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Net Disbursement (₹)</label><input
+              type="number" id="loanNetDisbursementAmount"
+              class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none"
+              readonly /></div>
+          <div class="col-span-full"><label
+              class="block text-sm font-medium mb-1 dark:text-gray-200">Remarks</label><textarea id="loanRemarks"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"
+              rows="2"></textarea></div>
+
           <div class="col-span-full border-t border-gray-200 dark:border-slate-700 my-2"></div>
-          
+
           <div class="col-span-full">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-2">
-              <label class="text-sm font-bold text-brand-600 dark:text-brand-400">Select Available Ornaments to Pledge</label>
+              <label class="text-sm font-bold text-brand-600 dark:text-brand-400">Select Available Ornaments to
+                Pledge</label>
               <div class="relative w-full sm:w-64">
-                <input type="text" id="loanOrnamentSearch" oninput="filterLoanOrnaments()" placeholder="Search ornaments..." class="w-full bg-white dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-brand-500 pl-8" />
-                <svg class="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                <input type="text" id="loanOrnamentSearch" oninput="filterLoanOrnaments()"
+                  placeholder="Search ornaments..."
+                  class="w-full bg-white dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-lg px-3 py-1.5 text-xs outline-none focus:ring-2 focus:ring-brand-500 pl-8" />
+                <svg class="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
               </div>
             </div>
-            <div id="availableOrnamentsForLoan" class="p-4 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50 max-h-[250px] overflow-y-auto custom-scrollbar"></div>
+            <div id="availableOrnamentsForLoan"
+              class="p-4 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50 max-h-[250px] overflow-y-auto custom-scrollbar">
+            </div>
           </div>
         </div>
       </div>
-      <div class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end gap-3">
-        <button onclick="hideModal('loanModal')" class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Cancel</button>
-        <button onclick="submitLoan(this)" class="px-5 py-2.5 text-sm font-medium bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg transition-all">Save Loan</button>
+      <div
+        class="px-6 py-4 border-t border-gray-100 dark:border-dark-border bg-gray-50 dark:bg-slate-800/50 flex justify-end gap-3">
+        <button onclick="hideModal('loanModal')"
+          class="px-5 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Cancel</button>
+        <button onclick="submitLoan(this)"
+          class="px-5 py-2.5 text-sm font-medium bg-brand-600 hover:bg-brand-500 text-white rounded-xl shadow-lg transition-all">Save
+          Loan</button>
       </div>
     </div>
   </div>
@@ -454,6 +1146,7 @@
     // --- INITIALIZATION ---
     window.addEventListener('DOMContentLoaded', () => {
       setToday('loanDate');
+      initAllTableSorting();
 
       const activeSession = sessionStorage.getItem('goldLoanAdmin');
       if (activeSession) {
@@ -472,7 +1165,7 @@
     function toggleTheme() {
       document.documentElement.classList.toggle('dark');
     }
-    
+
     function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('-translate-x-full');
       document.getElementById('sidebar-overlay').classList.toggle('hidden');
@@ -483,13 +1176,13 @@
       document.getElementById('sidebar-overlay').classList.add('hidden');
     }
 
-    function showModal(id) { 
-      document.getElementById(id).classList.remove('hidden'); 
-      document.getElementById(id).classList.add('flex'); 
+    function showModal(id) {
+      document.getElementById(id).classList.remove('hidden');
+      document.getElementById(id).classList.add('flex');
     }
-    function hideModal(id) { 
-      document.getElementById(id).classList.add('hidden'); 
-      document.getElementById(id).classList.remove('flex'); 
+    function hideModal(id) {
+      document.getElementById(id).classList.add('hidden');
+      document.getElementById(id).classList.remove('flex');
     }
 
     // --- HELPER: GET RAW DIRECT IMAGE ---
@@ -559,6 +1252,7 @@
     }
 
     function initializeApp() {
+      initAllTableSorting();
       gsr('getUsers', [], (res) => {
         allUsers = res.data || [];
         populateUserDropdowns();
@@ -576,13 +1270,14 @@
 
     // --- NAVIGATION & UI HELPERS ---
     function showSection(name) {
+      initAllTableSorting();
       document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
       document.getElementById('view-' + name).classList.add('active');
-      
+
       document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('bg-brand-50', 'text-brand-600', 'dark:bg-slate-800', 'dark:text-white', 'active'));
       const activeNav = document.getElementById(`nav-${name}`);
       if (activeNav) activeNav.classList.add('bg-brand-50', 'text-brand-600', 'dark:bg-slate-800', 'dark:text-white', 'active');
-      
+
       const titles = {
         dashboard: 'Dashboard Overview',
         users: 'User Management',
@@ -592,8 +1287,8 @@
         closure: 'Loan Closure'
       };
       document.getElementById('header-title').innerText = titles[name] || name;
-      
-      if(window.innerWidth < 768) closeSidebar();
+
+      if (window.innerWidth < 768) closeSidebar();
 
       const loaders = { dashboard: loadDashboard, users: loadUsers, 'bank-accounts': loadBankAccounts, ornaments: loadOrnaments, loans: loadLoans, closure: loadClosureScreen };
       if (loaders[name]) loaders[name]();
@@ -690,7 +1385,382 @@
       });
     }
 
+    // --- TABLE PAGINATION ENGINE ---
+    const tablePagination = {
+      tables: {},
+
+      getDefaults() {
+        return {
+          pageSize: 10,
+          currentPage: 1,
+          searchTerm: ''
+        };
+      },
+
+      getState(tableId) {
+        if (!this.tables[tableId]) {
+          this.tables[tableId] = this.getDefaults();
+        }
+        return this.tables[tableId];
+      },
+
+      setPageSize(tableId, size) {
+        const state = this.getState(tableId);
+        state.pageSize = parseInt(size, 10) || 10;
+        state.currentPage = 1;
+        this.update(tableId);
+      },
+
+      setPage(tableId, page) {
+        const state = this.getState(tableId);
+        state.currentPage = page;
+        this.update(tableId);
+
+        // Smoothly scroll table container back to top
+        const table = document.getElementById(tableId);
+        if (table) {
+          const container = table.closest('.table-scroll-container');
+          if (container) {
+            container.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        }
+      },
+
+      search(tableId, query) {
+        const state = this.getState(tableId);
+        state.searchTerm = (query || '').toLowerCase().trim();
+        state.currentPage = 1;
+        this.update(tableId);
+      },
+
+      update(tableId) {
+        const table = document.getElementById(tableId);
+        if (!table) return;
+        const tbody = table.querySelector('tbody');
+        if (!tbody) return;
+
+        const state = this.getState(tableId);
+
+        // Synchronize page size dropdown if present
+        const select = document.getElementById(`${tableId}-pageSize`);
+        if (select && select.value !== String(state.pageSize)) {
+          select.value = String(state.pageSize);
+        }
+
+        // Remove previous empty message row if present
+        const existingEmpty = tbody.querySelector('.empty-pagination-row');
+        if (existingEmpty) existingEmpty.remove();
+
+        const allRows = Array.from(tbody.querySelectorAll('tr'));
+        if (allRows.length === 0) {
+          this.renderControls(tableId, 0, 0, 0, 0, 1);
+          return;
+        }
+
+        // Filter rows by searchTerm
+        const search = state.searchTerm;
+        const matchingRows = search
+          ? allRows.filter(row => {
+              const terms = row.dataset.searchTerms || row.textContent;
+              return terms.toLowerCase().includes(search);
+            })
+          : allRows;
+
+        const totalMatching = matchingRows.length;
+        const totalPages = Math.ceil(totalMatching / state.pageSize) || 1;
+
+        if (state.currentPage > totalPages) state.currentPage = totalPages;
+        if (state.currentPage < 1) state.currentPage = 1;
+
+        const startIndex = totalMatching > 0 ? (state.currentPage - 1) * state.pageSize : 0;
+        const endIndex = totalMatching > 0 ? Math.min(startIndex + state.pageSize, totalMatching) : 0;
+
+        const visibleSet = new Set(matchingRows.slice(startIndex, endIndex));
+        allRows.forEach(row => {
+          row.style.display = visibleSet.has(row) ? '' : 'none';
+        });
+
+        if (totalMatching === 0) {
+          const colCount = table.querySelectorAll('thead th').length || 6;
+          const emptyRow = document.createElement('tr');
+          emptyRow.className = 'empty-pagination-row';
+          emptyRow.innerHTML = `
+            <td colspan="${colCount}" class="px-4 py-8 text-center text-gray-400 dark:text-gray-500 text-sm">
+              <div class="flex flex-col items-center justify-center gap-2">
+                <svg class="w-8 h-8 opacity-40 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>${search ? 'No matching records found' : 'No data available'}</span>
+              </div>
+            </td>`;
+          tbody.appendChild(emptyRow);
+        }
+
+        this.renderControls(tableId, allRows.length, totalMatching, startIndex, endIndex, totalPages);
+      },
+
+      renderControls(tableId, totalAll, totalMatching, startIndex, endIndex, totalPages) {
+        const state = this.getState(tableId);
+        const infoEl = document.getElementById(`${tableId}-info`);
+        const controlsEl = document.getElementById(`${tableId}-pagination`);
+
+        if (infoEl) {
+          if (totalMatching === 0) {
+            infoEl.textContent = totalAll === 0 ? 'Showing 0 to 0 of 0 entries' : `No records found (filtered from ${totalAll} total entries)`;
+          } else {
+            const base = `Showing ${startIndex + 1} to ${endIndex} of ${totalMatching} entries`;
+            infoEl.textContent = state.searchTerm && totalMatching !== totalAll
+              ? `${base} (filtered from ${totalAll} total)`
+              : base;
+          }
+        }
+
+        if (controlsEl) {
+          const isFirst = state.currentPage <= 1;
+          const isLast = state.currentPage >= totalPages;
+
+          let html = '';
+
+          // Previous button
+          html += `
+            <button type="button" onclick="tablePagination.setPage('${tableId}', ${state.currentPage - 1})"
+              ${isFirst ? 'disabled' : ''}
+              class="pagination-btn px-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed border border-gray-200 dark:border-slate-700 rounded-lg flex items-center gap-1 text-xs font-medium transition-colors">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+              <span>Prev</span>
+            </button>`;
+
+          // Page buttons
+          const maxButtons = 5;
+          let startPage = Math.max(1, state.currentPage - Math.floor(maxButtons / 2));
+          let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+          if (endPage - startPage + 1 < maxButtons) {
+            startPage = Math.max(1, endPage - maxButtons + 1);
+          }
+
+          if (startPage > 1) {
+            html += `
+              <button type="button" onclick="tablePagination.setPage('${tableId}', 1)"
+                class="pagination-btn text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700 rounded-lg text-xs transition-colors">1</button>`;
+            if (startPage > 2) {
+              html += `<span class="px-1 text-gray-400 text-xs select-none">...</span>`;
+            }
+          }
+
+          for (let p = startPage; p <= endPage; p++) {
+            if (p === state.currentPage) {
+              html += `
+                <button type="button" class="pagination-btn pagination-btn-active bg-brand-600 text-white font-semibold rounded-lg text-xs shadow-sm cursor-default border border-brand-600">${p}</button>`;
+            } else {
+              html += `
+                <button type="button" onclick="tablePagination.setPage('${tableId}', ${p})"
+                  class="pagination-btn text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700 rounded-lg text-xs transition-colors">${p}</button>`;
+            }
+          }
+
+          if (endPage < totalPages) {
+            if (endPage < totalPages - 1) {
+              html += `<span class="px-1 text-gray-400 text-xs select-none">...</span>`;
+            }
+            html += `
+              <button type="button" onclick="tablePagination.setPage('${tableId}', ${totalPages})"
+                class="pagination-btn text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700 rounded-lg text-xs transition-colors">${totalPages}</button>`;
+          }
+
+          // Next button
+          html += `
+            <button type="button" onclick="tablePagination.setPage('${tableId}', ${state.currentPage + 1})"
+              ${isLast ? 'disabled' : ''}
+              class="pagination-btn px-2.5 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-700 disabled:opacity-40 disabled:hover:bg-transparent dark:disabled:hover:bg-transparent cursor-pointer disabled:cursor-not-allowed border border-gray-200 dark:border-slate-700 rounded-lg flex items-center gap-1 text-xs font-medium transition-colors">
+              <span>Next</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            </button>`;
+
+          controlsEl.innerHTML = html;
+        }
+      }
+    };
+
+    // --- TABLE SORTING ENGINE ---
+    const SORT_ICONS = {
+      neutral: `<svg class="w-3.5 h-3.5 opacity-40 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>`,
+      asc: `<svg class="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>`,
+      desc: `<svg class="w-3.5 h-3.5 text-brand-600 dark:text-brand-400 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>`
+    };
+
+    function parseCellValue(cell) {
+      if (!cell) return { isNull: true, val: '' };
+      const raw = (cell.innerText || cell.textContent || '').trim();
+      if (!raw || raw === '—' || raw === '-' || raw === 'N/A' || raw === 'undefined' || raw === 'null') {
+        return { isNull: true, val: '' };
+      }
+
+      // 1. Check Date (DD-MM-YYYY or DD/MM/YYYY or YYYY-MM-DD)
+      const ddmmyyyy = raw.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
+      if (ddmmyyyy) {
+        const day = parseInt(ddmmyyyy[1], 10);
+        const month = parseInt(ddmmyyyy[2], 10) - 1;
+        const year = parseInt(ddmmyyyy[3], 10);
+        const time = new Date(year, month, day).getTime();
+        if (!isNaN(time)) return { isDate: true, val: time };
+      }
+      const isoDate = raw.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})$/);
+      if (isoDate) {
+        const time = new Date(raw).getTime();
+        if (!isNaN(time)) return { isDate: true, val: time };
+      }
+
+      // 2. Check Currency / Weight / Count / Numeric values
+      // e.g. ₹20,00,000 -> 2000000; 25.5g -> 25.5; 3 item(s) -> 3; 12.5% -> 12.5
+      let cleaned = raw.replace(/[₹$,\s]/g, '');
+      if (cleaned.endsWith('%')) {
+        cleaned = cleaned.slice(0, -1);
+      } else if (/g$/i.test(cleaned)) {
+        cleaned = cleaned.replace(/g$/i, '');
+      } else if (/item\(s\)?$/i.test(cleaned)) {
+        cleaned = cleaned.replace(/item\(s\)?$/i, '');
+      }
+
+      if (cleaned !== '' && !isNaN(Number(cleaned))) {
+        return { isNum: true, val: Number(cleaned) };
+      }
+
+      // 3. Fallback: alphanumeric text
+      return { isText: true, val: raw };
+    }
+
+    function compareValues(aParsed, bParsed, dir) {
+      if (aParsed.isNull && bParsed.isNull) return 0;
+      if (aParsed.isNull) return 1;
+      if (bParsed.isNull) return -1;
+
+      let result = 0;
+      if (aParsed.isDate && bParsed.isDate) {
+        result = aParsed.val - bParsed.val;
+      } else if (aParsed.isNum && bParsed.isNum) {
+        result = aParsed.val - bParsed.val;
+      } else {
+        result = String(aParsed.val).localeCompare(String(bParsed.val), undefined, { numeric: true, sensitivity: 'base' });
+      }
+
+      return dir === 'desc' ? -result : result;
+    }
+
+    function sortTable(tableOrId, colIndex, forceDir = null) {
+      const table = typeof tableOrId === 'string' ? document.getElementById(tableOrId) : tableOrId;
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const thead = table.querySelector('thead');
+      if (!tbody || !thead) return;
+
+      const rows = Array.from(tbody.querySelectorAll('tr')).filter(r => !r.classList.contains('empty-pagination-row'));
+      if (rows.length === 0) return;
+
+      const thList = thead.querySelectorAll('th');
+      const targetTh = thList[colIndex];
+      if (!targetTh || targetTh.classList.contains('no-sort')) return;
+
+      let dir = forceDir;
+      if (!dir) {
+        const currentDir = table.dataset.sortCol === String(colIndex) ? table.dataset.sortDir : null;
+        dir = currentDir === 'asc' ? 'desc' : 'asc';
+      }
+
+      const rowsWithValues = rows.map((row, index) => ({
+        row,
+        index,
+        parsed: parseCellValue(row.children[colIndex])
+      }));
+
+      rowsWithValues.sort((a, b) => {
+        const cmp = compareValues(a.parsed, b.parsed, dir);
+        return cmp !== 0 ? cmp : a.index - b.index;
+      });
+
+      const fragment = document.createDocumentFragment();
+      rowsWithValues.forEach(item => fragment.appendChild(item.row));
+      tbody.appendChild(fragment);
+
+      table.dataset.sortCol = String(colIndex);
+      table.dataset.sortDir = dir;
+
+      thList.forEach((th, idx) => {
+        th.classList.remove('sort-asc', 'sort-desc');
+        const icon = th.querySelector('.sort-icon');
+        if (icon) {
+          if (idx === colIndex) {
+            th.classList.add('sort-' + dir);
+            icon.innerHTML = dir === 'asc' ? SORT_ICONS.asc : SORT_ICONS.desc;
+            icon.setAttribute('title', dir === 'asc' ? 'Sorted Ascending' : 'Sorted Descending');
+          } else {
+            icon.innerHTML = SORT_ICONS.neutral;
+            icon.setAttribute('title', 'Click to sort');
+          }
+        }
+      });
+
+      if (window.tablePagination) {
+        tablePagination.update(table.id);
+      }
+    }
+
+    function initTableSorting(tableOrId) {
+      const table = typeof tableOrId === 'string' ? document.getElementById(tableOrId) : tableOrId;
+      if (!table) return;
+      const thList = table.querySelectorAll('thead th');
+
+      thList.forEach((th, colIndex) => {
+        const text = (th.textContent || '').trim().toLowerCase();
+        if (text === 'actions' || text === 'action' || th.classList.contains('no-sort')) {
+          th.classList.add('no-sort');
+          return;
+        }
+
+        if (!th.classList.contains('sortable')) {
+          th.classList.add('sortable');
+          const label = th.innerHTML.trim();
+          th.innerHTML = `
+            <div class="inline-flex items-center gap-1 cursor-pointer select-none">
+              <span>${label}</span>
+              <span class="sort-icon" title="Click to sort">${SORT_ICONS.neutral}</span>
+            </div>`;
+          th.addEventListener('click', () => {
+            sortTable(table, colIndex);
+          });
+        }
+      });
+    }
+
+    function reapplyTableSort(tableOrId) {
+      const table = typeof tableOrId === 'string' ? document.getElementById(tableOrId) : tableOrId;
+      if (!table) return;
+      const sortCol = table.dataset.sortCol;
+      const sortDir = table.dataset.sortDir;
+      if (sortCol !== undefined && sortCol !== null && sortDir) {
+        sortTable(table, parseInt(sortCol, 10), sortDir);
+      } else if (window.tablePagination) {
+        tablePagination.update(table.id);
+      }
+    }
+
+    function initAllTableSorting() {
+      const tableIds = ['usersTable', 'bankAccountsTable', 'ornamentsTable', 'loansTable', 'closureTable'];
+      tableIds.forEach(id => {
+        initTableSorting(id);
+        if (window.tablePagination) {
+          tablePagination.update(id);
+        }
+      });
+    }
+
     // --- DASHBOARD ---
+    function updatePledgedOrnamentsCard(count, grams) {
+      const gramsEl = document.getElementById('d-pledged-grams');
+      const countEl = document.getElementById('d-pledged-count');
+      const numGrams = parseFloat(grams) || 0;
+      const formattedGrams = numGrams % 1 === 0 ? numGrams.toLocaleString('en-IN') : numGrams.toLocaleString('en-IN', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+      if (gramsEl) gramsEl.textContent = `${formattedGrams}g`;
+      if (countEl) countEl.textContent = `${count} item${count === 1 ? '' : 's'} pledged`;
+    }
+
     function loadDashboard() {
       gsr('getDashboardData', [], res => {
         const d = res.data;
@@ -700,6 +1770,20 @@
         document.getElementById('d-active-loans').textContent = d.activeLoans;
         document.getElementById('d-closed-loans').textContent = d.closedLoans;
         document.getElementById('d-loan-amount').textContent = '₹' + fmt(d.totalLoanAmount);
+
+        // Update Pledged Ornaments Card
+        if (d.pledgedOrnamentsCount !== undefined && d.pledgedGrams !== undefined) {
+          updatePledgedOrnamentsCard(d.pledgedOrnamentsCount, d.pledgedGrams);
+        } else {
+          // Fallback in case Google Apps Script backend hasn't refreshed yet
+          gsr('getOrnaments', [], oRes => {
+            const ornList = oRes.data || [];
+            const pledged = ornList.filter(o => o.Status === 'Pledged');
+            const count = pledged.length;
+            const grams = pledged.reduce((sum, o) => sum + (parseFloat(o.GrossWeight) || 0), 0);
+            updatePledgedOrnamentsCard(count, grams);
+          }, null, true);
+        }
       });
     }
 
@@ -722,6 +1806,7 @@
         </td>
       </tr>`).join('');
         populateUserDropdowns();
+        reapplyTableSort('usersTable');
       });
     }
 
@@ -825,21 +1910,29 @@
         allBankAccounts = res.data;
         const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
         const tbody = document.querySelector('#bankAccountsTable tbody');
-        tbody.innerHTML = allBankAccounts.map(acc => `
+        tbody.innerHTML = allBankAccounts.map(acc => {
+          const maxLoan = parseFloat(acc.MaxLoanAmount) || 0;
+          const utilizedLoan = parseFloat(acc.UtilizedLoanAmount) || 0;
+          const availableLoan = acc.AvailableLoanAmount !== undefined ? acc.AvailableLoanAmount : Math.max(0, maxLoan - utilizedLoan);
+          return `
       <tr class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
         <td class="px-4 py-3 font-bold dark:text-white">${acc.BankAccountId}</td>
         <td class="px-4 py-3 text-gray-800 dark:text-gray-200">${acc.AccountHolderName}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${acc.AccountNumber}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${acc.BankName}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${userMap[acc.UserId] || acc.UserId}</td>
-        <td class="px-4 py-3 font-bold text-brand-600 dark:text-brand-400">₹${fmt(acc.MaxLoanAmount)}</td>
+        <td class="px-4 py-3 font-bold text-blue-600 dark:text-blue-400">₹${fmt(maxLoan)}</td>
+        <td class="px-4 py-3 font-bold text-amber-600 dark:text-amber-400">₹${fmt(utilizedLoan)}</td>
+        <td class="px-4 py-3 font-bold text-emerald-600 dark:text-emerald-400">₹${fmt(availableLoan)}</td>
         <td class="px-4 py-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${acc.Status === 'Active' ? 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300'}">${acc.Status}</span></td>
         <td class="px-4 py-3 flex gap-2">
             <button onclick="viewBankAccountDetail('${acc.BankAccountId}')" class="p-1.5 text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-300 dark:bg-brand-900/30 rounded-lg" title="View"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
             <button onclick="openBankAccountModal('${acc.BankAccountId}')" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30 rounded-lg" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
             <button onclick="deleteBankAccount('${acc.BankAccountId}')" class="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-300 dark:bg-red-900/30 rounded-lg" title="Delete"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
         </td>
-      </tr>`).join('');
+      </tr>`;
+        }).join('');
+        reapplyTableSort('bankAccountsTable');
       });
     }
 
@@ -847,6 +1940,9 @@
       const acc = allBankAccounts.find(x => x.BankAccountId === id);
       if (!acc) return;
       const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+      const maxLoan = parseFloat(acc.MaxLoanAmount) || 0;
+      const utilizedLoan = parseFloat(acc.UtilizedLoanAmount) || 0;
+      const availableLoan = acc.AvailableLoanAmount !== undefined ? acc.AvailableLoanAmount : Math.max(0, maxLoan - utilizedLoan);
 
       const html = `
         <table class="w-full text-sm text-left border border-gray-100 dark:border-slate-700 rounded-xl overflow-hidden">
@@ -860,8 +1956,9 @@
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">IFSC Code</th><td class="p-3">${acc.IFSCCode || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Account Type</th><td class="p-3">${acc.AccountType || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">UPI ID</th><td class="p-3">${acc.UPI_ID || '-'}</td></tr>
-                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Max Loan Amount</th><td class="p-3 font-bold text-blue-600 dark:text-blue-400">₹${fmt(acc.MaxLoanAmount)}</td></tr>
-                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Utilized Loan Amount</th><td class="p-3 font-bold text-brand-500">₹${fmt(acc.UtilizedLoanAmount)}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Max Loan Amount</th><td class="p-3 font-bold text-blue-600 dark:text-blue-400">₹${fmt(maxLoan)}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Utilized Loan Amount</th><td class="p-3 font-bold text-amber-500">₹${fmt(utilizedLoan)}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Available Loan Amount</th><td class="p-3 font-bold text-emerald-600 dark:text-emerald-400">₹${fmt(availableLoan)}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Status</th><td class="p-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${acc.Status === 'Active' ? 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300'}">${acc.Status}</span></td></tr>
             </tbody>
         </table>`;
@@ -936,7 +2033,7 @@
           const isPledged = o.Status === 'Pledged';
           const bgClass = isPledged ? 'bg-orange-50/50 dark:bg-orange-900/10' : '';
           const badgeClass = isPledged ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-          
+
           return `
       <tr class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors ${bgClass}">
         <td class="px-4 py-3 font-bold dark:text-white">${o.OrnamentId}</td>
@@ -953,6 +2050,7 @@
         </td>
       </tr>`;
         }).join('');
+        reapplyTableSort('ornamentsTable');
       });
     }
 
@@ -1117,13 +2215,14 @@
       gsr('getLoans', [], res => {
         allLoans = res.data;
         const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+        const bankMap = Object.fromEntries(allBankAccounts.map(b => [String(b.BankAccountId), b.BankName]));
         const today = new Date(); today.setHours(0, 0, 0, 0);
         const tbody = document.querySelector('#loansTable tbody');
-        
+
         tbody.innerHTML = allLoans.map(l => {
           const dueDate = new Date(l.DueDate);
           const isOverdue = l.LoanStatus === 'Active' && dueDate < today;
-          
+
           let statusBadgeClass = '';
           if (isOverdue) statusBadgeClass = 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
           else if (l.LoanStatus === 'Active') statusBadgeClass = 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
@@ -1131,12 +2230,14 @@
           else statusBadgeClass = 'bg-gray-100 text-gray-700 dark:bg-slate-700 dark:text-gray-300';
 
           const rowBgClass = isOverdue ? 'bg-red-50/30 dark:bg-red-900/10' : '';
-          
+          const bankName = l.BankName || bankMap[String(l.BankAccountId)] || '—';
+
           return `
       <tr class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors ${rowBgClass}">
         <td class="px-4 py-3 font-bold dark:text-white">${l.LoanId}</td>
         <td class="px-4 py-3 text-gray-800 dark:text-gray-200">${l.LoanNumber}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${userMap[l.UserId] || l.UserId}</td>
+        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${bankName}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${fmtDate(l.LoanDate)}</td>
         <td class="px-4 py-3 font-bold text-brand-600 dark:text-brand-400">₹${fmt(l.LoanAmount)}</td>
         <td class="px-4 py-3 ${isOverdue ? 'text-red-600 font-bold dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}">${fmtDate(l.DueDate)}</td>
@@ -1147,6 +2248,7 @@
         </td>
       </tr>`;
         }).join('');
+        reapplyTableSort('loansTable');
       });
     }
 
@@ -1160,7 +2262,7 @@
         const bankText = bank
           ? `${bank.BankName} - ${bank.AccountNumber} <span class="text-xs text-gray-400 font-normal block">${bank.AccountHolderName ? 'Holder: ' + bank.AccountHolderName : ''}${bank.IFSCCode ? ' • IFSC: ' + bank.IFSCCode : ''}</span>`
           : (loan.BankAccountId || '—');
-        
+
         const ornamentsHtml = ornaments.length > 0 ? ornaments.map(o => {
           const images = o.OrnamentImages ? o.OrnamentImages.split(' | ').filter(u => u.trim() !== '') : [];
           let galleryHtml = '<div class="p-3"><p class="text-sm text-gray-500 dark:text-gray-400 mb-0">No images available</p></div>';
@@ -1196,9 +2298,9 @@
 
         const totalPaidSoFar = payments.reduce((sum, p) => sum + (parseFloat(p.TotalPaidAmount) || 0), 0);
         const paymentsHtml = payments.length > 0 ? `
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left whitespace-nowrap">
-              <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50/50 dark:bg-slate-800/50 border-b border-gray-100 dark:border-slate-700">
+          <div class="table-scroll-container max-h-60 rounded-xl border border-gray-100 dark:border-slate-700">
+            <table id="paymentsDetailTable" class="w-full text-sm text-left whitespace-nowrap">
+              <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-800">
                 <tr>
                   <th class="px-3 py-2.5">Date</th>
                   <th class="px-3 py-2.5">Type</th>
@@ -1265,10 +2367,12 @@
             </div>
           </div>`;
         openDetailView('Loan Details', html);
+        initTableSorting('paymentsDetailTable');
       });
     }
 
     let currentUserBankAccounts = [];
+    let currentEditingLoan = null;
 
     function calculateLoanCharges() {
       const amount = parseFloat(document.getElementById('loanAmount').value) || 0;
@@ -1297,8 +2401,11 @@
     function openLoanModal(loanId = null) {
       document.getElementById('loanModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
       document.getElementById('editLoanId').value = '';
+      currentEditingLoan = null;
       const alertEl = document.getElementById('loanModalAlert');
       if (alertEl) { alertEl.classList.add('hidden'); alertEl.innerHTML = ''; }
+      const limitInfo = document.getElementById('loanBankLimitInfo');
+      if (limitInfo) { limitInfo.classList.add('hidden'); limitInfo.innerHTML = ''; }
       const bankSelect = document.getElementById('loanBankAccountId');
       bankSelect.disabled = false;
 
@@ -1317,6 +2424,7 @@
           }
 
           const loan = res.data.loan;
+          currentEditingLoan = loan;
           const pledgedOrnaments = res.data.ornaments || [];
           const isClosed = loan.LoanStatus === 'Closed';
           const isCancelled = loan.LoanStatus === 'Cancelled';
@@ -1352,12 +2460,20 @@
             gsr('getBankAccounts', [loan.UserId], bRes => {
               currentUserBankAccounts = bRes.data || [];
               if (currentUserBankAccounts.length > 0) {
-                bankSelect.innerHTML = '<option value="">— Select Bank Account —</option>' + 
-                  currentUserBankAccounts.map(acc => `<option value="${acc.BankAccountId}" ${String(acc.BankAccountId) === String(loan.BankAccountId) ? 'selected' : ''}>${acc.BankName} - ${acc.AccountNumber}</option>`).join('');
+                bankSelect.innerHTML = '<option value="">— Select Bank Account —</option>' +
+                  currentUserBankAccounts.map(acc => {
+                    const maxL = parseFloat(acc.MaxLoanAmount) || 0;
+                    const util = parseFloat(acc.UtilizedLoanAmount) || 0;
+                    const avail = acc.AvailableLoanAmount !== undefined ? acc.AvailableLoanAmount : Math.max(0, maxL - util);
+                    const isSel = String(acc.BankAccountId) === String(loan.BankAccountId);
+                    return `<option value="${acc.BankAccountId}" ${isSel ? 'selected' : ''}>${acc.BankName} - ${acc.AccountNumber} (Avail: ₹${fmt(avail)})</option>`;
+                  }).join('');
+                bankSelect.value = loan.BankAccountId || '';
               } else {
                 bankSelect.innerHTML = '<option value="">No bank accounts for this user</option>';
               }
               if (isClosed || isCancelled) bankSelect.disabled = true;
+              handleLoanBankChange();
             });
 
             // Load ornaments: currently pledged + all available unpledged ornaments
@@ -1389,7 +2505,9 @@
       } else {
         document.getElementById('loanModalTitle').textContent = 'Add Loan';
         setToday('loanDate');
+        currentEditingLoan = null;
         bankSelect.innerHTML = '<option value="">— Select a User First —</option>';
+        if (limitInfo) { limitInfo.classList.add('hidden'); limitInfo.innerHTML = ''; }
         loadAvailableOrnamentsForLoan([], []);
         showModal('loanModal');
       }
@@ -1429,11 +2547,11 @@
         container.innerHTML = combined.map(o => {
           const isChecked = pledgedIds.has(String(o.OrnamentId)) || preSelectedSet.has(String(o.OrnamentId));
           const ownerName = o.UserId ? (userMap[o.UserId] || o.UserId) : '';
-          const ownerBadge = ownerName 
-            ? `<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Owner: ${ownerName}</span>` 
+          const ownerBadge = ownerName
+            ? `<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Owner: ${ownerName}</span>`
             : `<span class="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-400">Unassigned</span>`;
-          const statusBadge = isChecked 
-            ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">Pledged</span>` 
+          const statusBadge = isChecked
+            ? `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400">Pledged</span>`
             : `<span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">Available</span>`;
           const searchStr = `${o.OrnamentName || ''} ${o.OrnamentId || ''} ${o.OrnamentType || ''} ${o.Purity || ''} ${ownerName}`.toLowerCase();
 
@@ -1478,24 +2596,86 @@
       }
     }
 
-    function loadUserBankAccounts() {
+    function loadUserBankAccounts(selectedBankAccountId = null) {
       const userId = document.getElementById('loanUserId').value;
       const selectEl = document.getElementById('loanBankAccountId');
+      const limitInfo = document.getElementById('loanBankLimitInfo');
+      if (limitInfo) { limitInfo.classList.add('hidden'); limitInfo.innerHTML = ''; }
       selectEl.innerHTML = '<option value="">Loading...</option>';
       if (!userId) { selectEl.innerHTML = '<option value="">— Select a User First —</option>'; return; }
       gsr('getBankAccounts', [userId], res => {
         currentUserBankAccounts = res.data || [];
         if (currentUserBankAccounts.length > 0) {
-          selectEl.innerHTML = '<option value="">— Select Bank Account —</option>' + currentUserBankAccounts.map(acc => `<option value="${acc.BankAccountId}">${acc.BankName} - ${acc.AccountNumber}</option>`).join('');
+          selectEl.innerHTML = '<option value="">— Select Bank Account —</option>' +
+            currentUserBankAccounts.map(acc => {
+              const maxL = parseFloat(acc.MaxLoanAmount) || 0;
+              const util = parseFloat(acc.UtilizedLoanAmount) || 0;
+              const avail = acc.AvailableLoanAmount !== undefined ? acc.AvailableLoanAmount : Math.max(0, maxL - util);
+              const isSel = selectedBankAccountId && String(acc.BankAccountId) === String(selectedBankAccountId);
+              return `<option value="${acc.BankAccountId}" ${isSel ? 'selected' : ''}>${acc.BankName} - ${acc.AccountNumber} (Avail: ₹${fmt(avail)})</option>`;
+            }).join('');
+          if (selectedBankAccountId) {
+            selectEl.value = selectedBankAccountId;
+          }
         } else {
           selectEl.innerHTML = '<option value="">No bank accounts for this user</option>';
         }
+        handleLoanBankChange();
       });
+    }
+
+    function handleLoanBankChange() {
+      const bankAccountId = document.getElementById('loanBankAccountId').value;
+      const limitInfo = document.getElementById('loanBankLimitInfo');
+      if (!limitInfo) return;
+
+      if (!bankAccountId) {
+        limitInfo.classList.add('hidden');
+        limitInfo.innerHTML = '';
+        return;
+      }
+
+      const accountList = (currentUserBankAccounts && currentUserBankAccounts.length > 0) ? currentUserBankAccounts : allBankAccounts;
+      const selectedAccount = accountList.find(acc => String(acc.BankAccountId) === String(bankAccountId));
+
+      if (!selectedAccount) {
+        limitInfo.classList.add('hidden');
+        limitInfo.innerHTML = '';
+        return;
+      }
+
+      const maxLimit = parseFloat(selectedAccount.MaxLoanAmount) || 0;
+      const utilized = parseFloat(selectedAccount.UtilizedLoanAmount) || 0;
+
+      const editId = document.getElementById('editLoanId').value;
+      const originalLoan = currentEditingLoan || (editId ? allLoans.find(l => String(l.LoanId) === String(editId)) : null);
+
+      let effectiveUtilized = utilized;
+      let isSameAccountEdit = false;
+      let origAmt = 0;
+
+      if (originalLoan && originalLoan.LoanStatus === 'Active' && String(originalLoan.BankAccountId) === String(selectedAccount.BankAccountId)) {
+        isSameAccountEdit = true;
+        origAmt = parseFloat(originalLoan.LoanAmount) || 0;
+        effectiveUtilized = Math.max(0, utilized - origAmt);
+      }
+
+      const available = Math.max(0, maxLimit - effectiveUtilized);
+
+      limitInfo.classList.remove('hidden');
+      limitInfo.innerHTML = `
+        <span class="text-gray-600 dark:text-gray-300">Bank Limit: <strong class="text-gray-900 dark:text-white">₹${fmt(maxLimit)}</strong></span>
+        <span class="text-gray-400">•</span>
+        <span class="text-gray-600 dark:text-gray-300">Utilized: <strong class="text-amber-600 dark:text-amber-400">₹${fmt(effectiveUtilized)}</strong></span>
+        <span class="text-gray-400">•</span>
+        <span class="text-gray-600 dark:text-gray-300">Available: <strong class="${available > 0 ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-rose-600 dark:text-rose-400 font-bold'}">₹${fmt(available)}</strong></span>
+        ${isSameAccountEdit ? `<span class="text-[11px] text-blue-500 italic block w-full mt-0.5">(Includes ₹${fmt(origAmt)} available from current active loan)</span>` : ''}
+      `;
     }
 
     async function submitLoan(btn) {
       const id = document.getElementById('editLoanId').value;
-      const originalLoan = id ? allLoans.find(l => String(l.LoanId) === String(id)) : null;
+      const originalLoan = currentEditingLoan || (id ? allLoans.find(l => String(l.LoanId) === String(id)) : null);
       const isClosedOrCancelled = originalLoan && (originalLoan.LoanStatus === 'Closed' || originalLoan.LoanStatus === 'Cancelled');
 
       let selectedOrnaments = [];
@@ -1524,7 +2704,7 @@
         }
 
         if (maxLoan > 0 && loanAmount > availableAmount) {
-          showToast(`Loan amount of ₹${fmt(loanAmount)} exceeds the available limit of ₹${fmt(availableAmount)} for this account.`, 'error');
+          showToast(`Loan amount of ₹${fmt(loanAmount)} exceeds the available limit of ₹${fmt(availableAmount)} for ${selectedAccount.BankName} (${selectedAccount.AccountNumber}).`, 'error');
           return;
         }
       }
@@ -1534,6 +2714,7 @@
       const loanData = {
         UserId: document.getElementById('loanUserId').value,
         BankAccountId: bankAccountId,
+        BankName: selectedAccount ? selectedAccount.BankName : '',
         LoanNumber: document.getElementById('loanNumber').value.trim(),
         LoanDate: document.getElementById('loanDate').value,
         LoanAmount: document.getElementById('loanAmount').value,
@@ -1610,17 +2791,18 @@
             <td class="px-4 py-3"><button class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all" onclick="confirmCloseAndRelease('${loan.LoanId}', '${loan.customerName}')">Close & Release</button></td>
           </tr>`;
         }).join('');
+        reapplyTableSort('closureTable');
       });
     }
 
     function filterClosureTable() {
-      const query = document.getElementById('closureSearchInput').value.toLowerCase();
-      const rows = document.querySelectorAll('#closureTable tbody tr');
-      rows.forEach(row => {
-        const terms = row.dataset.searchTerms;
-        row.style.display = terms.includes(query) ? '' : 'none';
-      });
+      const input = document.getElementById('closureSearchInput');
+      const query = input ? input.value : '';
+      if (window.tablePagination) {
+        tablePagination.search('closureTable', query);
+      }
     }
   </script>
 </body>
+
 </html>
