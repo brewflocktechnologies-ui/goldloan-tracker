@@ -355,7 +355,7 @@
       <main class="flex-1 overflow-y-auto p-4 sm:p-6" id="views-container">
 
         <div id="view-dashboard" class="view-section space-y-6 active">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             <!-- Total Users -->
             <div onclick="navigateTo('users')"
               class="bg-white dark:bg-dark-card p-4 sm:p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between gap-3 cursor-pointer hover:shadow-md hover:border-brand-300 dark:hover:border-brand-500/50 transition-all duration-200 hover:-translate-y-0.5 group overflow-hidden"
@@ -492,6 +492,75 @@
               <div
                 class="p-2.5 sm:p-3 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 rounded-xl text-xl sm:text-2xl shrink-0 group-hover:scale-110 transition-transform flex items-center justify-center">
                 🏷️</div>
+            </div>
+
+            <!-- Gold Valuation Cards (Current Gold Value) -->
+            <div onclick="navigateTo('ornaments')"
+              class="bg-white dark:bg-dark-card p-4 sm:p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between gap-3 cursor-pointer hover:shadow-md hover:border-amber-300 dark:hover:border-amber-500/50 transition-all duration-200 hover:-translate-y-0.5 group overflow-hidden"
+              title="Current Gold Value = Today's Live Gold Rate × Total Gold Weight (grams)">
+              <div class="min-w-0 flex-1">
+                <p
+                  class="text-xs font-bold text-gray-400 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors uppercase tracking-wider truncate">
+                  Current Gold Value</p>
+                <h4
+                  class="text-xl sm:text-2xl 2xl:text-3xl font-bold text-amber-600 dark:text-amber-400 mt-1 tracking-tight truncate"
+                  id="d-current-gold-value" title="Current Gold Value">
+                  <span class="inline-block animate-pulse text-gray-400 dark:text-slate-500">₹—</span>
+                </h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium truncate"
+                  id="d-current-gold-subtitle">
+                  Live Rate × Total Weight
+                </p>
+              </div>
+              <div
+                class="p-2.5 sm:p-3 bg-amber-50 text-amber-600 dark:bg-amber-900/30 rounded-xl text-xl sm:text-2xl shrink-0 group-hover:scale-110 transition-transform flex items-center justify-center">
+                🏆</div>
+            </div>
+
+            <!-- Buying Gold Value -->
+            <div onclick="navigateTo('ornaments')"
+              class="bg-white dark:bg-dark-card p-4 sm:p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between gap-3 cursor-pointer hover:shadow-md hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-200 hover:-translate-y-0.5 group overflow-hidden"
+              title="Buying Gold Value = Σ(Buying Gold Rate × Gold Weight)">
+              <div class="min-w-0 flex-1">
+                <p
+                  class="text-xs font-bold text-gray-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors uppercase tracking-wider truncate">
+                  Buying Gold Value</p>
+                <h4
+                  class="text-xl sm:text-2xl 2xl:text-3xl font-bold text-gray-800 dark:text-white mt-1 tracking-tight truncate"
+                  id="d-buying-gold-value" title="Buying Gold Value">
+                  <span class="inline-block animate-pulse text-gray-400 dark:text-slate-500">₹—</span>
+                </h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium truncate"
+                  id="d-buying-gold-subtitle">
+                  From Ornaments Table
+                </p>
+              </div>
+              <div
+                class="p-2.5 sm:p-3 bg-blue-50 text-blue-600 dark:bg-blue-900/30 rounded-xl text-xl sm:text-2xl shrink-0 group-hover:scale-110 transition-transform flex items-center justify-center">
+                🏷️</div>
+            </div>
+
+            <!-- Appreciation / Gains -->
+            <div onclick="navigateTo('ornaments')"
+              class="bg-white dark:bg-dark-card p-4 sm:p-5 rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex items-center justify-between gap-3 cursor-pointer hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-500/50 transition-all duration-200 hover:-translate-y-0.5 group overflow-hidden"
+              title="Appreciation / Gains = Current Gold Value − Buying Gold Value">
+              <div class="min-w-0 flex-1">
+                <p
+                  class="text-xs font-bold text-gray-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors uppercase tracking-wider truncate">
+                  Appreciation / Gains</p>
+                <h4
+                  class="text-xl sm:text-2xl 2xl:text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-1 tracking-tight truncate"
+                  id="d-appreciation-gains" title="Appreciation / Gains">
+                  <span class="inline-block animate-pulse text-gray-400 dark:text-slate-500">₹—</span>
+                </h4>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 font-medium truncate"
+                  id="d-appreciation-subtitle">
+                  Current − Buying Value
+                </p>
+              </div>
+              <div
+                class="p-2.5 sm:p-3 bg-emerald-50 text-emerald-600 dark:bg-emerald-900/30 rounded-xl text-xl sm:text-2xl shrink-0 group-hover:scale-110 transition-transform flex items-center justify-center">
+                📈</div>
             </div>
           </div>
 
@@ -929,6 +998,7 @@
                     <th class="px-4 py-3">Bank Name</th>
                     <th class="px-4 py-3">Loan Date</th>
                     <th class="px-4 py-3">Amount (₹)</th>
+                    <th class="px-4 py-3">Processing Fee (₹)</th>
                     <th class="px-4 py-3">Due Date</th>
                     <th class="px-4 py-3">Status</th>
                     <th class="px-4 py-3">Actions</th>
@@ -1367,11 +1437,11 @@
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Date *</label><input type="date"
-              id="loanDate"
+              id="loanDate" oninput="calculateLoanCharges()"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Due Date *</label><input type="date"
-              id="loanDueDate"
+              id="loanDueDate" oninput="calculateLoanCharges()"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Amount (₹) *</label><input
@@ -1379,17 +1449,17 @@
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Interest Rate (%) *</label><input
-              type="number" step="0.01" id="loanInterestRate"
+              type="number" step="0.01" id="loanInterestRate" oninput="calculateLoanCharges()"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Interest Type</label><select
-              id="loanInterestType"
+              id="loanInterestType" onchange="calculateLoanCharges()"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500">
               <option>Simple</option>
               <option>Compound</option>
             </select></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Period (Months)</label><input
-              type="number" id="loanPeriod"
+              type="number" id="loanPeriod" oninput="calculateLoanCharges()"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
 
@@ -1410,11 +1480,15 @@
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Total Charges (₹)</label><input
               type="number" id="loanTotalCharges"
               class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none"
-              readonly /></div>
+              readonly title="Interest + Processing Fee" />
+            <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">= Interest for the loan period + Processing Fee</p>
+          </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Net Disbursement (₹)</label><input
               type="number" id="loanNetDisbursementAmount"
               class="w-full bg-gray-200 dark:bg-slate-700 dark:text-white border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none"
-              readonly /></div>
+              readonly title="Loan Amount − Processing Fee − Document Charge − Insurance Charge" />
+            <p class="text-[11px] text-gray-400 dark:text-gray-500 mt-1">= Loan Amount − Processing/Document/Insurance charges</p>
+          </div>
           <div class="col-span-full"><label
               class="block text-sm font-medium mb-1 dark:text-gray-200">Remarks</label><textarea id="loanRemarks"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500"
@@ -2097,6 +2171,127 @@
     }
 
     // --- DASHBOARD ---
+    window.dashboardValuationData = {
+      totalGoldWeight: 0,
+      totalBuyingGoldValue: 0,
+      totalOrnaments: 0
+    };
+
+    function getOrnamentGoldWeight(o) {
+      if (!o) return 0;
+      const metal = parseFloat(o.MetalWeight);
+      if (!isNaN(metal) && metal > 0) return metal;
+      const net = parseFloat(o.NetWeight);
+      if (!isNaN(net) && net > 0) return net;
+      const gross = parseFloat(o.GrossWeight) || 0;
+      const stone = parseFloat(o.StoneWeight) || 0;
+      if (gross > 0) return Math.max(0, gross - stone);
+      return 0;
+    }
+
+    function getOrnamentBuyingRate(o) {
+      if (!o) return 0;
+      const rate = o.BuyingPricePerGram !== undefined && o.BuyingPricePerGram !== null && o.BuyingPricePerGram !== ''
+        ? o.BuyingPricePerGram
+        : (o.BuyingPrice !== undefined && o.BuyingPrice !== null ? o.BuyingPrice : (o['Buying price/grm'] || 0));
+      return parseFloat(rate) || 0;
+    }
+
+    function setValuationCardTypography(el, text, colorClass = "text-gray-800 dark:text-white") {
+      if (!el) return;
+      const len = (text || '').length;
+      let sizeClass = "text-2xl sm:text-3xl";
+      if (len >= 13) {
+        sizeClass = "text-base sm:text-lg xl:text-xl";
+      } else if (len >= 9) {
+        sizeClass = "text-lg sm:text-xl xl:text-2xl";
+      }
+      el.className = `${sizeClass} font-bold ${colorClass} mt-1 tracking-tight truncate`;
+    }
+
+    function updateGoldValuationDashboardCards() {
+      const data = window.dashboardValuationData || { totalGoldWeight: 0, totalBuyingGoldValue: 0, totalOrnaments: 0 };
+      const totalWeight = data.totalGoldWeight || 0;
+      const buyingValue = Math.round(data.totalBuyingGoldValue || 0);
+      const totalOrns = data.totalOrnaments || 0;
+
+      // Latest live gold rate from existing system (Bangalore 22K standard for ornaments)
+      let liveRate = 0;
+      if (window.goldRatesData) {
+        liveRate = (window.goldRatesData.gold22k && window.goldRatesData.gold22k.numericPrice) ||
+                   (window.goldRatesData.gold24k && window.goldRatesData.gold24k.numericPrice) || 0;
+      }
+
+      const currentEl = document.getElementById('d-current-gold-value');
+      const buyingEl = document.getElementById('d-buying-gold-value');
+      const apprecEl = document.getElementById('d-appreciation-gains');
+
+      const currentSub = document.getElementById('d-current-gold-subtitle');
+      const buyingSub = document.getElementById('d-buying-gold-subtitle');
+      const apprecSub = document.getElementById('d-appreciation-subtitle');
+
+      const formattedWeight = (totalWeight % 1 === 0 ? totalWeight : totalWeight.toFixed(2)) + 'g';
+
+      // 1. Buying Gold Value Card
+      if (buyingEl) {
+        const fmtBuying = '₹' + fmt(buyingValue);
+        buyingEl.textContent = fmtBuying;
+        buyingEl.title = `Total Buying Gold Value: ${fmtBuying}`;
+        setValuationCardTypography(buyingEl, fmtBuying, "text-gray-800 dark:text-white");
+      }
+      if (buyingSub) {
+        buyingSub.textContent = `${totalOrns} ornament item${totalOrns === 1 ? '' : 's'} recorded`;
+      }
+
+      // 2. Current Gold Value & 3. Appreciation / Gains Cards
+      if (liveRate > 0) {
+        const currentGoldVal = Math.round(liveRate * totalWeight);
+        const appreciation = currentGoldVal - buyingValue;
+
+        if (currentEl) {
+          const fmtCurrent = '₹' + fmt(currentGoldVal);
+          currentEl.textContent = fmtCurrent;
+          currentEl.title = `Current Gold Value: ${fmtCurrent} (₹${fmt(liveRate)}/g × ${formattedWeight})`;
+          setValuationCardTypography(currentEl, fmtCurrent, "text-amber-600 dark:text-amber-400");
+        }
+        if (currentSub) {
+          currentSub.textContent = `Rate: ₹${fmt(liveRate)}/g (22K) • ${formattedWeight}`;
+        }
+
+        if (apprecEl) {
+          const isPos = appreciation >= 0;
+          const fmtApprec = (isPos ? '+₹' : '-₹') + fmt(Math.abs(appreciation));
+          apprecEl.textContent = fmtApprec;
+          apprecEl.title = `Appreciation / Gains: ${fmtApprec}`;
+          const colorClass = appreciation > 0 ? "text-emerald-600 dark:text-emerald-400" : (appreciation < 0 ? "text-red-600 dark:text-red-400" : "text-gray-800 dark:text-white");
+          setValuationCardTypography(apprecEl, fmtApprec, colorClass);
+        }
+        if (apprecSub) {
+          if (buyingValue > 0) {
+            const pct = ((appreciation / buyingValue) * 100).toFixed(1);
+            const isPos = appreciation >= 0;
+            apprecSub.textContent = `${isPos ? '+' : ''}${pct}% vs buying value`;
+          } else {
+            apprecSub.textContent = 'Current − Buying Value';
+          }
+        }
+      } else {
+        // Live rate is still loading
+        if (currentEl) {
+          currentEl.innerHTML = '<span class="inline-block animate-pulse text-gray-400 dark:text-slate-500">₹—</span>';
+        }
+        if (currentSub) {
+          currentSub.textContent = `Fetching live rate... (${formattedWeight} total gold)`;
+        }
+        if (apprecEl) {
+          apprecEl.innerHTML = '<span class="inline-block animate-pulse text-gray-400 dark:text-slate-500">₹—</span>';
+        }
+        if (apprecSub) {
+          apprecSub.textContent = 'Waiting for live gold rates';
+        }
+      }
+    }
+
     function updatePledgedOrnamentsCard(count, grams) {
       const gramsEl = document.getElementById('d-pledged-grams');
       const countEl = document.getElementById('d-pledged-count');
@@ -2179,6 +2374,36 @@
             const count = pledged.length;
             const grams = pledged.reduce((sum, o) => sum + (parseFloat(o.GrossWeight) || 0), 0);
             updatePledgedOrnamentsCard(count, grams);
+          }, null, true);
+        }
+
+        // Update Gold Valuation Cards (Current Gold Value, Buying Gold Value, Appreciation / Gains)
+        if (d.totalGoldWeight !== undefined && d.totalBuyingGoldValue !== undefined) {
+          window.dashboardValuationData = {
+            totalGoldWeight: parseFloat(d.totalGoldWeight) || 0,
+            totalBuyingGoldValue: parseFloat(d.totalBuyingGoldValue) || 0,
+            totalOrnaments: d.totalOrnaments || 0
+          };
+          updateGoldValuationDashboardCards();
+        } else {
+          // Fallback in case Google Apps Script backend hasn't refreshed yet
+          gsr('getOrnaments', [], oRes => {
+            const ornList = oRes.data || [];
+            let totWeight = 0;
+            let totBuyVal = 0;
+            ornList.forEach(o => {
+              const wt = getOrnamentGoldWeight(o);
+              const buyRate = getOrnamentBuyingRate(o);
+              const buyVal = (buyRate > 0 && wt > 0) ? (buyRate * wt) : (parseFloat(o.TotalPrice) || 0);
+              totWeight += wt;
+              totBuyVal += buyVal;
+            });
+            window.dashboardValuationData = {
+              totalGoldWeight: totWeight,
+              totalBuyingGoldValue: totBuyVal,
+              totalOrnaments: ornList.length
+            };
+            updateGoldValuationDashboardCards();
           }, null, true);
         }
       });
@@ -2277,6 +2502,9 @@
           <span>GoodReturns • Bangalore • ${dateStr} at ${timeStr}${warning ? ` (${warning})` : ''}</span>
         `;
       }
+
+      // Update gold valuation cards dynamically whenever live rates update
+      updateGoldValuationDashboardCards();
     }
 
     /**
@@ -2606,6 +2834,23 @@
       </tr>`;
         }).join('');
         reapplyTableSort('ornamentsTable');
+
+        // Keep dashboard valuation synchronized with ornaments table
+        let totWeight = 0;
+        let totBuyVal = 0;
+        allOrnaments.forEach(o => {
+          const wt = getOrnamentGoldWeight(o);
+          const buyRate = getOrnamentBuyingRate(o);
+          const buyVal = (buyRate > 0 && wt > 0) ? (buyRate * wt) : (parseFloat(o.TotalPrice) || 0);
+          totWeight += wt;
+          totBuyVal += buyVal;
+        });
+        window.dashboardValuationData = {
+          totalGoldWeight: totWeight,
+          totalBuyingGoldValue: totBuyVal,
+          totalOrnaments: allOrnaments.length
+        };
+        updateGoldValuationDashboardCards();
       });
     }
 
@@ -2832,6 +3077,7 @@
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${bankName}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${fmtDate(l.LoanDate)}</td>
         <td class="px-4 py-3 font-bold text-brand-600 dark:text-brand-400">₹${fmt(l.LoanAmount)}</td>
+        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">₹${fmt(l.ProcessingFee || 0)}</td>
         <td class="px-4 py-3 ${isOverdue ? 'text-red-600 font-bold dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}">${fmtDate(l.DueDate)}</td>
         <td class="px-4 py-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${statusBadgeClass}">${isOverdue ? 'OVERDUE' : l.LoanStatus}</span></td>
         <td class="px-4 py-3 flex gap-2">
@@ -2844,6 +3090,34 @@
       });
     }
 
+    function calculateLoanPeriodInterest(loan) {
+      if (!loan) return 0;
+      const principal = parseFloat(loan.LoanAmount) || 0;
+      const rate = parseFloat(loan.InterestRate) || 0;
+      if (principal <= 0 || rate <= 0) return 0;
+
+      let months = parseFloat(loan.LoanPeriod) || 0;
+      if (months <= 0 && loan.LoanDate && loan.DueDate) {
+        const start = new Date(loan.LoanDate);
+        const end = new Date(loan.DueDate);
+        if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end > start) {
+          const diffDays = (end - start) / (1000 * 60 * 60 * 24);
+          months = Math.max(1, Math.round(diffDays / 30.4375));
+        }
+      }
+      if (months <= 0) months = 1;
+
+      const interestType = (loan.InterestType || 'Simple').trim().toLowerCase();
+      if (interestType === 'compound') {
+        const monthlyRate = rate / (12 * 100);
+        const amount = principal * Math.pow(1 + monthlyRate, months);
+        return Math.round((amount - principal) * 100) / 100;
+      } else {
+        const interest = principal * (rate / 100) * (months / 12);
+        return Math.round(interest * 100) / 100;
+      }
+    }
+
     function viewLoanDetail(loanId) {
       gsr('getLoanDetails', [loanId], res => {
         const { loan, bankAccount, ornaments, payments } = res.data;
@@ -2854,6 +3128,22 @@
         const bankText = bank
           ? `${bank.BankName} - ${bank.AccountNumber} <span class="text-xs text-gray-400 font-normal block">${bank.AccountHolderName ? 'Holder: ' + bank.AccountHolderName : ''}${bank.IFSCCode ? ' • IFSC: ' + bank.IFSCCode : ''}</span>`
           : (loan.BankAccountId || '—');
+
+        const totalInterest = calculateLoanPeriodInterest(loan);
+        const processingFee = parseFloat(loan.ProcessingFee) || 0;
+        const totalCharges = totalInterest + processingFee;
+
+        let loanPeriodDisplay = '—';
+        if (loan.LoanPeriod) {
+          loanPeriodDisplay = `${loan.LoanPeriod} Month(s)`;
+        } else if (loan.LoanDate && loan.DueDate) {
+          const start = new Date(loan.LoanDate);
+          const end = new Date(loan.DueDate);
+          if (!isNaN(start.getTime()) && !isNaN(end.getTime()) && end > start) {
+            const m = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24 * 30.4375)));
+            loanPeriodDisplay = `${m} Month(s)`;
+          }
+        }
 
         const ornamentsHtml = ornaments.length > 0 ? ornaments.map(o => {
           const images = o.OrnamentImages ? o.OrnamentImages.split(' | ').filter(u => u.trim() !== '') : [];
@@ -2928,6 +3218,29 @@
               Edit Loan
             </button>
           </div>
+
+          <!-- Summary Cards: Principal, Total Interest Amount, Processing Fee, Total Charges -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-6">
+            <div class="bg-gray-50 dark:bg-slate-800/60 p-3.5 rounded-xl border border-gray-100 dark:border-slate-700">
+              <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Principal Amount</span>
+              <span class="text-xl font-bold text-gray-800 dark:text-white mt-0.5 block">₹${fmt(loan.LoanAmount)}</span>
+            </div>
+            <div class="bg-brand-50/50 dark:bg-brand-900/20 p-3.5 rounded-xl border border-brand-100 dark:border-brand-800/40">
+              <span class="text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider block">Total Interest Amount</span>
+              <span class="text-xl font-bold text-brand-600 dark:text-brand-400 mt-0.5 block">₹${fmt(totalInterest)}</span>
+              <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 block">${loan.InterestRate}% • ${loanPeriodDisplay} (${loan.InterestType || 'Simple'})</span>
+            </div>
+            <div class="bg-blue-50/50 dark:bg-blue-900/20 p-3.5 rounded-xl border border-blue-100 dark:border-blue-800/40">
+              <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">Processing Fee</span>
+              <span class="text-xl font-bold text-blue-600 dark:text-blue-400 mt-0.5 block">₹${fmt(processingFee)}</span>
+            </div>
+            <div class="bg-amber-50/50 dark:bg-amber-900/20 p-3.5 rounded-xl border border-amber-100 dark:border-amber-800/40">
+              <span class="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Total Charges</span>
+              <span class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-0.5 block">₹${fmt(totalCharges)}</span>
+              <span class="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5 block">Interest + Processing Fee</span>
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h6 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Loan Info</h6>
@@ -2937,10 +3250,12 @@
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Bank Account</td><td class="p-2.5 font-bold text-right dark:text-white">${bankText}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Loan Amount</td><td class="p-2.5 font-bold text-brand-600 dark:text-brand-400 text-right">₹${fmt(loan.LoanAmount)}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Interest Rate</td><td class="p-2.5 text-right dark:text-gray-200">${loan.InterestRate}% (${loan.InterestType || 'Simple'})</td></tr>
-                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Loan Period</td><td class="p-2.5 text-right dark:text-gray-200">${loan.LoanPeriod ? loan.LoanPeriod + ' Month(s)' : '—'}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Loan Period</td><td class="p-2.5 text-right dark:text-gray-200">${loanPeriodDisplay}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Total Interest</td><td class="p-2.5 font-bold text-right text-brand-600 dark:text-brand-400">₹${fmt(totalInterest)}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Processing Fee</td><td class="p-2.5 text-right dark:text-gray-200">₹${fmt(processingFee)}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Total Charges</td><td class="p-2.5 text-right font-bold text-amber-600 dark:text-amber-400" title="Interest + Processing Fee">₹${fmt(totalCharges)}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Loan Date</td><td class="p-2.5 text-right dark:text-gray-200">${fmtDate(loan.LoanDate)}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Due Date</td><td class="p-2.5 text-right dark:text-gray-200">${fmtDate(loan.DueDate)}</td></tr>
-                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Total Charges</td><td class="p-2.5 text-right dark:text-gray-200">₹${fmt(loan.TotalCharges || 0)}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Net Disbursement</td><td class="p-2.5 text-right font-bold text-green-600 dark:text-green-400">₹${fmt(loan.NetDisbursementAmount || loan.LoanAmount)}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Status</td><td class="p-2.5 text-right"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${loan.LoanStatus === 'Active' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300'}">${loan.LoanStatus}</span></td></tr>
                 </tbody>
@@ -2971,9 +3286,27 @@
       const procFee = parseFloat(document.getElementById('loanProcessingFee').value) || 0;
       const docCharge = parseFloat(document.getElementById('loanDocumentCharge').value) || 0;
       const insCharge = parseFloat(document.getElementById('loanInsuranceCharge').value) || 0;
-      const totalCharges = procFee + docCharge + insCharge;
+
+      // Net Disbursement = amount actually paid out at disbursement. Unaffected by
+      // the Total Charges formula below — only Processing/Document/Insurance
+      // charges are deducted upfront; interest is not.
+      const disbursementDeductions = procFee + docCharge + insCharge;
+      document.getElementById('loanNetDisbursementAmount').value = (amount - disbursementDeductions).toFixed(2);
+
+      // Total Charges (display/reporting figure, also what gets saved to the
+      // Loans sheet) = Interest for the loan period + Processing Fee — kept
+      // consistent with the same formula used in the Loan Detail/View screen
+      // (viewLoanDetail -> calculateLoanPeriodInterest).
+      const interest = calculateLoanPeriodInterest({
+        LoanAmount: amount,
+        InterestRate: parseFloat(document.getElementById('loanInterestRate').value) || 0,
+        InterestType: document.getElementById('loanInterestType').value,
+        LoanPeriod: document.getElementById('loanPeriod').value,
+        LoanDate: document.getElementById('loanDate').value,
+        DueDate: document.getElementById('loanDueDate').value
+      });
+      const totalCharges = interest + procFee;
       document.getElementById('loanTotalCharges').value = totalCharges > 0 ? totalCharges.toFixed(2) : '0';
-      document.getElementById('loanNetDisbursementAmount').value = (amount - totalCharges).toFixed(2);
     }
 
     function toInputDateFormat(val) {

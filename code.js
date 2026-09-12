@@ -1020,6 +1020,23 @@ function getDashboardData() {
       return sum + Math.max(0, maxL - util);
     }, 0);
 
+    // Calculate total gold weight and buying gold value from all ornaments
+    let totalGoldWeight = 0;
+    let totalBuyingGoldValue = 0;
+    ornaments.forEach(o => {
+      const metal = parseFloat(o.MetalWeight);
+      const net = parseFloat(o.NetWeight);
+      const gross = parseFloat(o.GrossWeight) || 0;
+      const stone = parseFloat(o.StoneWeight) || 0;
+      const wt = (!isNaN(metal) && metal > 0) ? metal : ((!isNaN(net) && net > 0) ? net : Math.max(0, gross - stone));
+
+      const rate = parseFloat(o.BuyingPricePerGram !== undefined && o.BuyingPricePerGram !== null && o.BuyingPricePerGram !== "" ? o.BuyingPricePerGram : (o.BuyingPrice || o["Buying price/grm"])) || 0;
+      const buyVal = (rate > 0 && wt > 0) ? (rate * wt) : (parseFloat(o.TotalPrice) || 0);
+
+      totalGoldWeight += wt;
+      totalBuyingGoldValue += buyVal;
+    });
+
     const payments = getSheetData("Payments");
     const recentTransactions = payments.slice(-5).reverse();
 
@@ -1036,6 +1053,8 @@ function getDashboardData() {
         totalLoanAmount,
         totalEligibleLoanAmount,
         totalAvailableLoanAmount,
+        totalGoldWeight,
+        totalBuyingGoldValue,
         recentTransactions
       }
     };
