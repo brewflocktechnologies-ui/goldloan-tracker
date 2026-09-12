@@ -967,3 +967,302 @@ function getDashboardData() {
     return { success: false, error: e.message };
   }
 }
+
+// ─── LIVE GOLD RATE TRACKER (GOODRETURNS BANGALORE) ───
+
+/**
+ * Fetches and parses real-time gold rates for Bangalore from GoodReturns.in.
+ * Features 30-minute caching via CacheService and persistent fallback via PropertiesService.
+ *
+ * @param {boolean} [forceRefresh=false] Whether to bypass CacheService
+ * @returns {Object} JSON result with rates for 24K, 22K, 18K gold per gram and daily changes
+ */
+function getGoldRates(forceRefresh) {
+  try {
+    const cache = CacheService.getScriptCache();
+    const CACHE_KEY = "GOLD_RATES_BANGALORE_V1";
+    const PROP_KEY = "LAST_KNOWN_GOLD_RATES_BANGALORE";
+
+    // 1. Check script cache (if not forcing refresh)
+    if (!forceRefresh) {
+      const cached = cache.get(CACHE_KEY);
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed && parsed.data && parsed.data.gold24k) {
+            return { ...parsed, isCached: true };
+          }
+        } catch (e) {
+          // Cache corruption fallback
+        }
+      }
+    }
+
+    // 2. Fetch live webpage HTML
+    const url = "https://www.goodreturns.in/gold-rates/bangalore.html";
+    const options = {
+      method: "get",
+      muteHttpExceptions: true,
+      validateHttpsCertificates: true,
+      followRedirects: true,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Cache-Control": "no-cache",
+        "Pragma": "no-cache"
+      }
+    };
+
+    const response = UrlFetchApp.fetch(url, options);
+    const statusCode = response.getResponseCode();
+
+    if (statusCode !== 200) {
+      throw new Error(`External source returned HTTP ${statusCode}`);
+    }
+
+    const html = response.getContentText();
+    const ratesData = parseGoldRatesHtml(html);
+
+    if (!ratesData || !ratesData.gold24k || !ratesData.gold22k || !ratesData.gold18k) {
+      throw new Error("Unable to extract complete gold rate data from page content.");
+    }
+
+    const result = {
+      success: true,
+      data: ratesData
+    };
+
+    // 3. Save to CacheService (30 min = 1800s)
+    try {
+      cache.put(CACHE_KEY, JSON.stringify(result), 1800);
+    } catch (cacheErr) {
+      console.warn("CacheService write error:", cacheErr);
+    }
+
+    // 4. Save to persistent PropertiesService as emergency backup
+    try {
+      PropertiesService.getScriptProperties().setProperty(PROP_KEY, JSON.stringify(ratesData));
+    } catch (propErr) {
+      console.warn("PropertiesService write error:", propErr);
+    }
+
+    return result;
+
+  } catch (error) {
+    console.error("getGoldRates error:", error);
+
+    // Fallback: Check persistent storage if live scrape fails
+    try {
+      const fallbackProp = PropertiesService.getScriptProperties().getProperty("LAST_KNOWN_GOLD_RATES_BANGALORE");
+      if (fallbackProp) {
+        const fallbackData = JSON.parse(fallbackProp);
+        return {
+          success: true,
+          data: fallbackData,
+          isFallback: true,
+          warning: "Displaying recently cached rates (Live server unreachable: " + error.message + ")"
+        };
+      }
+    } catch (propErr) {
+      // Ignore fallback read error
+    }
+
+    return {
+      success: false,
+      error: error.message || "Failed to retrieve Bangalore gold rates."
+    };
+  }
+}
+
+/**
+ * Robust, multi-strategy HTML parser for GoodReturns gold rates.
+ * Parses 1-gram rates and daily changes for 24K, 22K, and 18K gold.
+ *
+ * @param {string} html Raw webpage HTML
+ * @returns {Object|null} Extracted rates object
+ */
+function parseGoldRatesHtml(html) {
+  try {
+    if (!html || typeof html !== "string") {
+      return null;
+    }
+
+    // Decode standard HTML entities & normalize whitespace
+    const cleanHtml = html
+      .replace(/&#x20b9;/gi, "₹")
+      .replace(/&#8377;/gi, "₹")
+      .replace(/&nbsp;/gi, " ")
+      .replace(/&#160;/gi, " ");
+
+    const rates = {
+      location: "Bangalore",
+      updatedAt: new Date().toISOString(),
+      displayDate: "",
+      gold24k: null,
+      gold22k: null,
+      gold18k: null
+    };
+
+    // Extract formatted date from page
+    const dateMatch = cleanHtml.match(/id=["']metal-price-date["'][^>]*>([\s\S]*?)<\/span>/i) ||
+                      cleanHtml.match(/<title[^>]*>[\s\S]*?(?:on|for)\s+([0-9]{1,2}\s+[A-Za-z]+\s+[0-9]{4})/i);
+    if (dateMatch) {
+      rates.displayDate = dateMatch[1].replace(/<[^>]+>/g, "").trim();
+    } else {
+      const now = new Date();
+      rates.displayDate = Utilities.formatDate(now, "Asia/Kolkata", "dd MMMM yyyy");
+    }
+
+    function parseCell(cellHtml) {
+      if (!cellHtml) return null;
+
+      let deltaHtml = "";
+      const spanMatch = cellHtml.match(/<span[^>]*class=["'][^"']*gr-(?:change|delta)[^"']*["'][^>]*>([\s\S]*?)<\/span>/i) ||
+                        cellHtml.match(/<span[^>]*>([\s\S]*?)<\/span>/i);
+      if (spanMatch) {
+        deltaHtml = spanMatch[0];
+      }
+
+      // Remove karat badges / labels to avoid false price matches
+      const withoutSpan = cellHtml
+        .replace(/<span[^>]*>[\s\S]*?<\/span>/gi, "")
+        .replace(/\b(?:24|22|18)\s*K(?:arat)?\b/gi, "");
+
+      const priceText = withoutSpan.replace(/<[^>]+>/g, " ").trim();
+      const priceMatch = priceText.match(/(?:₹|Rs\.?|INR)?\s*([0-9]{1,3}(?:,[0-9]{2,3})*(?:\.[0-9]+)?|[0-9]{4,})/i);
+
+      let price = "—";
+      let numericPrice = 0;
+      if (priceMatch) {
+        const rawDigits = priceMatch[1].trim();
+        price = "₹" + rawDigits;
+        numericPrice = parseFloat(rawDigits.replace(/,/g, "")) || 0;
+      }
+
+      let change = 0;
+      let changeStr = "0";
+      let direction = "neutral";
+      let formattedBadge = "0 —";
+
+      const deltaText = deltaHtml.replace(/<[^>]+>/g, " ").trim();
+      const changeMatch = deltaText.match(/([+-]?)\s*([0-9,]+(?:\.[0-9]+)?)/) ||
+                          cellHtml.match(/\(([+-]?)\s*([0-9,]+(?:\.[0-9]+)?)\)/);
+
+      const hasDown = /gr-(?:change|delta)-down|red-span/i.test(deltaHtml || cellHtml) || deltaText.includes("-");
+      const hasUp = /gr-(?:change|delta)-up|green-span/i.test(deltaHtml || cellHtml) || deltaText.includes("+");
+
+      if (changeMatch) {
+        const sign = changeMatch[1];
+        const valStr = changeMatch[2];
+        const numVal = parseFloat(valStr.replace(/,/g, "")) || 0;
+
+        if (sign === "-" || hasDown) {
+          direction = "down";
+          change = -numVal;
+          changeStr = `-${valStr}`;
+          formattedBadge = `- ${valStr} ▼`;
+        } else if (sign === "+" || hasUp || numVal > 0) {
+          direction = "up";
+          change = numVal;
+          changeStr = `+${valStr}`;
+          formattedBadge = `+ ${valStr} ▲`;
+        } else {
+          direction = "neutral";
+          change = 0;
+          changeStr = "0";
+          formattedBadge = "0 —";
+        }
+      }
+
+      return {
+        price,
+        numericPrice,
+        change,
+        changeStr,
+        direction,
+        formattedBadge
+      };
+    }
+
+    // ── Strategy 1: HTML Table parsing (Gram | 24K | 22K | 18K) ──
+    const tableRegex = /<table[^>]*>([\s\S]*?)<\/table>/gi;
+    let tMatch;
+    while ((tMatch = tableRegex.exec(cleanHtml)) !== null) {
+      const tableContent = tMatch[1];
+      if (/24\s*K/i.test(tableContent) && /22\s*K/i.test(tableContent) && /18\s*K/i.test(tableContent)) {
+        const ths = [...tableContent.matchAll(/<th[^>]*>([\s\S]*?)<\/th>/gi)].map(h => h[1].replace(/<[^>]+>/g, "").trim());
+        let col24 = ths.findIndex(h => /24\s*K/i.test(h));
+        let col22 = ths.findIndex(h => /22\s*K/i.test(h));
+        let col18 = ths.findIndex(h => /18\s*K/i.test(h));
+
+        if (col24 === -1) col24 = 1;
+        if (col22 === -1) col22 = 2;
+        if (col18 === -1) col18 = 3;
+
+        const rows = [...tableContent.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)].map(r => r[1]);
+        for (const row of rows) {
+          const tds = [...row.matchAll(/<td[^>]*>([\s\S]*?)<\/td>/gi)].map(d => d[1]);
+          if (tds.length >= 4) {
+            const col0 = tds[0].replace(/<[^>]+>/g, "").trim();
+            if (/^1(\s*g(ram)?)?$/i.test(col0) || col0 === "1") {
+              rates.gold24k = parseCell(tds[col24]);
+              rates.gold22k = parseCell(tds[col22]);
+              rates.gold18k = parseCell(tds[col18]);
+              break;
+            }
+          }
+        }
+        if (rates.gold24k && rates.gold22k && rates.gold18k) break;
+      }
+    }
+
+    // ── Strategy 2: ID-based markup (id="24K-price", id="22K-price", id="18K-price") ──
+    if (!rates.gold24k || !rates.gold22k || !rates.gold18k) {
+      const karats = [
+        { key: "gold24k", id: "24K-price" },
+        { key: "gold22k", id: "22K-price" },
+        { key: "gold18k", id: "18K-price" }
+      ];
+
+      karats.forEach(k => {
+        if (!rates[k.key]) {
+          const m = cleanHtml.match(new RegExp(`id=["']${k.id}["'][^>]*>([\\s\\S]*?)<\\/span>`, "i"));
+          if (m) {
+            const rawVal = m[1].replace(/<[^>]+>/g, "").trim();
+            const pos = cleanHtml.indexOf(m[0]);
+            const nearby = cleanHtml.substring(pos, pos + 300);
+            const valObj = parseCell(rawVal);
+            const nearbyObj = parseCell(nearby);
+
+            rates[k.key] = {
+              price: (valObj && valObj.numericPrice > 500) ? valObj.price : (nearbyObj ? nearbyObj.price : "—"),
+              numericPrice: (valObj && valObj.numericPrice > 500) ? valObj.numericPrice : (nearbyObj ? nearbyObj.numericPrice : 0),
+              change: nearbyObj ? nearbyObj.change : 0,
+              changeStr: nearbyObj ? nearbyObj.changeStr : "0",
+              direction: nearbyObj ? nearbyObj.direction : "neutral",
+              formattedBadge: nearbyObj ? nearbyObj.formattedBadge : "0 —"
+            };
+          }
+        }
+      });
+    }
+
+    return rates;
+  } catch (err) {
+    console.error("parseGoldRatesHtml error:", err);
+    return null;
+  }
+}
+
+/**
+ * One-Click Authorization & Test Function
+ * Run this function once from the Apps Script IDE toolbar to grant the
+ * 'https://www.googleapis.com/auth/script.external_request' permission.
+ */
+function testGoldRates() {
+  console.log("Testing getGoldRates()...");
+  const result = getGoldRates(true);
+  console.log("Result:", JSON.stringify(result, null, 2));
+  return result;
+}
