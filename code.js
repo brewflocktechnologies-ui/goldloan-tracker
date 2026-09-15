@@ -4,7 +4,7 @@ const SHEET_HEADERS = {
   Admins: ["AdminId", "Username", "Password", "Role", "Status"], // NEW: Admin Sheet
   Users: ["UserId", "CustomerCode", "FullName", "FatherHusbandName", "MobileNumber", "AlternateMobileNumber", "Email", "DateOfBirth", "Gender", "AadhaarNumber", "PANNumber", "AddressLine1", "AddressLine2", "City", "State", "Pincode", "Occupation", "CustomerPhoto", "Status", "CreatedDate", "UpdatedDate"],
   BankAccounts: ["BankAccountId", "UserId", "AccountHolderName", "AccountNumber", "BankName", "BranchName", "City", "IFSCCode", "AccountType", "UPI_ID", "PassbookImage", "Status", "CreatedDate", "UpdatedDate", "MaxLoanAmount", "UtilizedLoanAmount"],
-  Ornaments: ["OrnamentId", "UserId", "OrnamentName", "OrnamentType", "OrnamentCategory", "Description", "GrossWeight", "NetWeight", "MetalWeight", "StoneWeight", "Purity", "HallmarkNumber", "Quantity", "BuyingPricePerGram", "TotalPrice", "MakerName", "EstimatedValue", "MarketValue", "OrnamentImages", "Remarks", "Status", "ReleaseDate", "ReleasedLoanId"],
+  Ornaments: ["OrnamentId", "UserId", "OrnamentName", "OrnamentType", "OrnamentCategory", "Description", "GrossWeight", "NetWeight", "MetalWeight", "StoneWeight", "Purity", "HallmarkNumber", "Quantity", "BuyingPricePerGram", "CurrentPricePerGram", "BuyingCost", "TotalPrice", "MarketValue", "AppreciationValue", "AppreciationPercentage", "MakerName", "EstimatedValue", "OrnamentImages", "Remarks", "Status", "ReleaseDate", "ReleasedLoanId"],
   Loans: ["LoanId", "LoanNumber", "UserId", "BankAccountId", "BankName", "LoanDate", "LoanAmount", "InterestRate", "InterestType", "LoanPeriod", "GrossWeight", "NetWeight", "ProcessingFee", "DocumentCharge", "InsuranceCharge", "TotalCharges", "NetDisbursementAmount", "DueDate", "LoanStatus", "Remarks", "CreatedDate", "UpdatedDate", "ClosedDate", "ClosureRemarks"],
   LoanOrnaments: ["MappingId", "LoanId", "OrnamentId", "Status"],
   Payments: ["PaymentId", "LoanId", "PaymentDate", "PaymentType", "PrincipalAmount", "InterestAmount", "PenaltyAmount", "TotalPaidAmount", "PaymentMethod", "TransactionReference", "Remarks", "CreatedDate"],
@@ -439,9 +439,22 @@ function addOrnament(ornamentData) {
     if (netWeight === null) netWeight = metalWeight;
 
     const buyingPrice = parseFloat(ornamentData.BuyingPricePerGram !== undefined ? ornamentData.BuyingPricePerGram : ornamentData.BuyingPrice) || 0;
-    let totalPrice = parseFloat(ornamentData.TotalPrice) || 0;
-    if (!totalPrice && buyingPrice && metalWeight) {
-      totalPrice = Math.round(metalWeight * buyingPrice);
+    const currentPrice = parseFloat(ornamentData.CurrentPricePerGram !== undefined ? ornamentData.CurrentPricePerGram : ornamentData.CurrentPrice) || 0;
+    let buyingCost = parseFloat(ornamentData.BuyingCost !== undefined ? ornamentData.BuyingCost : ornamentData.TotalPrice) || 0;
+    if (!buyingCost && buyingPrice && metalWeight) {
+      buyingCost = Math.round(metalWeight * buyingPrice * 100) / 100;
+    }
+    let marketValue = parseFloat(ornamentData.MarketValue) || 0;
+    if (!marketValue && currentPrice && metalWeight) {
+      marketValue = Math.round(metalWeight * currentPrice * 100) / 100;
+    }
+    let appreciationValue = parseFloat(ornamentData.AppreciationValue);
+    if (isNaN(appreciationValue)) {
+      appreciationValue = (marketValue && buyingCost) ? Math.round((marketValue - buyingCost) * 100) / 100 : 0;
+    }
+    let appreciationPercentage = parseFloat(ornamentData.AppreciationPercentage);
+    if (isNaN(appreciationPercentage)) {
+      appreciationPercentage = (buyingCost > 0) ? Math.round(((appreciationValue / buyingCost) * 100) * 100) / 100 : 0;
     }
 
     const record = {
@@ -459,10 +472,14 @@ function addOrnament(ornamentData) {
       HallmarkNumber: ornamentData.HallmarkNumber || "",
       Quantity: parseInt(ornamentData.Quantity) || 1,
       BuyingPricePerGram: buyingPrice,
-      TotalPrice: totalPrice,
+      CurrentPricePerGram: currentPrice,
+      BuyingCost: buyingCost,
+      TotalPrice: buyingCost,
       MakerName: ornamentData.MakerName || "",
-      EstimatedValue: parseFloat(ornamentData.EstimatedValue) || totalPrice || 0,
-      MarketValue: parseFloat(ornamentData.MarketValue) || 0,
+      EstimatedValue: parseFloat(ornamentData.EstimatedValue) || marketValue || buyingCost || 0,
+      MarketValue: marketValue,
+      AppreciationValue: appreciationValue,
+      AppreciationPercentage: appreciationPercentage,
       OrnamentImages: imageUrls.join(" | "),
       Status: ornamentData.Status || "Available",
       Remarks: ornamentData.Remarks || ""
@@ -523,8 +540,28 @@ function updateOrnament(ornamentId, ornamentData) {
       ornamentData.BuyingPricePerGram = parseFloat(ornamentData.BuyingPricePerGram) || 0;
     }
 
-    if (ornamentData.TotalPrice !== undefined) {
+    if (ornamentData.CurrentPricePerGram !== undefined) {
+      ornamentData.CurrentPricePerGram = parseFloat(ornamentData.CurrentPricePerGram) || 0;
+    }
+
+    if (ornamentData.BuyingCost !== undefined) {
+      ornamentData.BuyingCost = parseFloat(ornamentData.BuyingCost) || 0;
+      ornamentData.TotalPrice = ornamentData.BuyingCost;
+    } else if (ornamentData.TotalPrice !== undefined) {
       ornamentData.TotalPrice = parseFloat(ornamentData.TotalPrice) || 0;
+      ornamentData.BuyingCost = ornamentData.TotalPrice;
+    }
+
+    if (ornamentData.MarketValue !== undefined) {
+      ornamentData.MarketValue = parseFloat(ornamentData.MarketValue) || 0;
+    }
+
+    if (ornamentData.AppreciationValue !== undefined) {
+      ornamentData.AppreciationValue = parseFloat(ornamentData.AppreciationValue) || 0;
+    }
+
+    if (ornamentData.AppreciationPercentage !== undefined) {
+      ornamentData.AppreciationPercentage = parseFloat(ornamentData.AppreciationPercentage) || 0;
     }
 
     updateRow("Ornaments", "OrnamentId", ornamentId, ornamentData);

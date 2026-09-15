@@ -1337,16 +1337,49 @@
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
             <input type="hidden" id="ornNetWeight" />
           </div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Buying Price / g (₹)</label><input
-              type="number" step="0.01" id="ornBuyingPrice" oninput="calcOrnamentWeightsAndPrices(true)"
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Purity</label><select id="ornPurity" onchange="onOrnamentPurityChange()"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+              <option>24K</option>
+              <option selected>22K</option>
+              <option>18K</option>
+            </select></div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Current Price / g (₹)</label><input
+              type="number" step="0.01" id="ornCurrentPrice" oninput="this.dataset.manual = 'true'; calcOrnamentWeightsAndPrices();"
+              placeholder="Live / Custom Rate"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Total Price (₹)</label><input
-              type="number" step="0.01" id="ornTotalPrice"
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Buying Price / g (₹) *</label><input
+              type="number" step="0.01" id="ornBuyingPrice" oninput="calcOrnamentWeightsAndPrices()"
+              placeholder="Enter buying price"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Buying Cost (₹)</label><input
+              type="number" step="0.01" id="ornBuyingCost" readonly
+              placeholder="Auto: Metal Wt × Buying Price"
+              class="w-full bg-gray-100 dark:bg-slate-700/60 text-gray-800 dark:text-gray-100 font-semibold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed" />
+            <input type="hidden" id="ornTotalPrice" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Market Value (₹)</label><input
+              type="number" step="0.01" id="ornMarketValue" readonly
+              placeholder="Auto: Metal Wt × Current Price"
+              class="w-full bg-gray-100 dark:bg-slate-700/60 text-blue-600 dark:text-blue-400 font-semibold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Appreciation Value (₹)</label><input
+              type="text" id="ornAppreciationValue" readonly
+              placeholder="Auto: Market - Buying"
+              class="w-full bg-gray-100 dark:bg-slate-700/60 text-gray-800 dark:text-gray-100 font-bold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Appreciation %</label><input
+              type="text" id="ornAppreciationPercentage" readonly
+              placeholder="Auto: (Appr ÷ Buying) × 100"
+              class="w-full bg-gray-100 dark:bg-slate-700/60 text-gray-800 dark:text-gray-100 font-bold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed" />
           </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Maker Name</label><input type="text"
               id="ornMakerName" placeholder="e.g. Tanishq, Malabar"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Hallmark No.</label><input type="text"
+              id="ornHallmarkNumber"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Status</label><select id="ornStatus"
@@ -1355,22 +1388,8 @@
               <option value="Pledged">Pledged</option>
               <option value="Released">Released</option>
             </select></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Purity</label><select id="ornPurity"
-              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500">
-              <option>24K</option>
-              <option selected>22K</option>
-              <option>18K</option>
-            </select></div>
-          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Hallmark No.</label><input type="text"
-              id="ornHallmarkNumber"
-              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
-          </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Estimated Value (₹)</label><input
               type="number" id="ornEstimatedValue"
-              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
-          </div>
-          <div class="md:col-span-1"><label class="block text-sm font-medium mb-1 dark:text-gray-200">Market Value
-              (₹)</label><input type="number" id="ornMarketValue"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div class="md:col-span-3"><label
@@ -2518,6 +2537,20 @@
 
       // Update gold valuation cards dynamically whenever live rates update
       updateGoldValuationDashboardCards();
+
+      // If ornament modal is open and current price has not been manually edited, update it
+      const ornModal = document.getElementById('ornamentModal');
+      if (ornModal && !ornModal.classList.contains('hidden') && ornModal.style.display !== 'none') {
+        const curPriceInput = document.getElementById('ornCurrentPrice');
+        if (curPriceInput && curPriceInput.dataset.manual !== 'true') {
+          const purity = document.getElementById('ornPurity')?.value || '22K';
+          const rate = getLiveRateForPurity(purity);
+          if (rate > 0) {
+            curPriceInput.value = rate;
+            calcOrnamentWeightsAndPrices();
+          }
+        }
+      }
     }
 
     /**
@@ -2774,15 +2807,40 @@
     }
 
     // --- ORNAMENT MANAGEMENT ---
+    function getLiveRateForPurity(purity) {
+      if (!window.goldRatesData) return 0;
+      const p = (purity || '22K').toString().toUpperCase();
+      if (p.includes('24')) return (window.goldRatesData.gold24k && window.goldRatesData.gold24k.numericPrice) || 0;
+      if (p.includes('18')) return (window.goldRatesData.gold18k && window.goldRatesData.gold18k.numericPrice) || 0;
+      return (window.goldRatesData.gold22k && window.goldRatesData.gold22k.numericPrice) || 0;
+    }
+
+    function onOrnamentPurityChange() {
+      const purity = document.getElementById('ornPurity')?.value || '22K';
+      const curPriceInput = document.getElementById('ornCurrentPrice');
+      if (curPriceInput && curPriceInput.dataset.manual !== 'true') {
+        const liveRate = getLiveRateForPurity(purity);
+        if (liveRate > 0) curPriceInput.value = liveRate;
+      }
+      calcOrnamentWeightsAndPrices();
+    }
+
     function calcOrnamentWeightsAndPrices(manualMetalWeight = false) {
       const gross = parseFloat(document.getElementById('ornGrossWeight')?.value) || 0;
       const stone = parseFloat(document.getElementById('ornStoneWeight')?.value) || 0;
       const metalInput = document.getElementById('ornMetalWeight');
       const netInput = document.getElementById('ornNetWeight');
       const buyingPriceInput = document.getElementById('ornBuyingPrice');
+      const curPriceInput = document.getElementById('ornCurrentPrice');
+      const buyingCostInput = document.getElementById('ornBuyingCost');
       const totalPriceInput = document.getElementById('ornTotalPrice');
+      const marketValInput = document.getElementById('ornMarketValue');
+      const apprValInput = document.getElementById('ornAppreciationValue');
+      const apprPctInput = document.getElementById('ornAppreciationPercentage');
       const estimatedValueInput = document.getElementById('ornEstimatedValue');
+      const purityInput = document.getElementById('ornPurity');
 
+      // 1. Metal Weight = Gross Weight - Stone Weight
       if (!manualMetalWeight) {
         const metal = Math.max(0, +(gross - stone).toFixed(3));
         if (metalInput) metalInput.value = gross > 0 ? metal : '';
@@ -2792,12 +2850,76 @@
       }
 
       const metalVal = parseFloat(metalInput?.value) || 0;
+
+      // Current Price / gm: Pre-fill from live rate if empty and not manually edited
+      if (curPriceInput && !curPriceInput.value && curPriceInput.dataset.manual !== 'true') {
+        const liveRate = getLiveRateForPurity(purityInput?.value || '22K');
+        if (liveRate > 0) curPriceInput.value = liveRate;
+      }
+
+      const currentPrice = parseFloat(curPriceInput?.value) || 0;
       const buyingPrice = parseFloat(buyingPriceInput?.value) || 0;
-      if (metalVal > 0 && buyingPrice > 0 && totalPriceInput) {
-        const total = Math.round(metalVal * buyingPrice);
-        totalPriceInput.value = total;
+
+      // 2. Buying Cost = Metal Weight × Buying Price/gm
+      let buyingCost = 0;
+      if (metalVal > 0 && buyingPrice > 0) {
+        buyingCost = Math.round(metalVal * buyingPrice * 100) / 100;
+        if (buyingCostInput) buyingCostInput.value = buyingCost;
+        if (totalPriceInput) totalPriceInput.value = buyingCost;
+      } else {
+        if (buyingCostInput) buyingCostInput.value = '';
+        if (totalPriceInput) totalPriceInput.value = '';
+      }
+
+      // 3. Market Value = Metal Weight × Current Price/gm
+      let marketVal = 0;
+      if (metalVal > 0 && currentPrice > 0) {
+        marketVal = Math.round(metalVal * currentPrice * 100) / 100;
+        if (marketValInput) marketValInput.value = marketVal;
         if (estimatedValueInput && (!estimatedValueInput.value || estimatedValueInput.value === '0')) {
-          estimatedValueInput.value = total;
+          estimatedValueInput.value = marketVal;
+        }
+      } else {
+        if (marketValInput) marketValInput.value = '';
+      }
+
+      // 4. Appreciation Value = Market Value − Buying Cost
+      // 5. Appreciation % = (Appreciation Value ÷ Buying Cost) × 100
+      if (marketVal > 0 && buyingCost > 0) {
+        const apprVal = Math.round((marketVal - buyingCost) * 100) / 100;
+        const apprPct = Math.round(((apprVal / buyingCost) * 100) * 100) / 100;
+
+        if (apprValInput) {
+          apprValInput.dataset.raw = apprVal;
+          apprValInput.value = `${apprVal >= 0 ? '+' : ''}₹${apprVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+          if (apprVal > 0) {
+            apprValInput.className = 'w-full bg-gray-100 dark:bg-slate-700/60 font-bold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed text-emerald-600 dark:text-emerald-400';
+          } else if (apprVal < 0) {
+            apprValInput.className = 'w-full bg-gray-100 dark:bg-slate-700/60 font-bold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed text-red-600 dark:text-red-400';
+          } else {
+            apprValInput.className = 'w-full bg-gray-100 dark:bg-slate-700/60 font-bold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed text-gray-800 dark:text-gray-100';
+          }
+        }
+
+        if (apprPctInput) {
+          apprPctInput.dataset.raw = apprPct;
+          apprPctInput.value = `${apprPct >= 0 ? '+' : ''}${apprPct.toFixed(2)}%`;
+          if (apprPct > 0) {
+            apprPctInput.className = 'w-full bg-gray-100 dark:bg-slate-700/60 font-bold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed text-emerald-600 dark:text-emerald-400';
+          } else if (apprPct < 0) {
+            apprPctInput.className = 'w-full bg-gray-100 dark:bg-slate-700/60 font-bold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed text-red-600 dark:text-red-400';
+          } else {
+            apprPctInput.className = 'w-full bg-gray-100 dark:bg-slate-700/60 font-bold border border-gray-200 dark:border-slate-600 rounded-xl px-4 py-2 text-sm outline-none cursor-not-allowed text-gray-800 dark:text-gray-100';
+          }
+        }
+      } else {
+        if (apprValInput) {
+          apprValInput.dataset.raw = '';
+          apprValInput.value = '';
+        }
+        if (apprPctInput) {
+          apprPctInput.dataset.raw = '';
+          apprPctInput.value = '';
         }
       }
     }
@@ -2825,7 +2947,7 @@
           const buyingPriceRaw = o.BuyingPricePerGram !== undefined && o.BuyingPricePerGram !== null && o.BuyingPricePerGram !== '' ? o.BuyingPricePerGram : (o.BuyingPrice || o['Buying price/grm'] || '');
           const buyingPrice = buyingPriceRaw !== '' ? `₹${Number(buyingPriceRaw).toLocaleString('en-IN')}` : '-';
 
-          const totalPriceRaw = o.TotalPrice !== undefined && o.TotalPrice !== null && o.TotalPrice !== '' ? o.TotalPrice : (o['Total Price'] || '');
+          const totalPriceRaw = (o.BuyingCost !== undefined && o.BuyingCost !== null && o.BuyingCost !== '') ? o.BuyingCost : (o.TotalPrice !== undefined && o.TotalPrice !== null && o.TotalPrice !== '' ? o.TotalPrice : (o['Total Price'] || ''));
           const totalPrice = totalPriceRaw !== '' ? `₹${Number(totalPriceRaw).toLocaleString('en-IN')}` : '-';
 
           const makerName = o.MakerName || o['Maker Name'] || '-';
@@ -2859,7 +2981,7 @@
         allOrnaments.forEach(o => {
           const wt = getOrnamentGoldWeight(o);
           const buyRate = getOrnamentBuyingRate(o);
-          const buyVal = (buyRate > 0 && wt > 0) ? (buyRate * wt) : (parseFloat(o.TotalPrice) || 0);
+          const buyVal = (buyRate > 0 && wt > 0) ? (buyRate * wt) : (parseFloat(o.BuyingCost) || parseFloat(o.TotalPrice) || 0);
           totWeight += wt;
           totBuyVal += buyVal;
         });
@@ -2879,6 +3001,9 @@
       document.getElementById('ornPurity').value = '22K';
       document.getElementById('ornStatus').value = 'Available';
 
+      const curPriceInput = document.getElementById('ornCurrentPrice');
+      if (curPriceInput) delete curPriceInput.dataset.manual;
+
       if (ornamentId) {
         const ornament = allOrnaments.find(o => o.OrnamentId === ornamentId);
         if (ornament) {
@@ -2896,14 +3021,33 @@
           document.getElementById('ornNetWeight').value = ornament.NetWeight !== undefined && ornament.NetWeight !== '' ? ornament.NetWeight : metalWeight;
           document.getElementById('ornPurity').value = ornament.Purity || '22K';
           document.getElementById('ornStatus').value = ornament.Status || 'Available';
+
+          const curPrice = (ornament.CurrentPricePerGram !== undefined && ornament.CurrentPricePerGram !== '')
+            ? ornament.CurrentPricePerGram
+            : (getLiveRateForPurity(ornament.Purity || '22K') || '');
+          if (curPriceInput) {
+            curPriceInput.value = curPrice;
+            if (ornament.CurrentPricePerGram !== undefined && ornament.CurrentPricePerGram !== '') {
+              curPriceInput.dataset.manual = 'true';
+            }
+          }
+
           document.getElementById('ornBuyingPrice').value = ornament.BuyingPricePerGram !== undefined && ornament.BuyingPricePerGram !== '' ? ornament.BuyingPricePerGram : (ornament.BuyingPrice || '');
-          document.getElementById('ornTotalPrice').value = ornament.TotalPrice || '';
+          const buyingCost = (ornament.BuyingCost !== undefined && ornament.BuyingCost !== '') ? ornament.BuyingCost : (ornament.TotalPrice || '');
+          const buyingCostInput = document.getElementById('ornBuyingCost');
+          if (buyingCostInput) buyingCostInput.value = buyingCost;
+          document.getElementById('ornTotalPrice').value = ornament.TotalPrice || buyingCost || '';
+
+          const marketValInput = document.getElementById('ornMarketValue');
+          if (marketValInput) marketValInput.value = ornament.MarketValue || '';
+
           document.getElementById('ornMakerName').value = ornament.MakerName || '';
           document.getElementById('ornHallmarkNumber').value = ornament.HallmarkNumber || '';
           document.getElementById('ornEstimatedValue').value = ornament.EstimatedValue || '';
-          document.getElementById('ornMarketValue').value = ornament.MarketValue || '';
           document.getElementById('ornDescription').value = ornament.Description || '';
           document.getElementById('ornRemarks').value = ornament.Remarks || '';
+
+          calcOrnamentWeightsAndPrices();
 
           const galleryContainer = document.getElementById('existingImagesContainer');
           const gallery = document.getElementById('existingImagesGallery');
@@ -2927,6 +3071,11 @@
       } else {
         document.getElementById('ornModalTitle').textContent = 'Add Ornament';
         document.getElementById('existingImagesContainer').style.display = 'none';
+        if (curPriceInput) {
+          const liveRate = getLiveRateForPurity('22K');
+          if (liveRate > 0) curPriceInput.value = liveRate;
+        }
+        calcOrnamentWeightsAndPrices();
       }
       showModal('ornamentModal');
     }
@@ -2956,8 +3105,31 @@
       else if (isReleased) badgeClass = 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
 
       const metalWt = (o.MetalWeight !== undefined && o.MetalWeight !== '' && o.MetalWeight !== null) ? o.MetalWeight : ((o.NetWeight !== undefined && o.NetWeight !== '' && o.NetWeight !== null) ? o.NetWeight : '-');
-      const buyingPrice = o.BuyingPricePerGram ? `₹${Number(o.BuyingPricePerGram).toLocaleString('en-IN')}` : (o.BuyingPrice ? `₹${Number(o.BuyingPrice).toLocaleString('en-IN')}` : '-');
-      const totalPrice = o.TotalPrice ? `₹${Number(o.TotalPrice).toLocaleString('en-IN')}` : '-';
+      const buyingPriceRaw = (o.BuyingPricePerGram !== undefined && o.BuyingPricePerGram !== '' && o.BuyingPricePerGram !== null) ? o.BuyingPricePerGram : (o.BuyingPrice || o['Buying price/grm'] || '');
+      const buyingPrice = buyingPriceRaw !== '' ? `₹${Number(buyingPriceRaw).toLocaleString('en-IN')}` : '-';
+
+      const buyingCostRaw = (o.BuyingCost !== undefined && o.BuyingCost !== '' && o.BuyingCost !== null) ? o.BuyingCost : (o.TotalPrice !== undefined && o.TotalPrice !== '' && o.TotalPrice !== null ? o.TotalPrice : (o['Total Price'] || ''));
+      const buyingCostDisplay = buyingCostRaw !== '' ? `₹${Number(buyingCostRaw).toLocaleString('en-IN')}` : '-';
+
+      const curPriceRaw = (o.CurrentPricePerGram !== undefined && o.CurrentPricePerGram !== '' && o.CurrentPricePerGram !== null) ? o.CurrentPricePerGram : '';
+      const currentPriceDisplay = curPriceRaw !== '' ? `₹${Number(curPriceRaw).toLocaleString('en-IN')}` : '-';
+
+      const marketValRaw = (o.MarketValue !== undefined && o.MarketValue !== '' && o.MarketValue !== null) ? o.MarketValue : '';
+      const marketValueDisplay = marketValRaw !== '' ? `₹${Number(marketValRaw).toLocaleString('en-IN')}` : '-';
+
+      let apprValDisplay = '-';
+      let apprPctDisplay = '-';
+      let apprColor = 'text-gray-800 dark:text-gray-100';
+      if (o.AppreciationValue !== undefined && o.AppreciationValue !== '' && o.AppreciationValue !== null) {
+        const aVal = Number(o.AppreciationValue);
+        apprValDisplay = `${aVal >= 0 ? '+' : ''}₹${aVal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (aVal > 0) apprColor = 'text-emerald-600 dark:text-emerald-400 font-bold';
+        else if (aVal < 0) apprColor = 'text-red-600 dark:text-red-400 font-bold';
+      }
+      if (o.AppreciationPercentage !== undefined && o.AppreciationPercentage !== '' && o.AppreciationPercentage !== null) {
+        const aPct = Number(o.AppreciationPercentage);
+        apprPctDisplay = `${aPct >= 0 ? '+' : ''}${aPct.toFixed(2)}%`;
+      }
 
       const html = `
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2978,12 +3150,16 @@
             <h6 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Weight & Valuation</h6>
             <table class="w-full text-sm text-left border border-gray-100 dark:border-slate-700 rounded-xl overflow-hidden">
                 <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
-                    <tr><td class="w-1/2 bg-gray-50 dark:bg-slate-800/50 p-2.5">Purity</td><td class="p-2.5">${o.Purity || '-'}</td></tr>
+                    <tr><td class="w-1/2 bg-gray-50 dark:bg-slate-800/50 p-2.5">Purity</td><td class="p-2.5 font-medium">${o.Purity || '-'}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5">Gross Weight</td><td class="p-2.5">${o.GrossWeight || 0}g</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5">Stone Weight</td><td class="p-2.5">${o.StoneWeight || 0}g</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 font-semibold">Metal Weight</td><td class="p-2.5 font-semibold text-brand-600 dark:text-brand-400">${metalWt}${metalWt !== '-' ? 'g' : ''}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5">Buying Price / g</td><td class="p-2.5">${buyingPrice}</td></tr>
-                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 font-semibold">Total Price</td><td class="p-2.5 font-semibold text-green-600 dark:text-green-400">${totalPrice}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 font-semibold">Buying Cost</td><td class="p-2.5 font-semibold text-gray-800 dark:text-gray-100">${buyingCostDisplay}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5">Current Price / g</td><td class="p-2.5 font-medium">${currentPriceDisplay}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 font-semibold">Market Value</td><td class="p-2.5 font-semibold text-blue-600 dark:text-blue-400">${marketValueDisplay}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 font-semibold">Appreciation Value</td><td class="p-2.5 font-semibold ${apprColor}">${apprValDisplay}</td></tr>
+                    <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 font-semibold">Appreciation %</td><td class="p-2.5 font-semibold ${apprColor}">${apprPctDisplay}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5">Hallmark No.</td><td class="p-2.5">${o.HallmarkNumber || '-'}</td></tr>
                 </tbody>
             </table>
@@ -3007,6 +3183,12 @@
         const filesPayload = await getFilesPayload('ornImages');
         const metalWt = document.getElementById('ornMetalWeight').value;
         const netWt = document.getElementById('ornNetWeight').value || metalWt;
+        const buyingCostVal = document.getElementById('ornBuyingCost')?.value || document.getElementById('ornTotalPrice')?.value || '';
+        const currentPriceVal = document.getElementById('ornCurrentPrice')?.value || '';
+        const marketVal = document.getElementById('ornMarketValue')?.value || '';
+        const apprVal = document.getElementById('ornAppreciationValue')?.dataset?.raw !== undefined ? document.getElementById('ornAppreciationValue').dataset.raw : '';
+        const apprPct = document.getElementById('ornAppreciationPercentage')?.dataset?.raw !== undefined ? document.getElementById('ornAppreciationPercentage').dataset.raw : '';
+
         const ornamentData = {
           UserId: document.getElementById('ornUserId').value,
           OrnamentName: name,
@@ -3020,12 +3202,16 @@
           Purity: document.getElementById('ornPurity').value,
           Status: document.getElementById('ornStatus').value || 'Available',
           BuyingPricePerGram: document.getElementById('ornBuyingPrice').value,
-          TotalPrice: document.getElementById('ornTotalPrice').value,
+          CurrentPricePerGram: currentPriceVal,
+          BuyingCost: buyingCostVal,
+          TotalPrice: buyingCostVal,
+          MarketValue: marketVal,
+          AppreciationValue: apprVal,
+          AppreciationPercentage: apprPct,
           MakerName: document.getElementById('ornMakerName').value,
           HallmarkNumber: document.getElementById('ornHallmarkNumber').value,
           Quantity: document.getElementById('ornQuantity').value,
-          EstimatedValue: document.getElementById('ornEstimatedValue').value,
-          MarketValue: document.getElementById('ornMarketValue').value,
+          EstimatedValue: document.getElementById('ornEstimatedValue').value || marketVal || buyingCostVal,
           Remarks: document.getElementById('ornRemarks').value,
           files: filesPayload
         };
@@ -3516,7 +3702,7 @@
 
           return `
           <label class="ornament-loan-item flex items-start gap-3 p-3 border border-gray-200 dark:border-slate-600 rounded-xl mb-2 cursor-pointer hover:bg-white dark:hover:bg-slate-700 transition-colors" data-search="${searchStr}">
-            <input type="checkbox" data-gross="${o.GrossWeight || 0}" data-net="${o.NetWeight || 0}" onchange="syncLoanOrnamentWeights()" class="w-4 h-4 mt-1 text-brand-600 rounded border-gray-300 focus:ring-brand-500 dark:bg-slate-800 dark:border-slate-500" value="${o.OrnamentId}" id="chk-orn-${o.OrnamentId}" ${isChecked ? 'checked' : ''}>
+            <input type="checkbox" data-gross="${o.GrossWeight || 0}" data-net="${(o.MetalWeight !== undefined && o.MetalWeight !== '' && o.MetalWeight !== null) ? o.MetalWeight : (o.NetWeight || 0)}" onchange="syncLoanOrnamentWeights()" class="w-4 h-4 mt-1 text-brand-600 rounded border-gray-300 focus:ring-brand-500 dark:bg-slate-800 dark:border-slate-500" value="${o.OrnamentId}" id="chk-orn-${o.OrnamentId}" ${isChecked ? 'checked' : ''}>
             <div class="flex flex-col flex-1">
               <div class="flex justify-between items-center flex-wrap gap-1">
                 <span class="text-sm font-bold dark:text-white">${o.OrnamentName} <span class="text-gray-400 font-normal">(${o.OrnamentId})</span></span>
