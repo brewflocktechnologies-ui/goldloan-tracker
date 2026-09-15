@@ -781,7 +781,6 @@
                     <th class="px-4 py-3">ID</th>
                     <th class="px-4 py-3">Name</th>
                     <th class="px-4 py-3">Mobile</th>
-                    <th class="px-4 py-3">City</th>
                     <th class="px-4 py-3">Status</th>
                     <th class="px-4 py-3">Actions</th>
                   </tr>
@@ -851,7 +850,7 @@
                     <th class="px-4 py-3">Holder Name</th>
                     <th class="px-4 py-3">Account No.</th>
                     <th class="px-4 py-3">Bank</th>
-                    <th class="px-4 py-3">User</th>
+                    <th class="px-4 py-3">City</th>
                     <th class="px-4 py-3">Max Loan (₹)</th>
                     <th class="px-4 py-3">Utilized (₹)</th>
                     <th class="px-4 py-3">Available (₹)</th>
@@ -993,12 +992,12 @@
                 <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-800">
                   <tr>
                     <th class="px-4 py-3">ID</th>
-                    <th class="px-4 py-3">Loan No.</th>
                     <th class="px-4 py-3">User</th>
                     <th class="px-4 py-3">Bank Name</th>
                     <th class="px-4 py-3">Loan Date</th>
                     <th class="px-4 py-3">Amount (₹)</th>
-                    <th class="px-4 py-3">Processing Fee (₹)</th>
+                    <th class="px-4 py-3">Gross Weight</th>
+                    <th class="px-4 py-3">Net Weight</th>
                     <th class="px-4 py-3">Due Date</th>
                     <th class="px-4 py-3">Status</th>
                     <th class="px-4 py-3">Actions</th>
@@ -1241,6 +1240,10 @@
               id="baBranchName"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">City</label><input type="text"
+              id="baCity"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">IFSC Code</label><input type="text"
               id="baIFSCCode"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
@@ -1460,6 +1463,16 @@
             </select></div>
           <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Loan Period (Months)</label><input
               type="number" id="loanPeriod" oninput="calculateLoanCharges()"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Gross Weight (g)</label><input
+              type="number" step="0.001" id="loanGrossWeight" oninput="this.dataset.manual = 'true'"
+              placeholder="0.000"
+              class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          </div>
+          <div><label class="block text-sm font-medium mb-1 dark:text-gray-200">Net Weight (g)</label><input
+              type="number" step="0.001" id="loanNetWeight" oninput="this.dataset.manual = 'true'"
+              placeholder="0.000"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
 
@@ -2529,7 +2542,6 @@
         <td class="px-4 py-3 font-bold dark:text-white">${u.UserId}</td>
         <td class="px-4 py-3 text-gray-800 dark:text-gray-200">${u.FullName}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${u.MobileNumber}</td>
-        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${u.City}</td>
         <td class="px-4 py-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${u.Status === 'Active' ? 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300'}">${u.Status}</span></td>
         <td class="px-4 py-3 flex gap-2">
             <button onclick="viewUserDetail('${u.UserId}')" class="p-1.5 text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-300 dark:bg-brand-900/30 rounded-lg" title="View"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
@@ -2641,18 +2653,20 @@
       gsr('getBankAccounts', [], res => {
         allBankAccounts = res.data;
         const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+        const userCityMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.City]));
         const tbody = document.querySelector('#bankAccountsTable tbody');
         tbody.innerHTML = allBankAccounts.map(acc => {
           const maxLoan = parseFloat(acc.MaxLoanAmount) || 0;
           const utilizedLoan = parseFloat(acc.UtilizedLoanAmount) || 0;
           const availableLoan = acc.AvailableLoanAmount !== undefined ? acc.AvailableLoanAmount : Math.max(0, maxLoan - utilizedLoan);
+          const cityDisplay = acc.City || userCityMap[acc.UserId] || '—';
           return `
       <tr class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
         <td class="px-4 py-3 font-bold dark:text-white">${acc.BankAccountId}</td>
         <td class="px-4 py-3 text-gray-800 dark:text-gray-200">${acc.AccountHolderName}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${acc.AccountNumber}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${acc.BankName}</td>
-        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${userMap[acc.UserId] || acc.UserId}</td>
+        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${cityDisplay}</td>
         <td class="px-4 py-3 font-bold text-blue-600 dark:text-blue-400">₹${fmt(maxLoan)}</td>
         <td class="px-4 py-3 font-bold text-amber-600 dark:text-amber-400">₹${fmt(utilizedLoan)}</td>
         <td class="px-4 py-3 font-bold text-emerald-600 dark:text-emerald-400">₹${fmt(availableLoan)}</td>
@@ -2672,6 +2686,7 @@
       const acc = allBankAccounts.find(x => x.BankAccountId === id);
       if (!acc) return;
       const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
+      const userCityMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.City]));
       const maxLoan = parseFloat(acc.MaxLoanAmount) || 0;
       const utilizedLoan = parseFloat(acc.UtilizedLoanAmount) || 0;
       const availableLoan = acc.AvailableLoanAmount !== undefined ? acc.AvailableLoanAmount : Math.max(0, maxLoan - utilizedLoan);
@@ -2685,6 +2700,7 @@
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Bank Name</th><td class="p-3">${acc.BankName}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Account Number</th><td class="p-3 font-bold text-brand-600 dark:text-brand-400">${acc.AccountNumber}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Branch Name</th><td class="p-3">${acc.BranchName || '-'}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">City</th><td class="p-3">${acc.City || userCityMap[acc.UserId] || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">IFSC Code</th><td class="p-3">${acc.IFSCCode || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Account Type</th><td class="p-3">${acc.AccountType || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">UPI ID</th><td class="p-3">${acc.UPI_ID || '-'}</td></tr>
@@ -2715,6 +2731,7 @@
         document.getElementById('bankAccountModalTitle').textContent = 'Add Bank Account';
       }
       calculateAvailableLoan();
+      populateUserDropdowns();
       showModal('bankAccountModal');
     }
 
@@ -2729,7 +2746,8 @@
         const accountData = {
           UserId: document.getElementById('baUserId').value, AccountHolderName: holderName,
           AccountNumber: document.getElementById('baAccountNumber').value, BankName: document.getElementById('baBankName').value,
-          BranchName: document.getElementById('baBranchName').value, IFSCCode: document.getElementById('baIFSCCode').value,
+          BranchName: document.getElementById('baBranchName').value, City: (document.getElementById('baCity')?.value || '').trim(),
+          IFSCCode: document.getElementById('baIFSCCode').value,
           AccountType: document.getElementById('baAccountType').value, UPI_ID: document.getElementById('baUPI_ID').value,
           Status: document.getElementById('baStatus').value,
           MaxLoanAmount: document.getElementById('baMaxLoanAmount').value, UtilizedLoanAmount: document.getElementById('baUtilizedLoanAmount').value
@@ -3072,12 +3090,12 @@
           return `
       <tr class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors ${rowBgClass}">
         <td class="px-4 py-3 font-bold dark:text-white">${l.LoanId}</td>
-        <td class="px-4 py-3 text-gray-800 dark:text-gray-200">${l.LoanNumber}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${userMap[l.UserId] || l.UserId}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${bankName}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${fmtDate(l.LoanDate)}</td>
         <td class="px-4 py-3 font-bold text-brand-600 dark:text-brand-400">₹${fmt(l.LoanAmount)}</td>
-        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">₹${fmt(l.ProcessingFee || 0)}</td>
+        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${(l.GrossWeight !== undefined && l.GrossWeight !== null && l.GrossWeight !== '') ? l.GrossWeight + 'g' : '—'}</td>
+        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${(l.NetWeight !== undefined && l.NetWeight !== null && l.NetWeight !== '') ? l.NetWeight + 'g' : '—'}</td>
         <td class="px-4 py-3 ${isOverdue ? 'text-red-600 font-bold dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}">${fmtDate(l.DueDate)}</td>
         <td class="px-4 py-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${statusBadgeClass}">${isOverdue ? 'OVERDUE' : l.LoanStatus}</span></td>
         <td class="px-4 py-3 flex gap-2">
@@ -3249,6 +3267,8 @@
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Customer</td><td class="p-2.5 font-bold text-right dark:text-white">${customerName} <span class="text-xs text-gray-400 font-normal">(${loan.UserId})</span></td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Bank Account</td><td class="p-2.5 font-bold text-right dark:text-white">${bankText}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Loan Amount</td><td class="p-2.5 font-bold text-brand-600 dark:text-brand-400 text-right">₹${fmt(loan.LoanAmount)}</td></tr>
+                    ${(loan.GrossWeight !== undefined && loan.GrossWeight !== null && loan.GrossWeight !== '') ? `<tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Gross Weight</td><td class="p-2.5 text-right font-bold dark:text-white">${loan.GrossWeight}g</td></tr>` : ''}
+                    ${(loan.NetWeight !== undefined && loan.NetWeight !== null && loan.NetWeight !== '') ? `<tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Net Weight</td><td class="p-2.5 text-right font-bold dark:text-white">${loan.NetWeight}g</td></tr>` : ''}
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Interest Rate</td><td class="p-2.5 text-right dark:text-gray-200">${loan.InterestRate}% (${loan.InterestType || 'Simple'})</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Loan Period</td><td class="p-2.5 text-right dark:text-gray-200">${loanPeriodDisplay}</td></tr>
                     <tr><td class="bg-gray-50 dark:bg-slate-800/50 p-2.5 text-gray-500 dark:text-gray-400">Total Interest</td><td class="p-2.5 font-bold text-right text-brand-600 dark:text-brand-400">₹${fmt(totalInterest)}</td></tr>
@@ -3363,6 +3383,16 @@
           document.getElementById('loanInterestRate').value = loan.InterestRate || '';
           document.getElementById('loanInterestType').value = loan.InterestType || 'Simple';
           document.getElementById('loanPeriod').value = loan.LoanPeriod || '';
+          const grossEl = document.getElementById('loanGrossWeight');
+          const netEl = document.getElementById('loanNetWeight');
+          if (grossEl) {
+            grossEl.value = (loan.GrossWeight !== undefined && loan.GrossWeight !== null) ? loan.GrossWeight : '';
+            grossEl.dataset.manual = 'true';
+          }
+          if (netEl) {
+            netEl.value = (loan.NetWeight !== undefined && loan.NetWeight !== null) ? loan.NetWeight : '';
+            netEl.dataset.manual = 'true';
+          }
           document.getElementById('loanProcessingFee').value = loan.ProcessingFee || '';
           document.getElementById('loanDocumentCharge').value = loan.DocumentCharge || '';
           document.getElementById('loanInsuranceCharge').value = loan.InsuranceCharge || '';
@@ -3431,6 +3461,10 @@
         document.getElementById('loanModalTitle').textContent = 'Add Loan';
         setToday('loanDate');
         currentEditingLoan = null;
+        const grossEl = document.getElementById('loanGrossWeight');
+        const netEl = document.getElementById('loanNetWeight');
+        if (grossEl) delete grossEl.dataset.manual;
+        if (netEl) delete netEl.dataset.manual;
         bankSelect.innerHTML = '<option value="">— Select a User First —</option>';
         if (limitInfo) { limitInfo.classList.add('hidden'); limitInfo.innerHTML = ''; }
         loadAvailableOrnamentsForLoan([], []);
@@ -3482,7 +3516,7 @@
 
           return `
           <label class="ornament-loan-item flex items-start gap-3 p-3 border border-gray-200 dark:border-slate-600 rounded-xl mb-2 cursor-pointer hover:bg-white dark:hover:bg-slate-700 transition-colors" data-search="${searchStr}">
-            <input type="checkbox" class="w-4 h-4 mt-1 text-brand-600 rounded border-gray-300 focus:ring-brand-500 dark:bg-slate-800 dark:border-slate-500" value="${o.OrnamentId}" id="chk-orn-${o.OrnamentId}" ${isChecked ? 'checked' : ''}>
+            <input type="checkbox" data-gross="${o.GrossWeight || 0}" data-net="${o.NetWeight || 0}" onchange="syncLoanOrnamentWeights()" class="w-4 h-4 mt-1 text-brand-600 rounded border-gray-300 focus:ring-brand-500 dark:bg-slate-800 dark:border-slate-500" value="${o.OrnamentId}" id="chk-orn-${o.OrnamentId}" ${isChecked ? 'checked' : ''}>
             <div class="flex flex-col flex-1">
               <div class="flex justify-between items-center flex-wrap gap-1">
                 <span class="text-sm font-bold dark:text-white">${o.OrnamentName} <span class="text-gray-400 font-normal">(${o.OrnamentId})</span></span>
@@ -3499,7 +3533,30 @@
             </div>
           </label>`;
         }).join('') + '<p id="noMatchingOrnamentsNotice" class="text-sm text-gray-500 dark:text-gray-400 text-center py-4" style="display:none;">No ornaments match your search.</p>';
+        syncLoanOrnamentWeights();
       });
+    }
+
+    function syncLoanOrnamentWeights() {
+      const grossInput = document.getElementById('loanGrossWeight');
+      const netInput = document.getElementById('loanNetWeight');
+      if (!grossInput || !netInput) return;
+      if (grossInput.dataset.manual === 'true' && netInput.dataset.manual === 'true') return;
+
+      const checked = document.querySelectorAll('#availableOrnamentsForLoan input[type="checkbox"]:checked');
+      let totalGross = 0;
+      let totalNet = 0;
+      checked.forEach(cb => {
+        totalGross += parseFloat(cb.getAttribute('data-gross')) || 0;
+        totalNet += parseFloat(cb.getAttribute('data-net')) || 0;
+      });
+
+      if (grossInput.dataset.manual !== 'true') {
+        grossInput.value = totalGross > 0 ? parseFloat(totalGross.toFixed(3)) : '';
+      }
+      if (netInput.dataset.manual !== 'true') {
+        netInput.value = totalNet > 0 ? parseFloat(totalNet.toFixed(3)) : '';
+      }
     }
 
     function filterLoanOrnaments() {
@@ -3646,6 +3703,8 @@
         InterestRate: document.getElementById('loanInterestRate').value,
         InterestType: document.getElementById('loanInterestType').value,
         LoanPeriod: document.getElementById('loanPeriod').value,
+        GrossWeight: document.getElementById('loanGrossWeight')?.value || '',
+        NetWeight: document.getElementById('loanNetWeight')?.value || '',
         ProcessingFee: document.getElementById('loanProcessingFee').value,
         DocumentCharge: document.getElementById('loanDocumentCharge').value,
         InsuranceCharge: document.getElementById('loanInsuranceCharge').value,

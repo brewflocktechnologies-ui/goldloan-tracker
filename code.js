@@ -3,9 +3,9 @@ const SPREADSHEET_ID =
 const SHEET_HEADERS = {
   Admins: ["AdminId", "Username", "Password", "Role", "Status"], // NEW: Admin Sheet
   Users: ["UserId", "CustomerCode", "FullName", "FatherHusbandName", "MobileNumber", "AlternateMobileNumber", "Email", "DateOfBirth", "Gender", "AadhaarNumber", "PANNumber", "AddressLine1", "AddressLine2", "City", "State", "Pincode", "Occupation", "CustomerPhoto", "Status", "CreatedDate", "UpdatedDate"],
-  BankAccounts: ["BankAccountId", "UserId", "AccountHolderName", "AccountNumber", "BankName", "BranchName", "IFSCCode", "AccountType", "UPI_ID", "PassbookImage", "Status", "CreatedDate", "UpdatedDate", "MaxLoanAmount", "UtilizedLoanAmount"],
+  BankAccounts: ["BankAccountId", "UserId", "AccountHolderName", "AccountNumber", "BankName", "BranchName", "City", "IFSCCode", "AccountType", "UPI_ID", "PassbookImage", "Status", "CreatedDate", "UpdatedDate", "MaxLoanAmount", "UtilizedLoanAmount"],
   Ornaments: ["OrnamentId", "UserId", "OrnamentName", "OrnamentType", "OrnamentCategory", "Description", "GrossWeight", "NetWeight", "MetalWeight", "StoneWeight", "Purity", "HallmarkNumber", "Quantity", "BuyingPricePerGram", "TotalPrice", "MakerName", "EstimatedValue", "MarketValue", "OrnamentImages", "Remarks", "Status", "ReleaseDate", "ReleasedLoanId"],
-  Loans: ["LoanId", "LoanNumber", "UserId", "BankAccountId", "BankName", "LoanDate", "LoanAmount", "InterestRate", "InterestType", "LoanPeriod", "ProcessingFee", "DocumentCharge", "InsuranceCharge", "TotalCharges", "NetDisbursementAmount", "DueDate", "LoanStatus", "Remarks", "CreatedDate", "UpdatedDate", "ClosedDate", "ClosureRemarks"],
+  Loans: ["LoanId", "LoanNumber", "UserId", "BankAccountId", "BankName", "LoanDate", "LoanAmount", "InterestRate", "InterestType", "LoanPeriod", "GrossWeight", "NetWeight", "ProcessingFee", "DocumentCharge", "InsuranceCharge", "TotalCharges", "NetDisbursementAmount", "DueDate", "LoanStatus", "Remarks", "CreatedDate", "UpdatedDate", "ClosedDate", "ClosureRemarks"],
   LoanOrnaments: ["MappingId", "LoanId", "OrnamentId", "Status"],
   Payments: ["PaymentId", "LoanId", "PaymentDate", "PaymentType", "PrincipalAmount", "InterestAmount", "PenaltyAmount", "TotalPaidAmount", "PaymentMethod", "TransactionReference", "Remarks", "CreatedDate"],
   Releases: ["ReleaseId", "LoanId", "OrnamentId", "ReleaseDate", "ReleasedBy", "CustomerSignature", "DeliveryProofImage", "Remarks"]
@@ -298,6 +298,7 @@ function addBankAccount(accountData) {
       AccountNumber: accountData.AccountNumber,
       BankName: accountData.BankName,
       BranchName: accountData.BranchName || "",
+      City: accountData.City || "",
       IFSCCode: accountData.IFSCCode || "",
       AccountType: accountData.AccountType || "",
       UPI_ID: accountData.UPI_ID || "",
@@ -635,6 +636,20 @@ function addLoan(loanData) {
 
     const bankName = bankAccount.BankName || (loanData.BankName || "");
     const loanId = generateId("L", "Loans", "LoanId");
+
+    let grossWeight = parseFloat(loanData.GrossWeight) || 0;
+    let netWeight = parseFloat(loanData.NetWeight) || 0;
+    if ((!grossWeight || !netWeight) && loanData.ornamentIds && loanData.ornamentIds.length > 0) {
+      try {
+        const allOrns = getSheetData("Ornaments");
+        const selectedOrns = allOrns.filter(o => loanData.ornamentIds.map(String).includes(String(o.OrnamentId)));
+        if (!grossWeight) grossWeight = selectedOrns.reduce((s, o) => s + (parseFloat(o.GrossWeight) || 0), 0);
+        if (!netWeight) netWeight = selectedOrns.reduce((s, o) => s + (parseFloat(o.NetWeight) || 0), 0);
+      } catch (err) {
+        console.error("Error calculating ornament weights:", err);
+      }
+    }
+
     const record = {
       LoanId: loanId,
       LoanNumber: loanData.LoanNumber,
@@ -646,6 +661,8 @@ function addLoan(loanData) {
       InterestRate: parseFloat(loanData.InterestRate) || 0,
       InterestType: loanData.InterestType || "Simple",
       LoanPeriod: loanData.LoanPeriod || "",
+      GrossWeight: grossWeight || "",
+      NetWeight: netWeight || "",
       ProcessingFee: parseFloat(loanData.ProcessingFee) || 0,
       DocumentCharge: parseFloat(loanData.DocumentCharge) || 0,
       InsuranceCharge: parseFloat(loanData.InsuranceCharge) || 0,
@@ -683,10 +700,40 @@ function getLoans(userId, status) {
     const bankAccounts = getSheetData("BankAccounts");
     const bankMap = new Map(bankAccounts.map(b => [String(b.BankAccountId), b.BankName]));
 
-    loans = loans.map(l => ({
-      ...l,
-      BankName: l.BankName || bankMap.get(String(l.BankAccountId)) || ""
-    }));
+    const loanWeightMap = new Map();
+    try {
+      const mappings = getSheetData("LoanOrnaments").filter(m => m.Status === "Pledged");
+      const ornaments = getSheetData("Ornaments");
+      const ornMap = new Map(ornaments.map(o => [String(o.OrnamentId), o]));
+      mappings.forEach(m => {
+        const orn = ornMap.get(String(m.OrnamentId));
+        if (orn) {
+          const curr = loanWeightMap.get(String(m.LoanId)) || { gross: 0, net: 0 };
+          curr.gross += (parseFloat(orn.GrossWeight) || 0);
+          curr.net += (parseFloat(orn.NetWeight) || 0);
+          loanWeightMap.set(String(m.LoanId), curr);
+        }
+      });
+    } catch (err) {
+      console.error("Error computing loan weights in getLoans:", err);
+    }
+
+    loans = loans.map(l => {
+      const computed = loanWeightMap.get(String(l.LoanId)) || { gross: 0, net: 0 };
+      const gross = (l.GrossWeight !== undefined && l.GrossWeight !== null && l.GrossWeight !== "")
+        ? l.GrossWeight
+        : (computed.gross > 0 ? computed.gross : "");
+      const net = (l.NetWeight !== undefined && l.NetWeight !== null && l.NetWeight !== "")
+        ? l.NetWeight
+        : (computed.net > 0 ? computed.net : "");
+
+      return {
+        ...l,
+        GrossWeight: gross,
+        NetWeight: net,
+        BankName: l.BankName || bankMap.get(String(l.BankAccountId)) || ""
+      };
+    });
 
     return { success: true, data: loans };
   } catch (e) {
@@ -812,6 +859,8 @@ function updateLoan(loanId, loanData) {
       InterestRate: parseFloat(loanData.InterestRate) || 0,
       InterestType: loanData.InterestType || "Simple",
       LoanPeriod: loanData.LoanPeriod || "",
+      GrossWeight: loanData.GrossWeight !== undefined && loanData.GrossWeight !== "" ? (parseFloat(loanData.GrossWeight) || 0) : (existingLoan.GrossWeight !== undefined ? existingLoan.GrossWeight : ""),
+      NetWeight: loanData.NetWeight !== undefined && loanData.NetWeight !== "" ? (parseFloat(loanData.NetWeight) || 0) : (existingLoan.NetWeight !== undefined ? existingLoan.NetWeight : ""),
       ProcessingFee: parseFloat(loanData.ProcessingFee) || 0,
       DocumentCharge: parseFloat(loanData.DocumentCharge) || 0,
       InsuranceCharge: parseFloat(loanData.InsuranceCharge) || 0,
