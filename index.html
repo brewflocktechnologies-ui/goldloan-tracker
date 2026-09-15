@@ -1760,6 +1760,8 @@
               initSidebarState();
               initializeApp();
               showToast('Welcome back, ' + res.data.username);
+              loginBtn.disabled = false;
+              loginBtn.innerHTML = originalBtnText;
             }, 300);
 
           } else {
@@ -1781,8 +1783,24 @@
       sessionStorage.removeItem('goldLoanAdmin');
       const loginScreen = document.getElementById('view-login');
       loginScreen.classList.remove('hidden', 'opacity-0');
-      document.getElementById('loginUsername').value = '';
-      document.getElementById('loginPassword').value = '';
+      
+      const userField = document.getElementById('loginUsername');
+      const passField = document.getElementById('loginPassword');
+      if (userField) userField.value = '';
+      if (passField) passField.value = '';
+
+      const errDiv = document.getElementById('loginError');
+      if (errDiv) {
+        errDiv.textContent = '';
+        errDiv.classList.add('hidden');
+      }
+
+      const loginBtn = document.getElementById('loginBtn');
+      if (loginBtn) {
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Secure Login';
+      }
+
       document.getElementById('main-layout').classList.add('hidden');
       document.getElementById('main-layout').classList.remove('flex');
       closeSidebar();
