@@ -471,7 +471,7 @@ function doPost(e) {
 function handleApiRequest(action, payload) {
   try {
     // ── REST token guard: all actions except login/ping require a valid session token ──
-    const PUBLIC_ACTIONS = ["ping", "testConnection", "login", "authenticateAdmin"];
+    const PUBLIC_ACTIONS = ["ping", "testConnection", "login", "authenticateAdmin", "getGoldRates"];
     let session = null;
     if (!PUBLIC_ACTIONS.includes(action)) {
       session = validateSessionToken(payload.token);
@@ -1837,6 +1837,16 @@ function getGoldRates(forceRefresh) {
       const fallbackProp = PropertiesService.getScriptProperties().getProperty("LAST_KNOWN_GOLD_RATES_BANGALORE");
       if (fallbackProp) {
         const fallbackData = JSON.parse(fallbackProp);
+        ["gold24k", "gold22k", "gold18k"].forEach(k => {
+          if (fallbackData[k]) {
+            if (!fallbackData[k].rate1g && fallbackData[k].numericPrice) {
+              fallbackData[k].rate1g = fallbackData[k].numericPrice;
+            }
+            if (fallbackData[k].direction === "neutral") {
+              fallbackData[k].direction = "flat";
+            }
+          }
+        });
         return {
           success: true,
           data: fallbackData,
@@ -1848,9 +1858,20 @@ function getGoldRates(forceRefresh) {
       // Ignore fallback read error
     }
 
+    const fallbackBaseline = {
+      location: "Bangalore",
+      updatedAt: new Date().toISOString(),
+      displayDate: Utilities.formatDate(new Date(), "Asia/Kolkata", "dd MMMM yyyy") + " (Baseline)",
+      gold24k: { price: "₹8,850", numericPrice: 8850, rate1g: 8850, change: 0, changeStr: "0", direction: "flat", formattedBadge: "0 —" },
+      gold22k: { price: "₹8,115", numericPrice: 8115, rate1g: 8115, change: 0, changeStr: "0", direction: "flat", formattedBadge: "0 —" },
+      gold18k: { price: "₹6,640", numericPrice: 6640, rate1g: 6640, change: 0, changeStr: "0", direction: "flat", formattedBadge: "0 —" }
+    };
+
     return {
-      success: false,
-      error: error.message || "Failed to retrieve Bangalore gold rates."
+      success: true,
+      data: fallbackBaseline,
+      isFallback: true,
+      warning: error.message || "Failed to retrieve Bangalore gold rates."
     };
   }
 }
@@ -1922,7 +1943,7 @@ function parseGoldRatesHtml(html) {
 
       let change = 0;
       let changeStr = "0";
-      let direction = "neutral";
+      let direction = "flat";
       let formattedBadge = "0 —";
 
       const deltaText = deltaHtml.replace(/<[^>]+>/g, " ").trim();
@@ -1948,16 +1969,19 @@ function parseGoldRatesHtml(html) {
           changeStr = `+${valStr}`;
           formattedBadge = `+ ${valStr} ▲`;
         } else {
-          direction = "neutral";
+          direction = "flat";
           change = 0;
           changeStr = "0";
           formattedBadge = "0 —";
         }
+      } else {
+        direction = "flat";
       }
 
       return {
         price,
         numericPrice,
+        rate1g: numericPrice,
         change,
         changeStr,
         direction,
@@ -2015,12 +2039,17 @@ function parseGoldRatesHtml(html) {
             const valObj = parseCell(rawVal);
             const nearbyObj = parseCell(nearby);
 
+            const karatPrice = (valObj && valObj.numericPrice > 500) ? valObj.numericPrice : (nearbyObj ? nearbyObj.numericPrice : 0);
+            const rawDir = nearbyObj ? nearbyObj.direction : "flat";
+            const dir = rawDir === "neutral" ? "flat" : rawDir;
+
             rates[k.key] = {
               price: (valObj && valObj.numericPrice > 500) ? valObj.price : (nearbyObj ? nearbyObj.price : "—"),
-              numericPrice: (valObj && valObj.numericPrice > 500) ? valObj.numericPrice : (nearbyObj ? nearbyObj.numericPrice : 0),
+              numericPrice: karatPrice,
+              rate1g: karatPrice,
               change: nearbyObj ? nearbyObj.change : 0,
               changeStr: nearbyObj ? nearbyObj.changeStr : "0",
-              direction: nearbyObj ? nearbyObj.direction : "neutral",
+              direction: dir,
               formattedBadge: nearbyObj ? nearbyObj.formattedBadge : "0 —"
             };
           }
