@@ -31,8 +31,8 @@ function setupSheets() {
 
         // NEW: Seed default admin credentials if setting up for the first time
         if (name === "Admins") {
-          // Default Username: admin, Password: password123
-          sheet.appendRow(["ADM001", "admin", "password123", "SuperAdmin", "Active"]);
+          // Default Username: admin, Password: password123 (stored as SHA-256 hash)
+          sheet.appendRow(["ADM001", "admin", hashValue("password123"), "SuperAdmin", "Active"]);
         }
       } else {
         const firstRow = sheet.getRange(1, 1, 1, lastCol).getValues()[0];
@@ -98,19 +98,338 @@ function setupSheets() {
   }
 }
 
+// ─── SECURITY UTILITIES ───
+
+/**
+ * Computes a SHA-256 hex digest of a string value.
+ * Used for password hashing (one-way) and session token generation.
+ */
+function hashValue(value) {
+  const bytes = Utilities.computeDigest(
+    Utilities.DigestAlgorithm.SHA_256,
+    String(value),
+    Utilities.Charset.UTF_8
+  );
+  return bytes.map(b => ('0' + (b & 0xFF).toString(16)).slice(-2)).join('');
+}
+
+/**
+ * Brute-force protection: allows max 5 login attempts per username per 15 minutes.
+ * Throws an error string if the rate limit is exceeded.
+ */
+function checkLoginRateLimit(username) {
+  const key = 'LOGIN_ATTEMPTS_' + String(username).toLowerCase();
+  const props = PropertiesService.getScriptProperties();
+  const raw = props.getProperty(key);
+  let data = raw ? JSON.parse(raw) : { count: 0, firstAttempt: Date.now() };
+
+  const WINDOW_MS = 15 * 60 * 1000; // 15 minutes
+  const MAX_ATTEMPTS = 5;
+
+  // Reset window if it has expired
+  if (Date.now() - data.firstAttempt > WINDOW_MS) {
+    data = { count: 0, firstAttempt: Date.now() };
+  }
+
+  data.count++;
+  props.setProperty(key, JSON.stringify(data));
+
+  if (data.count > MAX_ATTEMPTS) {
+    const waitMins = Math.ceil((WINDOW_MS - (Date.now() - data.firstAttempt)) / 60000);
+    throw new Error('Too many failed login attempts. Please try again in ' + waitMins + ' minute(s).');
+  }
+}
+
+/**
+ * Clears the login attempt counter for a username after a successful login.
+ */
+function resetLoginRateLimit(username) {
+  try {
+    PropertiesService.getScriptProperties()
+      .deleteProperty('LOGIN_ATTEMPTS_' + String(username).toLowerCase());
+  } catch (e) { /* ignore */ }
+}
+
+/**
+ * Generates a secure session token, stores it in PropertiesService with an 8-hour TTL.
+ * Returns the token string.
+ */
+function createSessionToken(username, role) {
+  const raw = username + ':' + Date.now() + ':' + Math.random();
+  const token = hashValue(raw);
+  const expiry = Date.now() + (8 * 60 * 60 * 1000); // 8 hours
+
+  PropertiesService.getScriptProperties()
+    .setProperty('SESSION_' + token, JSON.stringify({ username, role, expiry }));
+
+  return token;
+}
+
+/**
+ * Validates a session token. Returns the session object { username, role } if valid,
+ * or null if missing, expired, or invalid.
+ */
+function validateSessionToken(token) {
+  if (!token) return null;
+  try {
+    const props = PropertiesService.getScriptProperties();
+    const raw = props.getProperty('SESSION_' + token);
+    if (!raw) return null;
+    const session = JSON.parse(raw);
+    if (Date.now() > session.expiry) {
+      props.deleteProperty('SESSION_' + token);
+      return null;
+    }
+    return session;
+  } catch (e) {
+    return null;
+  }
+}
+
+/**
+ * Invalidates a session token on the server side (secure logout).
+ */
+function logoutAdmin(token) {
+  try {
+    if (token) {
+      PropertiesService.getScriptProperties().deleteProperty('SESSION_' + token);
+    }
+    return { success: true };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+// ─── ADMIN USER MANAGEMENT ───
+
+/**
+ * Helper to extract caller role and username from either a session token or direct params.
+ */
+function resolveCaller(tokenOrRole, maybeUsername) {
+  if (tokenOrRole && typeof tokenOrRole === "string") {
+    if (tokenOrRole.length > 20) {
+      const session = validateSessionToken(tokenOrRole);
+      if (session) {
+        return { role: session.role || "", username: session.username || "" };
+      }
+    }
+    if (tokenOrRole === "SuperAdmin" || tokenOrRole === "User") {
+      return { role: tokenOrRole, username: maybeUsername || "" };
+    }
+  }
+  return { role: "", username: maybeUsername || (typeof tokenOrRole === "string" ? tokenOrRole : "") };
+}
+
+/**
+ * Returns all admin login users.
+ * Passwords are stripped before returning. Accessible to any authenticated user.
+ */
+function getAdminUsers(tokenOrRole) {
+  try {
+    const caller = resolveCaller(tokenOrRole);
+    if (!caller.username && !caller.role) {
+      return { success: false, error: "Authentication required." };
+    }
+    const admins = getSheetData("Admins")
+      .filter(a => a.Status !== "Deleted")
+      .map(a => ({
+        AdminId: a.AdminId,
+        Username: a.Username,
+        Role: a.Role,
+        Status: a.Status
+      }));
+    return { success: true, data: admins };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Creates a new admin login user with "User" role by default.
+ * SuperAdmin can also create another SuperAdmin if requested.
+ * Validates uniqueness and hashes the password.
+ */
+function addAdminUser(userData, tokenOrRole) {
+  try {
+    const caller = resolveCaller(tokenOrRole);
+    if (caller.role !== "SuperAdmin") {
+      return { success: false, error: "Access denied. SuperAdmin only." };
+    }
+    if (!userData || !userData.username || !userData.password) {
+      return { success: false, error: "Username and password are required." };
+    }
+
+    const trimmedUsername = String(userData.username).trim();
+    if (!trimmedUsername) {
+      return { success: false, error: "Username cannot be empty." };
+    }
+
+    const existing = getSheetData("Admins").find(
+      a => String(a.Username).toLowerCase() === trimmedUsername.toLowerCase() && a.Status !== "Deleted"
+    );
+    if (existing) {
+      return { success: false, error: "Username already exists." };
+    }
+
+    const adminId = generateId("ADM", "Admins", "AdminId");
+    // DEFAULT ROLE IS "User" (read-only view access), unless explicitly requested as SuperAdmin
+    const role = (userData.role === "SuperAdmin") ? "SuperAdmin" : "User";
+    const record = {
+      AdminId: adminId,
+      Username: trimmedUsername,
+      Password: hashValue(String(userData.password)),
+      Role: role,
+      Status: userData.status || "Active"
+    };
+    appendRow("Admins", record);
+    return { success: true, data: { AdminId: adminId, Username: record.Username, Role: record.Role, Status: record.Status } };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Updates an existing admin user (status, role, or password reset).
+ * SuperAdmin can update role, status, and reset passwords for any user.
+ * Non-SuperAdmin (User role) can ONLY update their own password.
+ */
+function updateAdminUser(adminId, updateData, callerUsername, tokenOrRole) {
+  try {
+    let caller = resolveCaller(tokenOrRole, callerUsername);
+    if (!caller.username && callerUsername) caller.username = callerUsername;
+    if (!caller.role && caller.username) {
+      const allAdmins = getSheetData("Admins");
+      const callerRecord = allAdmins.find(a => String(a.Username).toLowerCase() === String(caller.username).toLowerCase());
+      if (callerRecord) caller.role = callerRecord.Role;
+    }
+
+    const admins = getSheetData("Admins");
+    const target = admins.find(a => String(a.AdminId) === String(adminId) && a.Status !== "Deleted");
+    if (!target) return { success: false, error: "Admin user not found." };
+
+    const isSuper = caller.role === "SuperAdmin";
+    const isSelf = caller.username && String(target.Username).toLowerCase() === String(caller.username).toLowerCase();
+
+    // Only SuperAdmin or the user themselves can perform updates
+    if (!isSuper && !isSelf) {
+      return { success: false, error: "Access denied. You can only update your own password." };
+    }
+
+    // Non-SuperAdmin cannot change role or status
+    if (!isSuper && (updateData.role || updateData.status)) {
+      return { success: false, error: "Access denied. Only SuperAdmin can change role or status." };
+    }
+
+    // Prevent SuperAdmin from stripping their own SuperAdmin role
+    if (isSelf && isSuper && updateData.role && updateData.role !== "SuperAdmin") {
+      return { success: false, error: "You cannot change your own role." };
+    }
+
+    const changes = {};
+    if (isSuper && updateData.role) changes.Role = updateData.role === "SuperAdmin" ? "SuperAdmin" : "User";
+    if (isSuper && updateData.status) changes.Status = updateData.status;
+
+    const newPass = updateData.password || updateData.newPassword;
+    if (newPass && String(newPass).trim()) {
+      changes.Password = hashValue(String(newPass).trim());
+    }
+
+    updateRow("Admins", "AdminId", adminId, changes);
+    return { success: true, data: "Admin user updated." };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Changes password for the currently authenticated user.
+ * Can be called from Profile Modal or REST API.
+ */
+function changePassword(newPassword, oldPassword, tokenOrUsername) {
+  try {
+    let caller = resolveCaller(tokenOrUsername);
+    if (!caller.username && tokenOrUsername && typeof tokenOrUsername === "string") {
+      caller.username = tokenOrUsername;
+    }
+    if (!caller.username) {
+      return { success: false, error: "Authentication required to change password." };
+    }
+    const trimmedNew = String(newPassword || "").trim();
+    if (!trimmedNew || trimmedNew.length < 4) {
+      return { success: false, error: "New password must be at least 4 characters long." };
+    }
+
+    const admins = getSheetData("Admins");
+    const target = admins.find(
+      a => String(a.Username).toLowerCase() === String(caller.username).toLowerCase() && a.Status !== "Deleted"
+    );
+    if (!target) {
+      return { success: false, error: "User account not found." };
+    }
+
+    // If current/old password is provided, verify it
+    if (oldPassword && String(oldPassword).trim()) {
+      const hashedOld = hashValue(String(oldPassword).trim());
+      if (hashedOld !== String(target.Password)) {
+        return { success: false, error: "Current password does not match." };
+      }
+    }
+
+    const newHashed = hashValue(trimmedNew);
+    updateRow("Admins", "AdminId", target.AdminId, { Password: newHashed });
+    return { success: true, data: "Password changed successfully." };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Soft-deletes an admin login user (sets Status = "Deleted"). SuperAdmin only.
+ * Cannot delete yourself.
+ */
+function deleteAdminLoginUser(adminId, callerUsername, tokenOrRole) {
+  try {
+    const caller = resolveCaller(tokenOrRole, callerUsername);
+    if (caller.role !== "SuperAdmin") {
+      return { success: false, error: "Access denied. SuperAdmin only." };
+    }
+    const admins = getSheetData("Admins");
+    const target = admins.find(a => String(a.AdminId) === String(adminId));
+    if (!target) return { success: false, error: "Admin user not found." };
+    if (String(target.Username) === String(caller.username)) {
+      return { success: false, error: "You cannot delete your own account." };
+    }
+    updateRow("Admins", "AdminId", adminId, { Status: "Deleted" });
+    return { success: true, data: "Admin user deleted." };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
 // ─── AUTHENTICATION ───
 
 function authenticateAdmin(username, password) {
   try {
+    // Rate limiting: blocks brute force after 5 failed attempts in 15 minutes
+    checkLoginRateLimit(username);
+
     const admins = getSheetData("Admins").filter(a => a.Status === "Active");
-    const admin = admins.find(a => String(a.Username) === String(username) && String(a.Password) === String(password));
+    const hashedInput = hashValue(String(password));
+    const admin = admins.find(a =>
+      String(a.Username) === String(username) &&
+      String(a.Password) === hashedInput
+    );
 
     if (admin) {
-      return { success: true, data: { username: admin.Username, role: admin.Role } };
+      // Successful login: clear rate limit counter and issue a session token
+      resetLoginRateLimit(username);
+      const token = createSessionToken(admin.Username, admin.Role);
+      return { success: true, data: { username: admin.Username, role: admin.Role, token } };
     } else {
       return { success: false, error: "Invalid username or password." };
     }
   } catch (e) {
+    // Surface rate limit errors and other failures to the client
     return { success: false, error: e.message };
   }
 }
@@ -151,10 +470,85 @@ function doPost(e) {
 
 function handleApiRequest(action, payload) {
   try {
+    // ── REST token guard: all actions except login/ping require a valid session token ──
+    const PUBLIC_ACTIONS = ["ping", "testConnection", "login", "authenticateAdmin"];
+    let session = null;
+    if (!PUBLIC_ACTIONS.includes(action)) {
+      session = validateSessionToken(payload.token);
+      if (!session) {
+        return jsonResponse({
+          success: false,
+          error: "Unauthorized. Session expired or invalid. Please log in again.",
+          code: 401
+        });
+      }
+    }
+
+    // ── Role-based write guard: "User" role can read, view staff directory, and change their own password ──
+    const USER_ALLOWED_ACTIONS = [
+      "ping", "testConnection", "login", "authenticateAdmin", "logout",
+      "getInitialSyncData", "getSyncData", "getDashboardData", "getGoldRates",
+      "getUsers", "getBankAccounts", "getOrnaments", "getAvailableOrnaments",
+      "getLoans", "getLoanDetails", "getActiveLoansForClosure",
+      "getPayments",
+      "getAdminUsers",
+      "changePassword",
+      "updateAdminUser"
+    ];
+    if (session && session.role !== "SuperAdmin" && !USER_ALLOWED_ACTIONS.includes(action)) {
+      return jsonResponse({
+        success: false,
+        error: "Access denied. You have view-only access. Contact your SuperAdmin to make changes.",
+        code: 403
+      });
+    }
+
+    const callerUsername = session ? session.username : "";
+    const callerRole = session ? session.role : "";
+
     switch (action) {
       case "ping":
       case "testConnection":
         return jsonResponse({ success: true, data: "PONG", timestamp: new Date().toISOString() });
+
+      // ── Login — accepts {"action":"login","username":"...","password":"..."} ──
+      case "login":
+      case "authenticateAdmin":
+        return jsonResponse(authenticateAdmin(payload.username, payload.password));
+
+      // ── Logout — {"action":"logout","token":"..."} ──
+      case "logout":
+        return jsonResponse(logoutAdmin(payload.token));
+
+      // ── Change Password (for current logged-in user) ──
+      case "changePassword":
+        return jsonResponse(changePassword(
+          payload.newPassword || payload.password,
+          payload.oldPassword || payload.currentPassword,
+          payload.token || callerUsername
+        ));
+
+      // ── Admin User Management ──
+      case "getAdminUsers":
+        return jsonResponse(getAdminUsers(payload.token || callerRole));
+
+      case "addAdminUser":
+        return jsonResponse(addAdminUser(payload.userData || payload, payload.token || callerRole));
+
+      case "updateAdminUser":
+        return jsonResponse(updateAdminUser(
+          payload.adminId || payload.AdminId,
+          payload.updateData || payload,
+          callerUsername,
+          payload.token || callerRole
+        ));
+
+      case "deleteAdminLoginUser":
+        return jsonResponse(deleteAdminLoginUser(
+          payload.adminId || payload.AdminId,
+          callerUsername,
+          payload.token || callerRole
+        ));
 
       case "getInitialSyncData":
       case "getSyncData":
@@ -232,9 +626,6 @@ function handleApiRequest(action, payload) {
       case "addPayment":
         return jsonResponse(addPayment(payload.paymentData || payload));
 
-      case "authenticateAdmin":
-        return jsonResponse(authenticateAdmin(payload.username, payload.password));
-
       default:
         return jsonResponse({ success: false, error: "Unknown action: " + action });
     }
@@ -242,6 +633,7 @@ function handleApiRequest(action, payload) {
     return jsonResponse({ success: false, error: e.message });
   }
 }
+
 
 function jsonResponse(obj) {
   return ContentService.createTextOutput(JSON.stringify(obj))
@@ -543,7 +935,9 @@ function processDriveFiles(files, folderName) {
     for (const file of files) {
       const blob = Utilities.newBlob(Utilities.base64Decode(file.base64), file.mimeType, file.name);
       const uploadedFile = folder.createFile(blob);
-      uploadedFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      // Restrict to domain only — not publicly accessible to the whole internet.
+      // Change to DriveApp.Access.ANYONE_WITH_LINK if you need public image previews.
+      uploadedFile.setSharing(DriveApp.Access.DOMAIN_WITH_LINK, DriveApp.Permission.VIEW);
       imageUrls.push(uploadedFile.getUrl());
     }
   }
@@ -1651,4 +2045,57 @@ function testGoldRates() {
   const result = getGoldRates(true);
   console.log("Result:", JSON.stringify(result, null, 2));
   return result;
+}
+
+// ─── ONE-TIME SECURITY MIGRATION ───
+
+/**
+ * IMPORTANT: Run this function ONCE from the Apps Script IDE after deploying
+ * this security update. It hashes all existing plaintext passwords in the
+ * Admins sheet so that existing admins can still log in.
+ *
+ * Safe to run multiple times — it detects already-hashed passwords (64-char hex)
+ * and skips them.
+ */
+function migrateAdminPasswordsToHashed() {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName("Admins");
+  if (!sheet) {
+    console.error("Admins sheet not found.");
+    return;
+  }
+
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) {
+    console.log("No admin records to migrate.");
+    return;
+  }
+
+  const headers = data[0];
+  const passwordCol = headers.indexOf("Password");
+  if (passwordCol === -1) {
+    console.error("Password column not found in Admins sheet.");
+    return;
+  }
+
+  let migrated = 0;
+  let skipped = 0;
+
+  for (let i = 1; i < data.length; i++) {
+    const currentPassword = String(data[i][passwordCol]);
+    // A SHA-256 hash is exactly 64 lowercase hex characters — skip if already hashed
+    const isAlreadyHashed = /^[0-9a-f]{64}$/.test(currentPassword);
+
+    if (isAlreadyHashed) {
+      skipped++;
+      console.log(`Row ${i + 1}: Already hashed — skipped.`);
+    } else {
+      const hashed = hashValue(currentPassword);
+      sheet.getRange(i + 1, passwordCol + 1).setValue(hashed);
+      migrated++;
+      console.log(`Row ${i + 1}: Password migrated to hash.`);
+    }
+  }
+
+  console.log(`Migration complete. Migrated: ${migrated}, Skipped (already hashed): ${skipped}`);
 }

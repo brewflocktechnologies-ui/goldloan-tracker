@@ -355,6 +355,11 @@
           <span class="w-10 h-10 flex items-center justify-center shrink-0 text-xl">🔒</span>
           <span class="nav-text whitespace-nowrap overflow-hidden">Loan Closure</span>
         </button>
+        <button onclick="showSection('admin-users')" id="nav-admin-users" title="Admin Users" style="display:none;"
+          class="nav-item w-full flex items-center justify-start gap-3.5 px-2.5 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-100 hover:bg-brand-50 hover:text-brand-600 dark:hover:bg-slate-800 dark:hover:text-white transition-all group">
+          <span class="w-10 h-10 flex items-center justify-center shrink-0 text-xl">🛡️</span>
+          <span class="nav-text whitespace-nowrap overflow-hidden">Admin Users</span>
+        </button>
       </nav>
       <div class="p-2.5 border-t border-gray-200 dark:border-dark-border sidebar-footer-box shrink-0">
         <button onclick="handleLogout()" title="Logout"
@@ -379,6 +384,7 @@
           <h2 class="text-xl font-semibold text-gray-800 dark:text-white" id="header-title">Dashboard</h2>
         </div>
         <div class="flex items-center gap-3">
+          <span id="header-user-badge" class="hidden px-2.5 py-1 text-xs font-bold rounded-full border"></span>
           <button onclick="toggleTheme()"
             class="p-2 rounded-full text-gray-500 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -773,7 +779,7 @@
 
         <div id="view-users" class="view-section space-y-4">
           <div class="flex justify-end items-center">
-            <button onclick="openUserModal()"
+            <button onclick="openUserModal()" id="btn-add-user"
               class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -839,7 +845,7 @@
 
         <div id="view-bank-accounts" class="view-section space-y-4">
           <div class="flex justify-end items-center">
-            <button onclick="openBankAccountModal()"
+            <button onclick="openBankAccountModal()" id="btn-add-bank-account"
               class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -912,7 +918,7 @@
 
         <div id="view-ornaments" class="view-section space-y-4">
           <div class="flex justify-end items-center">
-            <button onclick="openOrnamentModal()"
+            <button onclick="openOrnamentModal()" id="btn-add-ornament"
               class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -986,7 +992,7 @@
 
         <div id="view-loans" class="view-section space-y-4">
           <div class="flex justify-end items-center">
-            <button onclick="openLoanModal()"
+            <button onclick="openLoanModal()" id="btn-add-loan"
               class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all flex items-center justify-center gap-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -1112,6 +1118,71 @@
                 Showing 0 to 0 of 0 entries
               </div>
               <div id="closureTable-pagination" class="flex items-center gap-1 select-none flex-wrap"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── ADMIN LOGIN USERS MANAGEMENT (SUPERADMIN ONLY) ─── -->
+        <div id="view-admin-users" class="view-section space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="text-lg font-bold text-gray-800 dark:text-white">Admin Login Accounts</h3>
+              <p class="text-xs text-gray-500 dark:text-gray-400">Manage login credentials and system access permissions. New users default to Read-Only access.</p>
+            </div>
+            <button onclick="openAdminUserModal()" id="btn-add-admin-user"
+              class="w-full sm:w-auto bg-brand-600 hover:bg-brand-500 text-white px-5 py-2.5 rounded-xl text-sm font-medium shadow-lg transition-all flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>Add Login User</span>
+            </button>
+          </div>
+          <div class="bg-white dark:bg-dark-card rounded-2xl border border-gray-100 dark:border-dark-border shadow-sm flex flex-col overflow-hidden">
+            <!-- Table Controls Toolbar -->
+            <div class="p-3.5 sm:p-4 border-b border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20">
+              <div class="flex items-center gap-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
+                <span>Show</span>
+                <select id="adminUsersTable-pageSize" onchange="tablePagination.setPageSize('adminUsersTable', this.value)"
+                  class="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg px-2.5 py-1 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 focus:ring-2 focus:ring-brand-500 focus:outline-none transition-all cursor-pointer shadow-sm">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                </select>
+                <span>entries</span>
+              </div>
+              <div class="relative w-full sm:w-64">
+                <input type="text" id="adminUsersTable-search" oninput="tablePagination.search('adminUsersTable', this.value)"
+                  placeholder="Search admin users..."
+                  class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all shadow-sm" />
+                <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+              </div>
+            </div>
+
+            <!-- Scroll Container with Sticky Header -->
+            <div class="table-scroll-container">
+              <table class="w-full text-sm text-left whitespace-nowrap" id="adminUsersTable">
+                <thead class="text-xs text-gray-500 dark:text-gray-300 uppercase bg-gray-50 dark:bg-slate-800">
+                  <tr>
+                    <th class="px-4 py-3">Admin ID</th>
+                    <th class="px-4 py-3">Username</th>
+                    <th class="px-4 py-3">Role</th>
+                    <th class="px-4 py-3">Access Level</th>
+                    <th class="px-4 py-3">Status</th>
+                    <th class="px-4 py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 dark:divide-slate-700/50"></tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Bar -->
+            <div class="p-3.5 sm:p-4 border-t border-gray-100 dark:border-slate-700/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gray-50/40 dark:bg-slate-800/20 text-xs sm:text-sm">
+              <div id="adminUsersTable-info" class="text-gray-500 dark:text-gray-400 font-medium">
+                Showing 0 to 0 of 0 entries
+              </div>
+              <div id="adminUsersTable-pagination" class="flex items-center gap-1 select-none flex-wrap"></div>
             </div>
           </div>
         </div>
@@ -1598,6 +1669,60 @@
     </div>
   </div>
 
+  <!-- ─── ADMIN USER MODAL (ADD / EDIT LOGIN ACCOUNTS) ─── -->
+  <div id="adminUserModal"
+    class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+    <div
+      class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]">
+      <div
+        class="px-6 py-4 border-b border-gray-100 dark:border-dark-border flex justify-between items-center bg-gray-50 dark:bg-slate-800/50">
+        <h3 class="text-lg font-bold dark:text-white" id="adminUserModalTitle">Add Login User</h3>
+        <button onclick="hideModal('adminUserModal')"
+          class="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-white"><svg class="w-5 h-5"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg></button>
+      </div>
+      <form onsubmit="event.preventDefault(); submitAdminUser(document.getElementById('saveAdminUserBtn'));" class="p-6 space-y-4">
+        <input type="hidden" id="editAdminId" />
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-gray-200">Username *</label>
+          <input type="text" id="adminUsername" required placeholder="e.g. staff1" autocomplete="off"
+            class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-gray-200" id="adminPasswordLabel">Password *</label>
+          <input type="password" id="adminPassword" placeholder="Enter password" autocomplete="new-password"
+            class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
+          <p id="adminPasswordHelp" class="text-xs text-gray-400 mt-1 hidden">Leave blank to keep current password.</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-gray-200">Role</label>
+          <select id="adminRole"
+            class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="User" selected>User (Read-only View Access)</option>
+            <option value="SuperAdmin">SuperAdmin (Full Access: Read, Add, Edit, Delete)</option>
+          </select>
+          <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">Default is <strong>User</strong> (Read-only. They can view data, but cannot add, edit, or delete).</p>
+        </div>
+        <div>
+          <label class="block text-sm font-medium mb-1 dark:text-gray-200">Account Status</label>
+          <select id="adminStatus"
+            class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-brand-500">
+            <option value="Active" selected>Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="pt-4 flex justify-end gap-2 border-t border-gray-100 dark:border-dark-border">
+          <button type="button" onclick="hideModal('adminUserModal')"
+            class="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:text-gray-200 rounded-xl transition-colors">Cancel</button>
+          <button type="submit" id="saveAdminUserBtn"
+            class="px-5 py-2 text-sm font-medium text-white bg-brand-600 hover:bg-brand-500 rounded-xl transition-all shadow-sm">Save Login User</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 
   <script>
     // Global state
@@ -1750,7 +1875,10 @@
       google.script.run
         .withSuccessHandler(res => {
           if (res.success) {
+            // Store username, role and server-issued session token
             sessionStorage.setItem('goldLoanAdmin', res.data.username);
+            sessionStorage.setItem('goldLoanRole', res.data.role || 'User');
+            sessionStorage.setItem('goldLoanToken', res.data.token || '');
             const loginScreen = document.getElementById('view-login');
             loginScreen.classList.add('opacity-0');
 
@@ -1766,6 +1894,7 @@
             }, 300);
 
           } else {
+            // Surfaces rate limit errors ("Too many failed attempts...") and credential errors
             errDiv.textContent = res.error || "Invalid username or password.";
             errDiv.classList.remove('hidden');
             loginBtn.disabled = false;
@@ -1781,7 +1910,15 @@
     }
 
     function handleLogout() {
+      // Invalidate the session token on the server before clearing it locally
+      const token = sessionStorage.getItem('goldLoanToken');
+      if (token) {
+        google.script.run.logoutAdmin(token);
+      }
+
       sessionStorage.removeItem('goldLoanAdmin');
+      sessionStorage.removeItem('goldLoanRole');
+      sessionStorage.removeItem('goldLoanToken');
       const loginScreen = document.getElementById('view-login');
       loginScreen.classList.remove('hidden', 'opacity-0');
       
@@ -1802,13 +1939,53 @@
         loginBtn.innerHTML = 'Secure Login';
       }
 
+      const badgeEl = document.getElementById('header-user-badge');
+      if (badgeEl) badgeEl.classList.add('hidden');
+
       document.getElementById('main-layout').classList.add('hidden');
       document.getElementById('main-layout').classList.remove('flex');
       closeSidebar();
       showToast('Logged out successfully.');
     }
 
+    function isSuperAdmin() {
+      return (sessionStorage.getItem('goldLoanRole') || 'User') === 'SuperAdmin';
+    }
+
+    function applyRolePermissions() {
+      const role = sessionStorage.getItem('goldLoanRole') || 'User';
+      const username = sessionStorage.getItem('goldLoanAdmin') || 'User';
+      const isSuper = role === 'SuperAdmin';
+
+      // Header role badge
+      const badgeEl = document.getElementById('header-user-badge');
+      if (badgeEl) {
+        badgeEl.classList.remove('hidden');
+        if (isSuper) {
+          badgeEl.className = "px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 flex items-center gap-1.5 shadow-sm";
+          badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>${username} (SuperAdmin)</span>`;
+        } else {
+          badgeEl.className = "px-2.5 py-1 text-xs font-bold rounded-full bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800 flex items-center gap-1.5 shadow-sm";
+          badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span><span>${username} (View Only)</span>`;
+        }
+      }
+
+      // Sidebar Admin Users Nav (Visible only to SuperAdmin)
+      const navAdminUsers = document.getElementById('nav-admin-users');
+      if (navAdminUsers) {
+        navAdminUsers.style.display = isSuper ? 'flex' : 'none';
+      }
+
+      // Add buttons across all modules (Visible only to SuperAdmin)
+      const addBtns = ['btn-add-user', 'btn-add-bank-account', 'btn-add-ornament', 'btn-add-loan', 'btn-add-admin-user'];
+      addBtns.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = isSuper ? 'flex' : 'none';
+      });
+    }
+
     function initializeApp() {
+      applyRolePermissions();
       initAllTableSorting();
       gsr('getUsers', [], (res) => {
         allUsers = res.data || [];
@@ -1841,13 +2018,22 @@
         'bank-accounts': 'Bank Accounts',
         ornaments: 'Ornaments',
         loans: 'Loans',
-        closure: 'Loan Closure'
+        closure: 'Loan Closure',
+        'admin-users': 'Admin Login Accounts'
       };
       document.getElementById('header-title').innerText = titles[name] || name;
 
       if (window.innerWidth < 768) closeSidebar();
 
-      const loaders = { dashboard: loadDashboard, users: loadUsers, 'bank-accounts': loadBankAccounts, ornaments: loadOrnaments, loans: loadLoans, closure: loadClosureScreen };
+      const loaders = {
+        dashboard: loadDashboard,
+        users: loadUsers,
+        'bank-accounts': loadBankAccounts,
+        ornaments: loadOrnaments,
+        loans: loadLoans,
+        closure: loadClosureScreen,
+        'admin-users': loadAdminUsers
+      };
       if (loaders[name]) loaders[name]();
     }
 
@@ -1858,7 +2044,8 @@
         'bank-accounts': 'bankAccountsTable',
         ornaments: 'ornamentsTable',
         loans: 'loansTable',
-        closure: 'closureTable'
+        closure: 'closureTable',
+        'admin-users': 'adminUsersTable'
       };
       const tableId = tableMap[section];
       if (tableId && window.tablePagination) {
@@ -2330,7 +2517,7 @@
     }
 
     function initAllTableSorting() {
-      const tableIds = ['usersTable', 'bankAccountsTable', 'ornamentsTable', 'loansTable', 'closureTable'];
+      const tableIds = ['usersTable', 'bankAccountsTable', 'ornamentsTable', 'loansTable', 'closureTable', 'adminUsersTable'];
       tableIds.forEach(id => {
         initTableSorting(id);
         if (window.tablePagination) {
@@ -2707,6 +2894,7 @@
       gsr('getUsers', [], res => {
         allUsers = res.data;
         const tbody = document.querySelector('#usersTable tbody');
+        const isSuper = isSuperAdmin();
         tbody.innerHTML = allUsers.map(u => `
       <tr class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
         <td class="px-4 py-3 font-bold dark:text-white">${u.UserId}</td>
@@ -2715,8 +2903,10 @@
         <td class="px-4 py-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${u.Status === 'Active' ? 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300'}">${u.Status}</span></td>
         <td class="px-4 py-3 flex gap-2">
             <button onclick="viewUserDetail('${u.UserId}')" class="p-1.5 text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-300 dark:bg-brand-900/30 rounded-lg" title="View"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
+            ${isSuper ? `
             <button onclick="openUserModal('${u.UserId}')" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30 rounded-lg" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
             <button onclick="deleteUser('${u.UserId}')" class="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-300 dark:bg-red-900/30 rounded-lg" title="Delete"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+            ` : ''}
         </td>
       </tr>`).join('');
         populateUserDropdowns();
@@ -2825,6 +3015,7 @@
         const userMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.FullName]));
         const userCityMap = Object.fromEntries(allUsers.map(u => [u.UserId, u.City]));
         const tbody = document.querySelector('#bankAccountsTable tbody');
+        const isSuper = isSuperAdmin();
         tbody.innerHTML = allBankAccounts.map(acc => {
           const maxLoan = parseFloat(acc.MaxLoanAmount) || 0;
           const utilizedLoan = parseFloat(acc.UtilizedLoanAmount) || 0;
@@ -2843,8 +3034,10 @@
         <td class="px-4 py-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${acc.Status === 'Active' ? 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300'}">${acc.Status}</span></td>
         <td class="px-4 py-3 flex gap-2">
             <button onclick="viewBankAccountDetail('${acc.BankAccountId}')" class="p-1.5 text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-300 dark:bg-brand-900/30 rounded-lg" title="View"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
+            ${isSuper ? `
             <button onclick="openBankAccountModal('${acc.BankAccountId}')" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30 rounded-lg" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
             <button onclick="deleteBankAccount('${acc.BankAccountId}')" class="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-300 dark:bg-red-900/30 rounded-lg" title="Delete"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+            ` : ''}
         </td>
       </tr>`;
         }).join('');
@@ -3105,8 +3298,10 @@
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${makerName}</td>
         <td class="px-4 py-3 flex gap-2">
             <button onclick="viewOrnamentDetail('${o.OrnamentId}')" class="p-1.5 text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-300 dark:bg-brand-900/30 rounded-lg" title="View"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
+            ${isSuperAdmin() ? `
             <button onclick="openOrnamentModal('${o.OrnamentId}')" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30 rounded-lg" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
             <button onclick="deleteOrnament('${o.OrnamentId}')" class="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-300 dark:bg-red-900/30 rounded-lg" title="Delete"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+            ` : ''}
         </td>
       </tr>`;
         }).join('');
@@ -3434,7 +3629,9 @@
         <td class="px-4 py-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${statusBadgeClass}">${isOverdue ? 'OVERDUE' : l.LoanStatus}</span></td>
         <td class="px-4 py-3 flex gap-2">
             <button onclick="viewLoanDetail('${l.LoanId}')" class="p-1.5 text-brand-600 bg-brand-50 hover:bg-brand-100 dark:text-brand-300 dark:bg-brand-900/30 rounded-lg" title="View"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg></button>
+            ${isSuperAdmin() ? `
             <button onclick="openLoanModal('${l.LoanId}')" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30 rounded-lg" title="Edit"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+            ` : ''}
         </td>
       </tr>`;
         }).join('');
@@ -3565,10 +3762,12 @@
         const html = `
           <div class="flex justify-between items-center mb-4">
             <h5 class="font-bold text-brand-600 dark:text-brand-400 text-lg">Loan Reference: ${loan.LoanNumber}</h5>
+            ${isSuperAdmin() ? `
             <button onclick="hideModal('detailViewModal'); openLoanModal('${loan.LoanId}')" class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-500 rounded-lg shadow-sm transition-all" title="Edit Loan">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
               Edit Loan
             </button>
+            ` : ''}
           </div>
 
           <!-- Summary Cards: Principal, Total Interest Amount, Processing Fee, Total Charges -->
@@ -4147,7 +4346,10 @@
             <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${fmtDate(loan.LoanDate)}</td>
             <td class="px-4 py-3 ${isOverdue ? 'text-red-600 font-bold dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}">${fmtDate(loan.DueDate)}</td>
             <td class="px-4 py-3"><span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300" title="${loan.linkedOrnaments}">${ornamentCount} item(s)</span></td>
-            <td class="px-4 py-3"><button class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all" onclick="confirmCloseAndRelease('${loan.LoanId}', '${loan.customerName}')">Close & Release</button></td>
+            <td class="px-4 py-3">${isSuperAdmin()
+              ? `<button class="bg-green-600 hover:bg-green-500 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all" onclick="confirmCloseAndRelease('${loan.LoanId}', '${loan.customerName}')">Close & Release</button>`
+              : `<span class="px-2.5 py-1 text-xs font-medium text-gray-400 bg-gray-100 dark:bg-slate-800 rounded-lg select-none">View Only</span>`
+            }</td>
           </tr>`;
         }).join('');
         reapplyTableSort('closureTable');
@@ -4160,6 +4362,138 @@
       if (window.tablePagination) {
         tablePagination.search('closureTable', query);
       }
+    }
+
+    // ─── ADMIN USER MANAGEMENT (SUPERADMIN ONLY) ───
+    let allAdminUsers = [];
+
+    function loadAdminUsers() {
+      if (!isSuperAdmin()) {
+        showToast('Access denied. SuperAdmin only.', 'error');
+        showSection('dashboard');
+        return;
+      }
+      const token = sessionStorage.getItem('goldLoanToken') || '';
+      gsr('getAdminUsers', [token], res => {
+        allAdminUsers = res.data || [];
+        const currentUsername = (sessionStorage.getItem('goldLoanAdmin') || '').toLowerCase();
+        const tbody = document.querySelector('#adminUsersTable tbody');
+        tbody.innerHTML = allAdminUsers.map(a => {
+          const isSelf = String(a.Username).toLowerCase() === currentUsername;
+          const isSuper = a.Role === 'SuperAdmin';
+          const roleBadge = isSuper
+            ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">SuperAdmin</span>'
+            : '<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800">User</span>';
+          
+          const accessDesc = isSuper
+            ? '<span class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">Full Access (Read/Write/Delete)</span>'
+            : '<span class="text-xs text-amber-600 dark:text-amber-400 font-medium">Read-Only (View Only)</span>';
+
+          const statusBadge = a.Status === 'Active'
+            ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400">Active</span>'
+            : '<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300">Inactive</span>';
+
+          const deleteBtn = isSelf
+            ? `<span class="text-xs text-gray-400 italic px-2 py-1">Current User</span>`
+            : `<button onclick="deleteAdminLoginUserUI('${a.AdminId}', '${a.Username}')" class="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 dark:text-red-300 dark:bg-red-900/30 rounded-lg" title="Delete Account"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>`;
+
+          return `
+            <tr class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+              <td class="px-4 py-3 font-bold dark:text-white">${a.AdminId}</td>
+              <td class="px-4 py-3 font-semibold text-gray-800 dark:text-gray-200">${a.Username}</td>
+              <td class="px-4 py-3">${roleBadge}</td>
+              <td class="px-4 py-3">${accessDesc}</td>
+              <td class="px-4 py-3">${statusBadge}</td>
+              <td class="px-4 py-3 flex items-center gap-2">
+                <button onclick="openAdminUserModal('${a.AdminId}')" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 dark:text-blue-300 dark:bg-blue-900/30 rounded-lg" title="Edit / Reset Password"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg></button>
+                ${deleteBtn}
+              </td>
+            </tr>
+          `;
+        }).join('');
+        reapplyTableSort('adminUsersTable');
+      });
+    }
+
+    function openAdminUserModal(adminId = null) {
+      document.getElementById('editAdminId').value = '';
+      document.getElementById('adminUsername').value = '';
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('adminRole').value = 'User'; // DEFAULT TO USER
+      document.getElementById('adminStatus').value = 'Active';
+
+      const passLabel = document.getElementById('adminPasswordLabel');
+      const passHelp = document.getElementById('adminPasswordHelp');
+      const passInput = document.getElementById('adminPassword');
+      const usernameInput = document.getElementById('adminUsername');
+
+      if (adminId) {
+        const admin = allAdminUsers.find(a => a.AdminId === adminId);
+        if (admin) {
+          document.getElementById('adminUserModalTitle').textContent = `Edit Login User (${admin.Username})`;
+          document.getElementById('editAdminId').value = admin.AdminId;
+          usernameInput.value = admin.Username;
+          usernameInput.disabled = true; // Username cannot be changed
+          document.getElementById('adminRole').value = admin.Role || 'User';
+          document.getElementById('adminStatus').value = admin.Status || 'Active';
+          passLabel.textContent = 'New Password (Optional)';
+          passHelp.classList.remove('hidden');
+          passInput.required = false;
+        }
+      } else {
+        document.getElementById('adminUserModalTitle').textContent = 'Add Login User';
+        usernameInput.disabled = false;
+        passLabel.textContent = 'Password *';
+        passHelp.classList.add('hidden');
+        passInput.required = true;
+      }
+      showModal('adminUserModal');
+    }
+
+    function submitAdminUser(btn) {
+      const editId = document.getElementById('editAdminId').value;
+      const username = document.getElementById('adminUsername').value.trim();
+      const password = document.getElementById('adminPassword').value.trim();
+      const role = document.getElementById('adminRole').value;
+      const status = document.getElementById('adminStatus').value;
+
+      if (!editId && (!username || !password)) {
+        showToast('Username and password are required.', 'error');
+        return;
+      }
+
+      setButtonLoading(btn, true);
+      const token = sessionStorage.getItem('goldLoanToken') || '';
+
+      if (editId) {
+        const updateData = { role, status };
+        if (password) updateData.password = password;
+        const callerUsername = sessionStorage.getItem('goldLoanAdmin') || '';
+        gsr('updateAdminUser', [editId, updateData, callerUsername, token], () => {
+          setButtonLoading(btn, false);
+          showToast('Login user updated successfully.');
+          hideModal('adminUserModal');
+          loadAdminUsers();
+        }, () => { setButtonLoading(btn, false); }, true);
+      } else {
+        const userData = { username, password, role, status };
+        gsr('addAdminUser', [userData, token], () => {
+          setButtonLoading(btn, false);
+          showToast(`Login user '${username}' created with role '${role}'.`);
+          hideModal('adminUserModal');
+          loadAdminUsers();
+        }, () => { setButtonLoading(btn, false); }, true);
+      }
+    }
+
+    function deleteAdminLoginUserUI(adminId, username) {
+      if (!confirm(`Are you sure you want to delete login account for '${username}'?`)) return;
+      const callerUsername = sessionStorage.getItem('goldLoanAdmin') || '';
+      const token = sessionStorage.getItem('goldLoanToken') || '';
+      gsr('deleteAdminLoginUser', [adminId, callerUsername, token], () => {
+        showToast(`Account '${username}' deleted.`);
+        loadAdminUsers();
+      });
     }
   </script>
 </body>
