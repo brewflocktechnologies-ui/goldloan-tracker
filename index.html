@@ -1723,6 +1723,56 @@
     </div>
   </div>
 
+  <!-- Custom Confirmation Modal (Center of Screen) -->
+  <div id="confirmModal"
+    class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-[200] hidden items-center justify-center p-4 transition-all">
+    <div id="confirmModalBox"
+      class="bg-white dark:bg-dark-card rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col border border-gray-100 dark:border-dark-border transform transition-all duration-200 scale-95 opacity-0 relative">
+      <!-- Close X Button -->
+      <button type="button" onclick="closeConfirmDialog(false)"
+        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-white p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" title="Close">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+
+      <div class="p-6 pt-7 text-center">
+        <!-- Icon Badge -->
+        <div id="confirmModalIconContainer"
+          class="mx-auto flex items-center justify-center h-14 w-14 rounded-2xl bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 mb-4 ring-8 ring-red-50 dark:ring-red-950/20 transition-all">
+          <svg id="confirmModalDangerIcon" class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+          <svg id="confirmModalWarningIcon" class="w-7 h-7 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+
+        <!-- Title -->
+        <h3 id="confirmModalTitle" class="text-xl font-bold text-gray-900 dark:text-white">Delete Confirmation</h3>
+
+        <!-- Message -->
+        <div id="confirmModalMessage" class="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+          Are you sure you want to proceed?
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="px-6 py-4 bg-gray-50 dark:bg-slate-800/50 border-t border-gray-100 dark:border-dark-border flex items-center justify-end gap-3">
+        <button type="button" id="confirmModalCancelBtn"
+          class="flex-1 sm:flex-initial px-5 py-2.5 text-sm font-semibold text-gray-700 bg-white dark:bg-slate-700 dark:text-gray-200 border border-gray-200 dark:border-slate-600 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-gray-300">
+          Cancel
+        </button>
+        <button type="button" id="confirmModalConfirmBtn"
+          class="flex-1 sm:flex-initial px-5 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:scale-95 rounded-xl transition-all shadow-md shadow-red-600/25 focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center justify-center gap-2">
+          Yes, Delete
+        </button>
+      </div>
+    </div>
+  </div>
+
 
   <script>
     // Global state
@@ -1744,6 +1794,25 @@
 
       document.getElementById('loginPassword').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') handleLogin();
+      });
+
+      // Confirm modal listeners
+      const confirmCancelBtn = document.getElementById('confirmModalCancelBtn');
+      const confirmOkBtn = document.getElementById('confirmModalConfirmBtn');
+      const confirmModalEl = document.getElementById('confirmModal');
+
+      if (confirmCancelBtn) confirmCancelBtn.addEventListener('click', () => closeConfirmDialog(false));
+      if (confirmOkBtn) confirmOkBtn.addEventListener('click', () => closeConfirmDialog(true));
+      if (confirmModalEl) {
+        confirmModalEl.addEventListener('click', (e) => {
+          if (e.target === confirmModalEl) closeConfirmDialog(false);
+        });
+      }
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          const m = document.getElementById('confirmModal');
+          if (m && !m.classList.contains('hidden')) closeConfirmDialog(false);
+        }
       });
     });
 
@@ -2072,6 +2141,89 @@
         showConfirmButton: false,
         timer: 3000
       });
+    }
+
+    let currentConfirmResolver = null;
+    let currentConfirmCallback = null;
+
+    function showConfirmDialog({
+      title = 'Delete Confirmation',
+      message = 'Are you sure you want to proceed?',
+      confirmText = 'Yes, Delete',
+      cancelText = 'Cancel',
+      isDanger = true,
+      onConfirm = null
+    } = {}) {
+      const modal = document.getElementById('confirmModal');
+      const modalBox = document.getElementById('confirmModalBox');
+      const titleEl = document.getElementById('confirmModalTitle');
+      const msgEl = document.getElementById('confirmModalMessage');
+      const confirmBtn = document.getElementById('confirmModalConfirmBtn');
+      const cancelBtn = document.getElementById('confirmModalCancelBtn');
+      const iconContainer = document.getElementById('confirmModalIconContainer');
+      const dangerIcon = document.getElementById('confirmModalDangerIcon');
+      const warningIcon = document.getElementById('confirmModalWarningIcon');
+
+      if (titleEl) titleEl.textContent = title;
+      if (msgEl) msgEl.innerHTML = message;
+      if (confirmBtn) confirmBtn.textContent = confirmText;
+      if (cancelBtn) cancelBtn.textContent = cancelText;
+
+      if (isDanger) {
+        if (iconContainer) iconContainer.className = 'mx-auto flex items-center justify-center h-14 w-14 rounded-2xl bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 mb-4 ring-8 ring-red-50 dark:ring-red-950/20 transition-all';
+        if (dangerIcon) dangerIcon.classList.remove('hidden');
+        if (warningIcon) warningIcon.classList.add('hidden');
+        if (confirmBtn) confirmBtn.className = 'flex-1 sm:flex-initial px-5 py-2.5 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 active:scale-95 rounded-xl transition-all shadow-md shadow-red-600/25 focus:outline-none focus:ring-2 focus:ring-red-500 flex items-center justify-center gap-2';
+      } else {
+        if (iconContainer) iconContainer.className = 'mx-auto flex items-center justify-center h-14 w-14 rounded-2xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 mb-4 ring-8 ring-amber-50 dark:ring-amber-950/20 transition-all';
+        if (dangerIcon) dangerIcon.classList.add('hidden');
+        if (warningIcon) warningIcon.classList.remove('hidden');
+        if (confirmBtn) confirmBtn.className = 'flex-1 sm:flex-initial px-5 py-2.5 text-sm font-semibold text-gray-900 bg-amber-500 hover:bg-amber-400 active:scale-95 rounded-xl transition-all shadow-md shadow-amber-500/25 focus:outline-none focus:ring-2 focus:ring-amber-500 flex items-center justify-center gap-2';
+      }
+
+      currentConfirmCallback = onConfirm;
+
+      if (modal && modalBox) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => {
+          modalBox.classList.remove('scale-95', 'opacity-0');
+          modalBox.classList.add('scale-100', 'opacity-100');
+          if (confirmBtn) confirmBtn.focus();
+        }, 10);
+      }
+
+      return new Promise((resolve) => {
+        currentConfirmResolver = resolve;
+      });
+    }
+
+    function closeConfirmDialog(confirmed = false) {
+      const modal = document.getElementById('confirmModal');
+      const modalBox = document.getElementById('confirmModalBox');
+      if (!modal || modal.classList.contains('hidden')) return;
+
+      if (modalBox) {
+        modalBox.classList.remove('scale-100', 'opacity-100');
+        modalBox.classList.add('scale-95', 'opacity-0');
+      }
+
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }, 150);
+
+      const cb = currentConfirmCallback;
+      const res = currentConfirmResolver;
+      currentConfirmCallback = null;
+      currentConfirmResolver = null;
+
+      if (confirmed && typeof cb === 'function') {
+        cb();
+      }
+      if (typeof res === 'function') {
+        res(confirmed);
+      }
     }
 
     function openDetailView(title, htmlContent) {
@@ -2997,8 +3149,17 @@
     }
 
     function deleteUser(userId) {
-      if (!confirm(`Are you sure you want to delete user ${userId}?`)) return;
-      gsr('deleteUser', [userId], () => { showToast('User deleted.'); loadUsers(); });
+      const user = allUsers.find(u => u.UserId === userId);
+      const nameText = user && user.FullName ? ` (${user.FullName})` : '';
+      showConfirmDialog({
+        title: 'Delete User',
+        message: `Are you sure you want to delete user <strong class="text-gray-900 dark:text-white">${userId}${nameText}</strong>? This action cannot be undone.`,
+        confirmText: 'Delete User',
+        isDanger: true,
+        onConfirm: () => {
+          gsr('deleteUser', [userId], () => { showToast('User deleted.'); loadUsers(); });
+        }
+      });
     }
 
     // --- BANK ACCOUNT MANAGEMENT ---
@@ -3132,8 +3293,17 @@
     }
 
     function deleteBankAccount(accountId) {
-      if (!confirm(`Are you sure you want to delete bank account ${accountId}?`)) return;
-      gsr('deleteBankAccount', [accountId], () => { showToast('Bank account deleted.'); loadBankAccounts(); });
+      const acc = allBankAccounts.find(a => a.BankAccountId === accountId);
+      const detailText = acc ? ` (${acc.BankName} - ${acc.AccountHolderName})` : '';
+      showConfirmDialog({
+        title: 'Delete Bank Account',
+        message: `Are you sure you want to delete bank account <strong class="text-gray-900 dark:text-white">${accountId}${detailText}</strong>?`,
+        confirmText: 'Delete Account',
+        isDanger: true,
+        onConfirm: () => {
+          gsr('deleteBankAccount', [accountId], () => { showToast('Bank account deleted.'); loadBankAccounts(); });
+        }
+      });
     }
 
     // --- ORNAMENT MANAGEMENT ---
@@ -3564,22 +3734,38 @@
     }
 
     function deleteOrnament(ornamentId) {
-      if (!confirm(`Are you sure you want to delete ornament ${ornamentId}? This is a soft delete.`)) return;
-      gsr('deleteOrnament', [ornamentId], () => { showToast('Ornament deleted.'); loadOrnaments(); });
+      const orn = allOrnaments.find(o => o.OrnamentId === ornamentId);
+      const nameText = orn && orn.OrnamentName ? ` (${orn.OrnamentName})` : '';
+      showConfirmDialog({
+        title: 'Delete Ornament',
+        message: `Are you sure you want to delete ornament <strong class="text-gray-900 dark:text-white">${ornamentId}${nameText}</strong>?<div class="text-xs text-amber-600 dark:text-amber-400 mt-1.5 font-medium">Note: This is a soft delete.</div>`,
+        confirmText: 'Delete Ornament',
+        isDanger: true,
+        onConfirm: () => {
+          gsr('deleteOrnament', [ornamentId], () => { showToast('Ornament deleted.'); loadOrnaments(); });
+        }
+      });
     }
 
     function removeSingleImage(ornamentId, imageUrl, element) {
-      if (!confirm('Are you sure you want to permanently delete this image?')) return;
-      element.style.opacity = '0.5';
-      gsr('deleteOrnamentImage', [ornamentId, imageUrl], (res) => {
-        if (res.success) {
-          showToast('Image deleted successfully.');
-          element.remove();
-          const orn = allOrnaments.find(o => o.OrnamentId === ornamentId);
-          if (orn) {
-            orn.OrnamentImages = (orn.OrnamentImages || '').split(' | ').filter(u => u.trim() !== imageUrl.trim()).join(' | ');
-          }
-        } else { element.style.opacity = '1'; }
+      showConfirmDialog({
+        title: 'Delete Image',
+        message: 'Are you sure you want to permanently delete this ornament image?',
+        confirmText: 'Delete Image',
+        isDanger: true,
+        onConfirm: () => {
+          element.style.opacity = '0.5';
+          gsr('deleteOrnamentImage', [ornamentId, imageUrl], (res) => {
+            if (res.success) {
+              showToast('Image deleted successfully.');
+              element.remove();
+              const orn = allOrnaments.find(o => o.OrnamentId === ornamentId);
+              if (orn) {
+                orn.OrnamentImages = (orn.OrnamentImages || '').split(' | ').filter(u => u.trim() !== imageUrl.trim()).join(' | ');
+              }
+            } else { element.style.opacity = '1'; }
+          });
+        }
       });
     }
 
@@ -4487,12 +4673,19 @@
     }
 
     function deleteAdminLoginUserUI(adminId, username) {
-      if (!confirm(`Are you sure you want to delete login account for '${username}'?`)) return;
-      const callerUsername = sessionStorage.getItem('goldLoanAdmin') || '';
-      const token = sessionStorage.getItem('goldLoanToken') || '';
-      gsr('deleteAdminLoginUser', [adminId, callerUsername, token], () => {
-        showToast(`Account '${username}' deleted.`);
-        loadAdminUsers();
+      showConfirmDialog({
+        title: 'Delete Admin Account',
+        message: `Are you sure you want to delete login account for <strong class="text-gray-900 dark:text-white">'${username}'</strong>?`,
+        confirmText: 'Delete Account',
+        isDanger: true,
+        onConfirm: () => {
+          const callerUsername = sessionStorage.getItem('goldLoanAdmin') || '';
+          const token = sessionStorage.getItem('goldLoanToken') || '';
+          gsr('deleteAdminLoginUser', [adminId, callerUsername, token], () => {
+            showToast(`Account '${username}' deleted.`);
+            loadAdminUsers();
+          });
+        }
       });
     }
   </script>
