@@ -109,6 +109,8 @@ File uploads are stored in a Drive folder `GoldLoanApp_Uploads` (auto-created) w
 
 ## Security Notes
 
-- Passwords are stored as plain text in the `Admins` sheet — restrict spreadsheet sharing to authorized people only.
+- **Server-side auth:** the browser can only reach the server through `rpc(token, action, args)`, which validates the session token and role on every call. All other functions in `code.js` end in `_` (private to Apps Script) and cannot be called from the browser console. Only `doGet`, `doPost`, `authenticateAdmin`, `logoutAdmin` and `rpc` are public. If you add a new server function, give it a trailing `_` and register it in `RPC_ACTIONS_` (and in `USER_ROLE_ACTIONS_` if the read-only role may use it).
+- `setupSheets`, `testGoldRates` and `migrateAdminPasswordsToHashed` are run from the editor and refuse anyone but the script owner.
+- Passwords are stored as unsalted SHA-256 hashes in the `Admins` sheet — restrict spreadsheet sharing to authorized people only, and change the default `admin` / `password123` login.
 - The web app uses `XFrameOptionsMode.ALLOWALL`, which is what makes embedding on `goldloan.brewflock.com` possible.
 - Session is kept only in `sessionStorage` (cleared on logout/browser close).

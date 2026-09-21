@@ -2006,7 +2006,7 @@
         }).authenticateAdmin(user, pass);
     }
 
-    function handleLogout() {
+    function handleLogout(reason) {
       // Invalidate the session token on the server before clearing it locally
       const token = sessionStorage.getItem('goldLoanToken');
       if (token) {
@@ -2042,7 +2042,11 @@
       document.getElementById('main-layout').classList.add('hidden');
       document.getElementById('main-layout').classList.remove('flex');
       closeSidebar();
-      showToast('Logged out successfully.');
+      if (typeof reason === 'string' && reason) {
+        showToast(reason, 'warning');
+      } else {
+        showToast('Logged out successfully.');
+      }
     }
 
     function isSuperAdmin() {
@@ -2272,23 +2276,34 @@
       }
     }
 
+    // All server calls go through the authenticated rpc() entry point. The server
+    // validates the session token and role on every call; other server functions
+    // are private and cannot be called from the browser.
+    function getSessionToken() {
+      return sessionStorage.getItem('goldLoanToken') || '';
+    }
+
     function gsr(fnName, args = [], onSuccess = () => { }, onError = null, silent = false) {
       if (!silent) showSpinner();
       google.script.run
         .withSuccessHandler(res => {
           if (!silent) hideSpinner();
-          if (res.success) {
+          if (res && res.success) {
             onSuccess(res);
+          } else if (res && res.code === 401) {
+            handleLogout('Session expired. Please log in again.');
           } else {
-            showToast(res.error || 'An unknown error occurred.', 'error');
-            if (onError) onError(res.error);
+            const msg = (res && res.error) || 'An unknown error occurred.';
+            showToast(msg, 'error');
+            if (onError) onError(msg);
           }
         })
         .withFailureHandler(err => {
           if (!silent) hideSpinner();
           showToast(err.message || String(err), 'error');
           if (onError) onError(err);
-        })[fnName](...args);
+        })
+        .rpc(getSessionToken(), fnName, args);
     }
 
     function fmt(n) { return (parseFloat(n) || 0).toLocaleString('en-IN'); }
@@ -2996,6 +3011,8 @@
 
           if (res && res.success && res.data) {
             applyGoldRatesData(res.data, res.warning);
+          } else if (res && res.code === 401) {
+            handleLogout('Session expired. Please log in again.');
           } else {
             handleGoldRatesError(res ? res.error : 'Invalid response received.');
           }
@@ -3005,7 +3022,7 @@
           if (refreshSpinner) refreshSpinner.classList.remove('animate-spin');
           handleGoldRatesError(err.message || String(err));
         })
-        .getGoldRates(forceRefresh);
+        .rpc(getSessionToken(), 'getGoldRates', [forceRefresh]);
     }
 
     /**
