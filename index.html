@@ -1301,6 +1301,17 @@
               id="userPincode"
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
+          <div class="md:col-span-3">
+            <label class="block text-sm font-medium mb-1 dark:text-gray-200">Customer Photo</label>
+            <input type="file" id="userPhoto" accept="image/*"
+              class="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100" />
+          </div>
+          <div class="md:col-span-3" id="existingUserPhotoContainer" style="display:none;">
+            <label class="block text-sm font-medium mb-1 dark:text-gray-200">Current Photo</label>
+            <div id="existingUserPhotoPreview"
+              class="flex items-center gap-3 p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50">
+            </div>
+          </div>
         </div>
       </div>
       <div
@@ -1384,6 +1395,17 @@
               <option>Active</option>
               <option>Inactive</option>
             </select></div>
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-1 dark:text-gray-200">Passbook / Cheque Document</label>
+            <input type="file" id="baPassbookImage" accept="image/*,application/pdf"
+              class="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100" />
+          </div>
+          <div class="md:col-span-2" id="existingPassbookContainer" style="display:none;">
+            <label class="block text-sm font-medium mb-1 dark:text-gray-200">Current Passbook Document</label>
+            <div id="existingPassbookPreview"
+              class="flex items-center gap-3 p-3 border border-gray-200 dark:border-slate-700 rounded-xl bg-gray-50 dark:bg-slate-800/50">
+            </div>
+          </div>
         </div>
       </div>
       <div
@@ -3070,10 +3092,30 @@
       const u = allUsers.find(x => x.UserId === id);
       if (!u) return;
 
+      let photoHtml = '';
+      if (u.CustomerPhoto) {
+        const previewUrl = u.CustomerPhoto.replace('/view?usp=drivesdk', '/preview');
+        photoHtml = `
+          <div class="flex items-center gap-4 p-3.5 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-700 mb-4">
+            <div class="w-20 h-20 rounded-xl overflow-hidden border-2 border-brand-500 shadow-sm flex-shrink-0 bg-gray-100">
+              <iframe src="${previewUrl}" style="width:100%; height:100%; border:none; pointer-events:none;"></iframe>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Customer Photo</span>
+              <a href="${u.CustomerPhoto}" target="_blank" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline inline-flex items-center gap-1 mt-1.5">
+                <span>Open in Google Drive</span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+              </a>
+            </div>
+          </div>`;
+      }
+
       const html = `
+        ${photoHtml}
         <table class="w-full text-sm text-left border border-gray-100 dark:border-slate-700 rounded-xl overflow-hidden">
             <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3 w-1/3">User ID</th><td class="p-3 font-bold text-brand-600 dark:text-brand-400">${u.UserId}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Customer Code</th><td class="p-3 font-mono font-medium">${u.CustomerCode || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Full Name</th><td class="p-3 font-bold">${u.FullName}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Father/Husband</th><td class="p-3">${u.FatherHusbandName || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Mobile</th><td class="p-3">${u.MobileNumber}</td></tr>
@@ -3084,8 +3126,10 @@
                   <td class="p-3">${u.DateOfBirth ? u.DateOfBirth.split('T')[0] : '-'}</td>
                 </tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Occupation</th><td class="p-3">${u.Occupation || '-'}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Aadhaar Number</th><td class="p-3">${u.AadhaarNumber || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">PAN Number</th><td class="p-3">${u.PANNumber || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">City / State</th><td class="p-3">${u.City || '-'}, ${u.State || '-'}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Pincode</th><td class="p-3">${u.Pincode || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Address</th><td class="p-3">${u.AddressLine1 || ''} ${u.AddressLine2 || ''}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Status</th><td class="p-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${u.Status === 'Active' ? 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300'}">${u.Status}</span></td></tr>
             </tbody>
@@ -3096,6 +3140,10 @@
     function openUserModal(userId = null) {
       document.getElementById('userModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
       document.getElementById('editUserId').value = '';
+      const photoContainer = document.getElementById('existingUserPhotoContainer');
+      const photoPreview = document.getElementById('existingUserPhotoPreview');
+      if (photoContainer) photoContainer.style.display = 'none';
+      if (photoPreview) photoPreview.innerHTML = '';
 
       if (userId) {
         const user = allUsers.find(u => u.UserId === userId);
@@ -3104,8 +3152,29 @@
           document.getElementById('editUserId').value = user.UserId;
           Object.keys(user).forEach(key => {
             const el = document.getElementById(`user${key}`);
-            if (el && el.type !== 'file') el.value = user[key];
+            if (el && el.type !== 'file') {
+              if (key === 'DateOfBirth' && user[key]) {
+                el.value = toInputDateFormat(user[key]);
+              } else {
+                el.value = user[key];
+              }
+            }
           });
+          if (user.CustomerPhoto && photoContainer && photoPreview) {
+            photoContainer.style.display = 'block';
+            const previewUrl = user.CustomerPhoto.replace('/view?usp=drivesdk', '/preview');
+            photoPreview.innerHTML = `
+              <div class="relative flex items-center gap-3">
+                <iframe src="${previewUrl}" style="width:80px; height:80px; border:none; border-radius: 10px; pointer-events:none;"></iframe>
+                <div>
+                  <a href="${user.CustomerPhoto}" target="_blank" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
+                    <span>View Current Photo</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                  </a>
+                  <p class="text-[11px] text-gray-400 mt-1">Select a new photo file above to replace.</p>
+                </div>
+              </div>`;
+          }
         }
       } else {
         document.getElementById('userModalTitle').textContent = 'Add User';
@@ -3121,6 +3190,7 @@
       setButtonLoading(btn, true);
 
       try {
+        const filesPayload = await getFilesPayload('userPhoto');
         const userData = {
           FullName: fullName, FatherHusbandName: document.getElementById('userFatherHusbandName').value,
           CustomerCode: document.getElementById('userCustomerCode').value, MobileNumber: document.getElementById('userMobileNumber').value,
@@ -3132,6 +3202,9 @@
           State: document.getElementById('userState').value, Pincode: document.getElementById('userPincode').value,
           Status: document.getElementById('userStatus').value
         };
+        if (filesPayload && filesPayload.length > 0) {
+          userData.files = filesPayload;
+        }
 
         const fn = id ? 'updateUser' : 'addUser';
         const args = id ? [id, userData] : [userData];
@@ -3182,11 +3255,15 @@
           const utilizedLoan = parseFloat(acc.UtilizedLoanAmount) || 0;
           const availableLoan = acc.AvailableLoanAmount !== undefined ? acc.AvailableLoanAmount : Math.max(0, maxLoan - utilizedLoan);
           const cityDisplay = acc.City || userCityMap[acc.UserId] || '—';
+          const passbookBadge = acc.PassbookImage
+            ? `<a href="${acc.PassbookImage}" target="_blank" title="View Passbook / Cheque Document" class="inline-flex items-center text-brand-600 dark:text-brand-400 hover:text-brand-500 ml-1.5"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg></a>`
+            : '';
+
           return `
       <tr class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
         <td class="px-4 py-3 font-bold dark:text-white">${acc.BankAccountId}</td>
         <td class="px-4 py-3 text-gray-800 dark:text-gray-200">${acc.AccountHolderName}</td>
-        <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${acc.AccountNumber}</td>
+        <td class="px-4 py-3 font-mono text-gray-700 dark:text-gray-200">${acc.AccountNumber}${passbookBadge}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${acc.BankName}</td>
         <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${cityDisplay}</td>
         <td class="px-4 py-3 font-bold text-blue-600 dark:text-blue-400">₹${fmt(maxLoan)}</td>
@@ -3215,6 +3292,27 @@
       const utilizedLoan = parseFloat(acc.UtilizedLoanAmount) || 0;
       const availableLoan = acc.AvailableLoanAmount !== undefined ? acc.AvailableLoanAmount : Math.max(0, maxLoan - utilizedLoan);
 
+      let passbookHtml = '';
+      if (acc.PassbookImage) {
+        const previewUrl = acc.PassbookImage.replace('/view?usp=drivesdk', '/preview');
+        passbookHtml = `
+          <div class="mt-4 p-3.5 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-100 dark:border-slate-700">
+            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block mb-2">Passbook / Cheque Document</span>
+            <div class="flex items-center gap-3.5">
+              <div class="w-28 h-20 rounded-lg overflow-hidden border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 shadow-sm flex-shrink-0">
+                <iframe src="${previewUrl}" style="width:100%; height:100%; border:none; pointer-events:none;"></iframe>
+              </div>
+              <div>
+                <a href="${acc.PassbookImage}" target="_blank" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline inline-flex items-center gap-1">
+                  <span>Open Full Document</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                </a>
+                <p class="text-[11px] text-gray-400 mt-1">Uploaded bank document proof</p>
+              </div>
+            </div>
+          </div>`;
+      }
+
       const html = `
         <table class="w-full text-sm text-left border border-gray-100 dark:border-slate-700 rounded-xl overflow-hidden">
             <tbody class="divide-y divide-gray-100 dark:divide-slate-700">
@@ -3222,24 +3320,30 @@
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Linked User</th><td class="p-3 font-bold text-brand-600 dark:text-brand-400">${userMap[acc.UserId] || acc.UserId}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Account Holder Name</th><td class="p-3">${acc.AccountHolderName}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Bank Name</th><td class="p-3">${acc.BankName}</td></tr>
-                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Account Number</th><td class="p-3 font-bold text-brand-600 dark:text-brand-400">${acc.AccountNumber}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Account Number</th><td class="p-3 font-bold text-brand-600 dark:text-brand-400 font-mono">${acc.AccountNumber}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Branch Name</th><td class="p-3">${acc.BranchName || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">City</th><td class="p-3">${acc.City || userCityMap[acc.UserId] || '-'}</td></tr>
-                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">IFSC Code</th><td class="p-3">${acc.IFSCCode || '-'}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">IFSC Code</th><td class="p-3 font-mono">${acc.IFSCCode || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Account Type</th><td class="p-3">${acc.AccountType || '-'}</td></tr>
-                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">UPI ID</th><td class="p-3">${acc.UPI_ID || '-'}</td></tr>
+                <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">UPI ID</th><td class="p-3 font-mono">${acc.UPI_ID || '-'}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Max Loan Amount</th><td class="p-3 font-bold text-blue-600 dark:text-blue-400">₹${fmt(maxLoan)}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Utilized Loan Amount</th><td class="p-3 font-bold text-amber-500">₹${fmt(utilizedLoan)}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Available Loan Amount</th><td class="p-3 font-bold text-emerald-600 dark:text-emerald-400">₹${fmt(availableLoan)}</td></tr>
                 <tr><th class="bg-gray-50 dark:bg-slate-800/50 p-3">Status</th><td class="p-3"><span class="px-2 py-1 text-[10px] font-bold rounded-full ${acc.Status === 'Active' ? 'bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-600 dark:bg-slate-700 dark:text-gray-300'}">${acc.Status}</span></td></tr>
             </tbody>
-        </table>`;
+        </table>
+        ${passbookHtml}`;
       openDetailView('Bank Account Details', html);
     }
 
     function openBankAccountModal(accountId = null) {
       document.getElementById('bankAccountModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
       document.getElementById('editBankAccountId').value = '';
+      populateUserDropdowns();
+      const pbContainer = document.getElementById('existingPassbookContainer');
+      const pbPreview = document.getElementById('existingPassbookPreview');
+      if (pbContainer) pbContainer.style.display = 'none';
+      if (pbPreview) pbPreview.innerHTML = '';
 
       if (accountId) {
         const account = allBankAccounts.find(acc => acc.BankAccountId === accountId);
@@ -3250,23 +3354,45 @@
             const el = document.getElementById(`ba${key}`);
             if (el && el.type !== 'file') el.value = account[key];
           });
+          if (account.PassbookImage && pbContainer && pbPreview) {
+            pbContainer.style.display = 'block';
+            const previewUrl = account.PassbookImage.replace('/view?usp=drivesdk', '/preview');
+            pbPreview.innerHTML = `
+              <div class="relative flex items-center gap-3">
+                <iframe src="${previewUrl}" style="width:100px; height:75px; border:none; border-radius: 8px; pointer-events:none;"></iframe>
+                <div>
+                  <a href="${account.PassbookImage}" target="_blank" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
+                    <span>View Current Document</span>
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                  </a>
+                  <p class="text-[11px] text-gray-400 mt-1">Select a new file above to replace.</p>
+                </div>
+              </div>`;
+          }
         }
       } else {
         document.getElementById('bankAccountModalTitle').textContent = 'Add Bank Account';
       }
       calculateAvailableLoan();
-      populateUserDropdowns();
       showModal('bankAccountModal');
     }
 
     async function submitBankAccount(btn) {
       const id = document.getElementById('editBankAccountId').value;
+      const userId = document.getElementById('baUserId').value;
       const holderName = document.getElementById('baAccountHolderName').value.trim();
+      const accountNumber = document.getElementById('baAccountNumber').value.trim();
+      const bankName = document.getElementById('baBankName').value.trim();
+
+      if (!userId) { showToast('Please select a User for this bank account.', 'error'); return; }
       if (!holderName) { showToast('Account Holder Name is required.', 'error'); return; }
+      if (!accountNumber) { showToast('Account Number is required.', 'error'); return; }
+      if (!bankName) { showToast('Bank Name is required.', 'error'); return; }
 
       setButtonLoading(btn, true);
 
       try {
+        const filesPayload = await getFilesPayload('baPassbookImage');
         const accountData = {
           UserId: document.getElementById('baUserId').value, AccountHolderName: holderName,
           AccountNumber: document.getElementById('baAccountNumber').value, BankName: document.getElementById('baBankName').value,
@@ -3276,6 +3402,9 @@
           Status: document.getElementById('baStatus').value,
           MaxLoanAmount: document.getElementById('baMaxLoanAmount').value, UtilizedLoanAmount: document.getElementById('baUtilizedLoanAmount').value
         };
+        if (filesPayload && filesPayload.length > 0) {
+          accountData.files = filesPayload;
+        }
 
         const fn = id ? 'updateBankAccount' : 'addBankAccount';
         const args = id ? [id, accountData] : [accountData];

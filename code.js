@@ -935,9 +935,17 @@ function processDriveFiles(files, folderName) {
     for (const file of files) {
       const blob = Utilities.newBlob(Utilities.base64Decode(file.base64), file.mimeType, file.name);
       const uploadedFile = folder.createFile(blob);
-      // Restrict to domain only — not publicly accessible to the whole internet.
-      // Change to DriveApp.Access.ANYONE_WITH_LINK if you need public image previews.
-      uploadedFile.setSharing(DriveApp.Access.DOMAIN_WITH_LINK, DriveApp.Permission.VIEW);
+      // Use ANYONE_WITH_LINK so images can be previewed in web app iframes.
+      // Wrapped in try-catch so permission errors on personal Gmail or restricted domains never block upload.
+      try {
+        uploadedFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      } catch (shareErr) {
+        try {
+          uploadedFile.setSharing(DriveApp.Access.DOMAIN_WITH_LINK, DriveApp.Permission.VIEW);
+        } catch (domainErr) {
+          console.warn("Could not set link sharing for file " + file.name + ":", domainErr);
+        }
+      }
       imageUrls.push(uploadedFile.getUrl());
     }
   }
