@@ -572,6 +572,9 @@ function handleApiRequest(action, payload) {
       case "deleteUser":
         return jsonResponse(deleteUser(payload.userId || payload.UserId));
 
+      case "deleteUserPhoto":
+        return jsonResponse(deleteUserPhoto(payload.userId || payload.UserId));
+
       case "getBankAccounts":
         return jsonResponse(getBankAccounts(payload.userId || payload.UserId));
 
@@ -583,6 +586,9 @@ function handleApiRequest(action, payload) {
 
       case "deleteBankAccount":
         return jsonResponse(deleteBankAccount(payload.accountId || payload.BankAccountId));
+
+      case "deleteBankAccountPassbook":
+        return jsonResponse(deleteBankAccountPassbook(payload.accountId || payload.BankAccountId));
 
       case "getOrnaments":
         return jsonResponse(getOrnaments(payload.userId || payload.UserId));
@@ -780,8 +786,28 @@ function getUsers() {
   }
 }
 
+function trashDriveFileByUrl(url) {
+  if (!url) return;
+  try {
+    const fileIdMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (fileIdMatch && fileIdMatch[1]) {
+      DriveApp.getFileById(fileIdMatch[1]).setTrashed(true);
+    }
+  } catch (err) {
+    console.warn("Could not trash file from Drive (" + url + "):", err);
+  }
+}
+
 function updateUser(userId, userData) {
   try {
+    if (userData.deleteCustomerPhoto) {
+      const existingUser = getSheetData("Users").find(u => String(u.UserId) === String(userId));
+      if (existingUser && existingUser.CustomerPhoto) {
+        trashDriveFileByUrl(existingUser.CustomerPhoto);
+      }
+      userData.CustomerPhoto = "";
+      delete userData.deleteCustomerPhoto;
+    }
     if (userData.files && userData.files.length > 0) {
       userData.CustomerPhoto = processDriveFiles(userData.files, "Customer_Photos")[0];
     }
@@ -797,6 +823,41 @@ function deleteUser(userId) {
   try {
     deleteRow("Users", "UserId", userId);
     return { success: true, data: "User deleted" };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+function deleteUserPhoto(userId) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName("Users");
+    if (!sheet) return { success: false, error: "Users sheet not found" };
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const idColIndex = headers.indexOf("UserId");
+    const photoColIndex = headers.indexOf("CustomerPhoto");
+    const updatedColIndex = headers.indexOf("UpdatedDate");
+
+    let photoUrl = "";
+    if (idColIndex !== -1 && photoColIndex !== -1) {
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][idColIndex]) === String(userId)) {
+          photoUrl = data[i][photoColIndex] ? String(data[i][photoColIndex]) : "";
+          sheet.getRange(i + 1, photoColIndex + 1).setValue("");
+          if (updatedColIndex !== -1) {
+            sheet.getRange(i + 1, updatedColIndex + 1).setValue(new Date().toISOString());
+          }
+          break;
+        }
+      }
+    }
+
+    if (photoUrl) {
+      trashDriveFileByUrl(photoUrl);
+    }
+
+    return { success: true, data: "Customer photo deleted" };
   } catch (e) {
     return { success: false, error: e.message };
   }
@@ -887,6 +948,14 @@ function getBankAccounts(userId) {
 
 function updateBankAccount(accountId, accountData) {
   try {
+    if (accountData.deletePassbookImage) {
+      const existingAcc = getSheetData("BankAccounts").find(b => String(b.BankAccountId) === String(accountId));
+      if (existingAcc && existingAcc.PassbookImage) {
+        trashDriveFileByUrl(existingAcc.PassbookImage);
+      }
+      accountData.PassbookImage = "";
+      delete accountData.deletePassbookImage;
+    }
     if (accountData.files && accountData.files.length > 0) {
       accountData.PassbookImage = processDriveFiles(accountData.files, "Passbook_Images")[0];
     }
@@ -904,6 +973,41 @@ function deleteBankAccount(accountId) {
   try {
     deleteRow("BankAccounts", "BankAccountId", accountId);
     return { success: true, data: "Bank account deleted" };
+  } catch (e) {
+    return { success: false, error: e.message };
+  }
+}
+
+function deleteBankAccountPassbook(accountId) {
+  try {
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = ss.getSheetByName("BankAccounts");
+    if (!sheet) return { success: false, error: "BankAccounts sheet not found" };
+    const data = sheet.getDataRange().getValues();
+    const headers = data[0];
+    const idColIndex = headers.indexOf("BankAccountId");
+    const photoColIndex = headers.indexOf("PassbookImage");
+    const updatedColIndex = headers.indexOf("UpdatedDate");
+
+    let passbookUrl = "";
+    if (idColIndex !== -1 && photoColIndex !== -1) {
+      for (let i = 1; i < data.length; i++) {
+        if (String(data[i][idColIndex]) === String(accountId)) {
+          passbookUrl = data[i][photoColIndex] ? String(data[i][photoColIndex]) : "";
+          sheet.getRange(i + 1, photoColIndex + 1).setValue("");
+          if (updatedColIndex !== -1) {
+            sheet.getRange(i + 1, updatedColIndex + 1).setValue(new Date().toISOString());
+          }
+          break;
+        }
+      }
+    }
+
+    if (passbookUrl) {
+      trashDriveFileByUrl(passbookUrl);
+    }
+
+    return { success: true, data: "Passbook document deleted" };
   } catch (e) {
     return { success: false, error: e.message };
   }

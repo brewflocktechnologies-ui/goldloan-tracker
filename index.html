@@ -1302,8 +1302,11 @@
               class="w-full bg-gray-50 dark:bg-slate-800 dark:text-white border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-brand-500" />
           </div>
           <div class="md:col-span-3">
-            <label class="block text-sm font-medium mb-1 dark:text-gray-200">Customer Photo</label>
-            <input type="file" id="userPhoto" accept="image/*"
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-sm font-medium dark:text-gray-200">Customer Photo</label>
+              <button type="button" id="userPhotoClearBtn" style="display:none;" onclick="clearFileInput('userPhoto', 'userPhotoClearBtn')" class="text-xs text-red-500 hover:text-red-700 font-medium">Clear selected file</button>
+            </div>
+            <input type="file" id="userPhoto" accept="image/*" onchange="toggleFileClearBtn('userPhoto', 'userPhotoClearBtn')"
               class="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100" />
           </div>
           <div class="md:col-span-3" id="existingUserPhotoContainer" style="display:none;">
@@ -1396,8 +1399,11 @@
               <option>Inactive</option>
             </select></div>
           <div class="md:col-span-2">
-            <label class="block text-sm font-medium mb-1 dark:text-gray-200">Passbook / Cheque Document</label>
-            <input type="file" id="baPassbookImage" accept="image/*,application/pdf"
+            <div class="flex justify-between items-center mb-1">
+              <label class="block text-sm font-medium dark:text-gray-200">Passbook / Cheque Document</label>
+              <button type="button" id="baPassbookClearBtn" style="display:none;" onclick="clearFileInput('baPassbookImage', 'baPassbookClearBtn')" class="text-xs text-red-500 hover:text-red-700 font-medium">Clear selected file</button>
+            </div>
+            <input type="file" id="baPassbookImage" accept="image/*,application/pdf" onchange="toggleFileClearBtn('baPassbookImage', 'baPassbookClearBtn')"
               class="w-full text-sm text-gray-500 dark:text-gray-300 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-brand-50 file:text-brand-600 hover:file:bg-brand-100" />
           </div>
           <div class="md:col-span-2" id="existingPassbookContainer" style="display:none;">
@@ -2312,6 +2318,21 @@
       return await Promise.all(filePromises);
     }
 
+    function toggleFileClearBtn(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+      if (input && btn) {
+        btn.style.display = (input.files && input.files.length > 0) ? 'inline-block' : 'none';
+      }
+    }
+
+    function clearFileInput(inputId, btnId) {
+      const input = document.getElementById(inputId);
+      const btn = document.getElementById(btnId);
+      if (input) input.value = '';
+      if (btn) btn.style.display = 'none';
+    }
+
     function populateUserDropdowns() {
       const userOptions = allUsers
         .filter(u => u.Status === 'Active')
@@ -3140,6 +3161,7 @@
     function openUserModal(userId = null) {
       document.getElementById('userModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
       document.getElementById('editUserId').value = '';
+      clearFileInput('userPhoto', 'userPhotoClearBtn');
       const photoContainer = document.getElementById('existingUserPhotoContainer');
       const photoPreview = document.getElementById('existingUserPhotoPreview');
       if (photoContainer) photoContainer.style.display = 'none';
@@ -3164,15 +3186,21 @@
             photoContainer.style.display = 'block';
             const previewUrl = user.CustomerPhoto.replace('/view?usp=drivesdk', '/preview');
             photoPreview.innerHTML = `
-              <div class="relative flex items-center gap-3">
-                <iframe src="${previewUrl}" style="width:80px; height:80px; border:none; border-radius: 10px; pointer-events:none;"></iframe>
-                <div>
-                  <a href="${user.CustomerPhoto}" target="_blank" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
-                    <span>View Current Photo</span>
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                  </a>
-                  <p class="text-[11px] text-gray-400 mt-1">Select a new photo file above to replace.</p>
+              <div class="flex items-center justify-between w-full gap-3">
+                <div class="flex items-center gap-3">
+                  <iframe src="${previewUrl}" style="width:80px; height:80px; border:none; border-radius: 10px; pointer-events:none;"></iframe>
+                  <div>
+                    <a href="${user.CustomerPhoto}" target="_blank" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline inline-flex items-center gap-1">
+                      <span>View Current Photo</span>
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
+                    <p class="text-[11px] text-gray-400 mt-1">Select a new photo file above to replace.</p>
+                  </div>
                 </div>
+                <button type="button" onclick="deleteUserPhotoUI('${user.UserId}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 border border-red-200 dark:border-red-800/40 rounded-lg flex items-center gap-1.5 transition-colors flex-shrink-0" title="Delete Photo">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  <span>Delete Photo</span>
+                </button>
               </div>`;
           }
         }
@@ -3231,6 +3259,30 @@
         isDanger: true,
         onConfirm: () => {
           gsr('deleteUser', [userId], () => { showToast('User deleted.'); loadUsers(); });
+        }
+      });
+    }
+
+    function deleteUserPhotoUI(userId) {
+      showConfirmDialog({
+        title: 'Delete Customer Photo',
+        message: 'Are you sure you want to permanently delete this customer photo?',
+        confirmText: 'Delete Photo',
+        isDanger: true,
+        onConfirm: () => {
+          gsr('deleteUserPhoto', [userId], (res) => {
+            if (res.success) {
+              showToast('Customer photo deleted successfully.');
+              const photoContainer = document.getElementById('existingUserPhotoContainer');
+              const photoPreview = document.getElementById('existingUserPhotoPreview');
+              if (photoContainer) photoContainer.style.display = 'none';
+              if (photoPreview) photoPreview.innerHTML = '';
+              clearFileInput('userPhoto', 'userPhotoClearBtn');
+              const user = allUsers.find(u => u.UserId === userId);
+              if (user) user.CustomerPhoto = '';
+              loadUsers();
+            }
+          });
         }
       });
     }
@@ -3339,6 +3391,7 @@
     function openBankAccountModal(accountId = null) {
       document.getElementById('bankAccountModal').querySelectorAll('input, select, textarea').forEach(el => el.value = '');
       document.getElementById('editBankAccountId').value = '';
+      clearFileInput('baPassbookImage', 'baPassbookClearBtn');
       populateUserDropdowns();
       const pbContainer = document.getElementById('existingPassbookContainer');
       const pbPreview = document.getElementById('existingPassbookPreview');
@@ -3358,15 +3411,21 @@
             pbContainer.style.display = 'block';
             const previewUrl = account.PassbookImage.replace('/view?usp=drivesdk', '/preview');
             pbPreview.innerHTML = `
-              <div class="relative flex items-center gap-3">
-                <iframe src="${previewUrl}" style="width:100px; height:75px; border:none; border-radius: 8px; pointer-events:none;"></iframe>
-                <div>
-                  <a href="${account.PassbookImage}" target="_blank" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1">
-                    <span>View Current Document</span>
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                  </a>
-                  <p class="text-[11px] text-gray-400 mt-1">Select a new file above to replace.</p>
+              <div class="flex items-center justify-between w-full gap-3">
+                <div class="flex items-center gap-3">
+                  <iframe src="${previewUrl}" style="width:100px; height:75px; border:none; border-radius: 8px; pointer-events:none;"></iframe>
+                  <div>
+                    <a href="${account.PassbookImage}" target="_blank" class="text-xs font-semibold text-brand-600 dark:text-brand-400 hover:underline inline-flex items-center gap-1">
+                      <span>View Current Document</span>
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </a>
+                    <p class="text-[11px] text-gray-400 mt-1">Select a new file above to replace.</p>
+                  </div>
                 </div>
+                <button type="button" onclick="deleteBankAccountPassbookUI('${account.BankAccountId}')" class="px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 border border-red-200 dark:border-red-800/40 rounded-lg flex items-center gap-1.5 transition-colors flex-shrink-0" title="Delete Document">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  <span>Delete Document</span>
+                </button>
               </div>`;
           }
         }
@@ -3431,6 +3490,30 @@
         isDanger: true,
         onConfirm: () => {
           gsr('deleteBankAccount', [accountId], () => { showToast('Bank account deleted.'); loadBankAccounts(); });
+        }
+      });
+    }
+
+    function deleteBankAccountPassbookUI(accountId) {
+      showConfirmDialog({
+        title: 'Delete Passbook Document',
+        message: 'Are you sure you want to permanently delete this passbook / cheque document?',
+        confirmText: 'Delete Document',
+        isDanger: true,
+        onConfirm: () => {
+          gsr('deleteBankAccountPassbook', [accountId], (res) => {
+            if (res.success) {
+              showToast('Passbook document deleted successfully.');
+              const pbContainer = document.getElementById('existingPassbookContainer');
+              const pbPreview = document.getElementById('existingPassbookPreview');
+              if (pbContainer) pbContainer.style.display = 'none';
+              if (pbPreview) pbPreview.innerHTML = '';
+              clearFileInput('baPassbookImage', 'baPassbookClearBtn');
+              const acc = allBankAccounts.find(a => a.BankAccountId === accountId);
+              if (acc) acc.PassbookImage = '';
+              loadBankAccounts();
+            }
+          });
         }
       });
     }
