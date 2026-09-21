@@ -1,0 +1,5 @@
+node_modules/
+test-results/
+playwright-report/
+# CDN scripts (Tailwind etc.) cached by the UI tests so they also run offline
+.cache/

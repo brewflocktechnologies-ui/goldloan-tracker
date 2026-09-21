@@ -20,7 +20,7 @@ The system seeds one default admin account the **first time** the sheets are ini
 | --- | --- | --- |
 | `admin` | `password123` | SuperAdmin |
 
-> **IMPORTANT:** Change the default password immediately after first login by editing the **Admins** sheet in the spreadsheet (columns: `AdminId`, `Username`, `Password`, `Role`, `Status`). Password storage is **plain text** — keep the sheet private.
+> **IMPORTANT:** Change the default password immediately after first login (Admin Login Accounts screen, as SuperAdmin). Do not edit the `Password` column of the **Admins** sheet by hand: it stores SHA-256 hashes, not plain text, so a typed-in password will not match.
 
 ## How It Works (Architecture)
 
@@ -114,3 +114,51 @@ File uploads are stored in a Drive folder `GoldLoanApp_Uploads` (auto-created) w
 - Passwords are stored as unsalted SHA-256 hashes in the `Admins` sheet — restrict spreadsheet sharing to authorized people only, and change the default `admin` / `password123` login.
 - The web app uses `XFrameOptionsMode.ALLOWALL`, which is what makes embedding on `goldloan.brewflock.com` possible.
 - Session is kept only in `sessionStorage` (cleared on logout/browser close).
+
+## Automated tests
+
+The backend (`code.js`) and the UI/server contract are covered by tests that run in Node against an in-memory fake of Google Sheets, Drive and the other Apps Script services. No installs, no Google account, about a second to run. Browser tests for the UI are described further down.
+
+```
+npm test          # readable output; known bugs shown as one line each
+npm run test:raw  # Node's default output, with full details for known bugs too
+```
+
+| File | Covers |
+| --- | --- |
+| `tests/auth.test.js` | Login, lockout, sessions, roles, privilege-escalation regressions, REST endpoint |
+| `tests/users.test.js`, `bank-accounts.test.js`, `ornaments.test.js` | Create / read / update / delete, derived values, Drive uploads |
+| `tests/loans.test.js` | Loan rules: limits, pledging, editing, closing and releasing |
+| `tests/payments-dashboard.test.js` | Payments, dashboard totals, gold-rate parsing and fallback |
+| `tests/contract.test.js` | UI, server and mobile app agree on action names; nothing leaks to the browser |
+| `tests/known-bugs.test.js` | Known bugs written as the behaviour we want, marked `todo` until fixed |
+
+- **Before you paste into Apps Script:** run `npm test`. To check a candidate copy of the script, run `GOLDLOAN_CODE_PATH=path/to/Code.gs npm test`.
+- **A `todo` test that starts passing** means a known bug got fixed: delete its `todo` option so it becomes a permanent regression test.
+- **What this cannot catch:** behaviour that only exists in real Google services (e.g. how Sheets stores dates, Drive permissions, quotas). Click through the app once after a deploy.
+
+### Browser (UI) tests
+
+`ui-tests/` drives the real `index.html` in a real Chromium browser with Playwright. A small shim replaces `google.script.run` and forwards each call to the real `code.js` running on the same in-memory fake spreadsheet, so a click on a button exercises the actual UI and the actual backend together, with no Google account. Only functions without a trailing `_` are callable from the page, exactly like Apps Script.
+
+```
+npm install                       # once (installs Playwright)
+npx playwright install chromium   # once (downloads the browser, ~150 MB)
+npm run test:ui                   # about a minute
+npm run test:all                  # Node tests, then UI tests
+```
+
+| File | Covers |
+| --- | --- |
+| `ui-tests/login.spec.js` | Wrong / right password, reload keeps the session, logout, expired session |
+| `ui-tests/roles.spec.js` | Read-only role: no edit / delete / close controls, and the server refuses it anyway; console cannot reach server functions |
+| `ui-tests/customers.spec.js` | Customers and bank accounts: add, validate, edit, delete with confirmation, search, detail view |
+| `ui-tests/ornaments-loans.spec.js` | Ornament form calculations and live gold rates; creating, editing and over-limit loans; overdue flag; loan detail |
+| `ui-tests/closure-admin.spec.js` | Close and release a loan; admin login accounts |
+| `ui-tests/smoke.spec.js` | Every screen and detail view opens with no JavaScript errors; dashboard totals; sorting |
+| `ui-tests/known-bugs.spec.js` | Known UI bugs (unescaped HTML / XSS, apostrophe in a name, zoom locked) as `test.fail()` |
+
+- The first run needs internet: Tailwind and other scripts are fetched once and cached in `.cache/` (git-ignored), then the tests also run offline.
+- **A `test.fail()` that starts failing the other way** (Playwright reports "expected to fail but passed") means the bug was fixed: change `test.fail(` to `test(`.
+- On a failure Playwright saves a screenshot and a trace in `test-results/` (git-ignored); open a trace with `npx playwright show-trace <path>`.
+- These tests use a fake, so they cannot see things only real Google shows (Sheets date storage, Drive permissions, slow Apps Script calls, the real iframe on your domain).
