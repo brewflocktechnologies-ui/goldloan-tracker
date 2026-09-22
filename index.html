@@ -1082,7 +1082,7 @@
               </div>
               <div class="relative w-full sm:w-72">
                 <input type="text" id="closureSearchInput" oninput="filterClosureTable()"
-                  placeholder="🔍 Search by Loan No, Customer, Mobile..."
+                  placeholder="🔍 Search by Loan No, Customer, Bank..."
                   class="w-full pl-9 pr-3 py-1.5 text-xs sm:text-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-brand-500 focus:outline-none dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-all shadow-sm" />
                 <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5 pointer-events-none" fill="none"
                   stroke="currentColor" viewBox="0 0 24 24">
@@ -1099,7 +1099,7 @@
                   <tr>
                     <th class="px-4 py-3">Loan Number</th>
                     <th class="px-4 py-3">Customer</th>
-                    <th class="px-4 py-3">Mobile</th>
+                    <th class="px-4 py-3">Bank Name</th>
                     <th class="px-4 py-3">Amount</th>
                     <th class="px-4 py-3">Date</th>
                     <th class="px-4 py-3">Due Date</th>
@@ -4752,11 +4752,12 @@
           const dueDate = new Date(loan.DueDate);
           const isOverdue = dueDate < today;
           const ornamentCount = loan.linkedOrnaments ? loan.linkedOrnaments.split(',').length : 0;
+          const bankName = loan.BankName || (allBankAccounts && allBankAccounts.find(b => String(b.BankAccountId) === String(loan.BankAccountId))?.BankName) || '—';
           return `
-          <tr data-search-terms="${(loan.LoanNumber + ' ' + loan.customerName + ' ' + loan.mobileNumber).toLowerCase()}" class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+          <tr data-search-terms="${(loan.LoanNumber + ' ' + loan.customerName + ' ' + bankName + ' ' + (loan.mobileNumber || '')).toLowerCase()}" class="border-b border-gray-50 dark:border-slate-700/50 hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
             <td class="px-4 py-3 font-bold dark:text-white">${loan.LoanNumber} ${isOverdue ? '<span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 ml-2">OVERDUE</span>' : ''}</td>
             <td class="px-4 py-3 text-gray-800 dark:text-gray-200">${loan.customerName}</td>
-            <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${loan.mobileNumber}</td>
+            <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${bankName}</td>
             <td class="px-4 py-3 text-brand-600 dark:text-brand-400 font-bold">₹${fmt(loan.LoanAmount)}</td>
             <td class="px-4 py-3 text-gray-600 dark:text-gray-300">${fmtDate(loan.LoanDate)}</td>
             <td class="px-4 py-3 ${isOverdue ? 'text-red-600 font-bold dark:text-red-400' : 'text-gray-600 dark:text-gray-300'}">${fmtDate(loan.DueDate)}</td>

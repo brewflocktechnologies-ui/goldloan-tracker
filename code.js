@@ -1455,7 +1455,7 @@ function getLoans_(userId, status) {
     const loanWeightMap = new Map();
     const loanOrnMap = new Map();
     try {
-      const mappings = getSheetData_("LoanOrnaments").filter(m => m.Status === "Pledged");
+      const mappings = getSheetData_("LoanOrnaments").filter(m => m.Status === "Pledged" || m.Status === "Released");
       const ornaments = getSheetData_("Ornaments");
       const ornMap = new Map(ornaments.map(o => [String(o.OrnamentId), o]));
       mappings.forEach(m => {
@@ -1748,7 +1748,7 @@ function getActiveLoansForClosure_() {
 
     const userMap = new Map(users.map(u => [u.UserId, u]));
     const ornamentMap = new Map(ornaments.map(o => [o.OrnamentId, o]));
-    const bankMap = new Map(bankAccounts.map(b => [String(b.BankAccountId), b.BankName]));
+    const bankMap = new Map(bankAccounts.map(b => [String(b.BankAccountId).trim(), b.BankName]));
 
     const results = loans.map(loan => {
       const user = userMap.get(loan.UserId) || {};
@@ -1760,7 +1760,7 @@ function getActiveLoansForClosure_() {
 
       return {
         ...loan,
-        BankName: loan.BankName || bankMap.get(String(loan.BankAccountId)) || '—',
+        BankName: loan.BankName || bankMap.get(String(loan.BankAccountId || '').trim()) || '—',
         customerName: user.FullName || 'N/A',
         mobileNumber: user.MobileNumber || 'N/A',
         linkedOrnaments: linkedOrnamentNames.join(', ')

@@ -304,13 +304,12 @@ describe('loans: close and release', () => {
     assert.equal(ornamentStatus(app, orn1.OrnamentId), 'Pledged');
   });
 
-  test('getActiveLoansForClosure lists only active loans with customer, mobile and ornament names', () => {
+  test('getActiveLoansForClosure lists only active loans with customer, bank and ornament names', () => {
     const { app, user, bank, loan, orn1 } = setup();
     const api = app.api(app.superToken());
     const rows = api.getActiveLoansForClosure().data;
     assert.equal(rows.length, 1);
     assert.equal(rows[0].customerName, 'Asha Rao');
-    assert.equal(rows[0].mobileNumber, '9990001111');
     assert.equal(rows[0].BankName, 'SBI');
     assert.equal(rows[0].linkedOrnaments, 'Chain, Bangle');
     api.closeAndReleaseLoan(loan.LoanId, '');

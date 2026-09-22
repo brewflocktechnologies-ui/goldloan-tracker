@@ -11,7 +11,7 @@ test.describe('loan closure screen', () => {
     return { ...s, loan };
   }
 
-  test('lists active loans with customer, mobile, amount and ornament count', async ({ app }) => {
+  test('lists active loans with customer, bank, amount and ornament count', async ({ app }) => {
     seedLoan(app.backend);
     await app.open();
     await app.login();
@@ -20,7 +20,7 @@ test.describe('loan closure screen', () => {
     const row = app.rows('closureTable').first();
     await expect(row).toContainText('LN-0001');
     await expect(row).toContainText('Asha Rao');
-    await expect(row).toContainText('9990001111');
+    await expect(row).toContainText('SBI');
     await expect(row).toContainText('₹2,00,000');
     await expect(row).toContainText('2 item(s)');
   });
