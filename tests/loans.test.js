@@ -271,7 +271,7 @@ describe('loans: close and release', () => {
     app.api(app.superToken()).closeAndReleaseLoan(loan.LoanId, '');
     for (const orn of [orn1, orn2]) {
       const row = app.table('Ornaments').find(o => o.OrnamentId === orn.OrnamentId);
-      assert.equal(row.Status, 'Released');
+      assert.equal(row.Status, 'Available');
       assert.equal(row.ReleasedLoanId, loan.LoanId);
       assert.ok(!isNaN(Date.parse(row.ReleaseDate)));
     }
@@ -291,7 +291,7 @@ describe('loans: close and release', () => {
     const l1 = app.seed.loan({ UserId: s.user.UserId, BankAccountId: s.bank.BankAccountId, LoanAmount: 10000, ornamentIds: [s.orn1.OrnamentId] });
     app.seed.loan({ UserId: s.user.UserId, BankAccountId: s.bank.BankAccountId, LoanAmount: 10000, ornamentIds: [s.orn2.OrnamentId] });
     app.api(app.superToken()).closeAndReleaseLoan(l1.LoanId, '');
-    assert.equal(ornamentStatus(app, s.orn1.OrnamentId), 'Released');
+    assert.equal(ornamentStatus(app, s.orn1.OrnamentId), 'Available');
     assert.equal(ornamentStatus(app, s.orn2.OrnamentId), 'Pledged');
   });
 

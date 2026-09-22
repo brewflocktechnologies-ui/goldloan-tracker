@@ -1723,7 +1723,7 @@ function closeAndReleaseLoan_(loanId, closureRemarks) {
 
       // Update the ornament itself
       updateRow_("Ornaments", "OrnamentId", m.OrnamentId, {
-        Status: "Released",
+        Status: "Available",
         ReleaseDate: currentDate,
         ReleasedLoanId: loanId
       });

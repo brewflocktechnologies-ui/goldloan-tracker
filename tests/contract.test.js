@@ -25,7 +25,7 @@ describe('server surface', () => {
   test('only the intended functions are callable from a browser (no trailing underscore)', () => {
     const publicFns = [...src.matchAll(/^(?:async\s+)?function\s+([A-Za-z0-9_]+)\s*\(/gm)].map(m => m[1]).filter(n => !n.endsWith('_'));
     assert.deepEqual(publicFns.sort(), [
-      'authenticateAdmin', 'doGet', 'doPost', 'logoutAdmin', 'migrateAdminPasswordsToHashed', 'rpc', 'setupSheets', 'testGoldRates',
+      'authenticateAdmin', 'doGet', 'doPost', 'logoutAdmin', 'migrateAdminPasswordsToHashed', 'migrateReleasedOrnamentsToAvailable', 'rpc', 'setupSheets', 'testGoldRates',
     ]);
   });
 
