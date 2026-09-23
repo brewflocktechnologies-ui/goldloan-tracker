@@ -209,6 +209,32 @@ test.describe('loans screen', () => {
     await expect(app.rows('loansTable').first()).toContainText('OVERDUE');
   });
 
+  test('the Status filter narrows the loans list to the chosen statuses', async ({ app }) => {
+    const { page, backend } = app;
+    const s = backend.scenario();
+    backend.seed.loan({ UserId: s.user.UserId, BankAccountId: s.bank.BankAccountId, LoanNumber: 'LN-0001', ornamentIds: [s.orn1.OrnamentId] }); // Active
+    const overdueLoan = backend.seed.loan({ UserId: s.user.UserId, BankAccountId: s.bank.BankAccountId, LoanNumber: 'LN-0002', LoanDate: '2024-01-01', DueDate: '2024-07-01', ornamentIds: [s.orn2.OrnamentId] }); // Overdue
+    await app.open();
+    await app.login();
+    await app.go('loans');
+
+    await expect(app.rows('loansTable')).toHaveCount(2);
+
+    await page.locator('#loanStatusDropdownBtn').click();
+    await expect(page.locator('#loanStatusDropdownMenu')).toBeVisible();
+    await page.locator('#loanStatusFilterList input[value="Active"]').uncheck();
+
+    // Filtered-out rows stay in the DOM (pagination hides them via display:none)
+    const visibleRows = page.locator('#loansTable tbody tr:not(.empty-pagination-row):visible');
+    await expect(visibleRows).toHaveCount(1);
+    await expect(visibleRows.first()).toContainText(overdueLoan.LoanId);
+    await expect(visibleRows.first()).toContainText('OVERDUE');
+    await expect(page.locator('#loanStatusDropdownLabel')).toContainText('Status: Overdue');
+
+    await page.locator('#loanFilterResetBtn').click();
+    await expect(visibleRows).toHaveCount(2);
+  });
+
   test('the loan detail view shows terms, pledged ornament and payments', async ({ app }) => {
     const { page, backend } = app;
     const s = backend.scenario();
