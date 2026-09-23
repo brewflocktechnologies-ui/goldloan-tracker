@@ -2320,3 +2320,49 @@ function migrateAdminPasswordsToHashed() {
 
   console.log(`Migration complete. Migrated: ${migrated}, Skipped (already hashed): ${skipped}`);
 }
+
+// ─── ONE-TIME ORNAMENT STATUS MIGRATION ───
+
+/**
+ * IMPORTANT: Run this function ONCE from the Apps Script IDE to fix historical
+ * ornament rows. Loan closure used to mark released ornaments as "Released"
+ * instead of "Available" (which is what the partial-release flow always used).
+ * This updates every Ornaments row currently marked "Released" to "Available",
+ * matching the now-unified behavior in closeAndReleaseLoan_.
+ *
+ * Safe to run multiple times — it only touches rows whose Status is "Released".
+ */
+function migrateReleasedOrnamentsToAvailable() {
+  assertOwner_();
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const sheet = ss.getSheetByName("Ornaments");
+  if (!sheet) {
+    console.error("Ornaments sheet not found.");
+    return;
+  }
+
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) {
+    console.log("No ornament records to migrate.");
+    return;
+  }
+
+  const headers = data[0];
+  const statusCol = headers.indexOf("Status");
+  if (statusCol === -1) {
+    console.error("Status column not found in Ornaments sheet.");
+    return;
+  }
+
+  let migrated = 0;
+
+  for (let i = 1; i < data.length; i++) {
+    if (String(data[i][statusCol]) === "Released") {
+      sheet.getRange(i + 1, statusCol + 1).setValue("Available");
+      migrated++;
+      console.log(`Row ${i + 1}: Status changed from Released to Available.`);
+    }
+  }
+
+  console.log(`Migration complete. Ornaments updated: ${migrated}.`);
+}
