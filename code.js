@@ -1354,6 +1354,19 @@ function updateOrnamentStatus_(ornamentId, status) {
 
 // ─── LOAN FUNCTIONS ───
 
+/**
+ * Loan period (in months) is the gap between LoanDate and DueDate — never a
+ * manually-entered number that can drift from the actual dates.
+ */
+function monthsBetweenDates_(startStr, endStr) {
+  if (!startStr || !endStr) return "";
+  const start = new Date(String(startStr).split("T")[0]);
+  const end = new Date(String(endStr).split("T")[0]);
+  if (isNaN(start.getTime()) || isNaN(end.getTime()) || end <= start) return "";
+  const diffDays = (end - start) / (1000 * 60 * 60 * 24);
+  return Math.max(1, Math.round(diffDays / 30.4375));
+}
+
 function addLoan_(loanData) {
   try {
     const existing = getSheetData_("Loans").find(l =>
@@ -1402,6 +1415,26 @@ function addLoan_(loanData) {
       }
     }
 
+    let dueDate = loanData.DueDate;
+    if (!dueDate && loanData.LoanDate) {
+      try {
+        const parts = String(loanData.LoanDate).split("T")[0].split("-");
+        if (parts.length === 3) {
+          const d = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+          d.setFullYear(d.getFullYear() + 1);
+          d.setDate(d.getDate() - 1);
+          const y = d.getFullYear();
+          const m = String(d.getMonth() + 1).padStart(2, "0");
+          const dt = String(d.getDate()).padStart(2, "0");
+          dueDate = `${y}-${m}-${dt}`;
+        }
+      } catch (err) {
+        dueDate = loanData.DueDate || "";
+      }
+    }
+
+    const loanPeriod = monthsBetweenDates_(loanData.LoanDate, dueDate) || loanData.LoanPeriod || "";
+
     const record = {
       LoanId: loanId,
       LoanNumber: loanData.LoanNumber,
@@ -1412,7 +1445,7 @@ function addLoan_(loanData) {
       LoanAmount: loanAmount,
       InterestRate: parseFloat(loanData.InterestRate) || 0,
       InterestType: loanData.InterestType || "Simple",
-      LoanPeriod: loanData.LoanPeriod || "",
+      LoanPeriod: loanPeriod,
       GrossWeight: grossWeight || "",
       NetWeight: netWeight || "",
       ProcessingFee: parseFloat(loanData.ProcessingFee) || 0,
@@ -1420,7 +1453,7 @@ function addLoan_(loanData) {
       InsuranceCharge: parseFloat(loanData.InsuranceCharge) || 0,
       TotalCharges: parseFloat(loanData.TotalCharges) || 0,
       NetDisbursementAmount: parseFloat(loanData.NetDisbursementAmount) || 0,
-      DueDate: loanData.DueDate,
+      DueDate: dueDate || "",
       LoanStatus: "Active",
       Remarks: loanData.Remarks || "",
       CreatedDate: new Date().toISOString()
@@ -1623,16 +1656,18 @@ function updateLoan_(loanId, loanData) {
     }
 
     // Update Loan Record
+    const newLoanDate = loanData.LoanDate || existingLoan.LoanDate;
+    const newDueDate = loanData.DueDate || existingLoan.DueDate;
     const updateRecord = {
       LoanNumber: loanData.LoanNumber || existingLoan.LoanNumber,
       UserId: loanData.UserId || existingLoan.UserId,
       BankAccountId: newBankAccountId,
       BankName: bankName,
-      LoanDate: loanData.LoanDate || existingLoan.LoanDate,
+      LoanDate: newLoanDate,
       LoanAmount: newLoanAmount,
       InterestRate: parseFloat(loanData.InterestRate) || 0,
       InterestType: loanData.InterestType || "Simple",
-      LoanPeriod: loanData.LoanPeriod || "",
+      LoanPeriod: monthsBetweenDates_(newLoanDate, newDueDate) || loanData.LoanPeriod || existingLoan.LoanPeriod || "",
       GrossWeight: grossWeight > 0 ? parseFloat(grossWeight.toFixed(3)) : (existingLoan.GrossWeight || ""),
       NetWeight: netWeight > 0 ? parseFloat(netWeight.toFixed(3)) : (existingLoan.NetWeight || ""),
       ProcessingFee: parseFloat(loanData.ProcessingFee) || 0,
@@ -1640,7 +1675,7 @@ function updateLoan_(loanId, loanData) {
       InsuranceCharge: parseFloat(loanData.InsuranceCharge) || 0,
       TotalCharges: parseFloat(loanData.TotalCharges) || 0,
       NetDisbursementAmount: parseFloat(loanData.NetDisbursementAmount) || 0,
-      DueDate: loanData.DueDate || existingLoan.DueDate,
+      DueDate: newDueDate,
       Remarks: loanData.Remarks !== undefined ? loanData.Remarks : existingLoan.Remarks,
       UpdatedDate: new Date().toISOString()
     };
