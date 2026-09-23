@@ -83,10 +83,10 @@ test.describe('loans screen', () => {
     await page.locator('#loanUserId').selectOption('U001');
     await page.locator('#loanBankAccountId').selectOption('BA001');
     await page.locator('#loanNumber').fill('LN-0001');
+    await page.locator('#loanDate').fill('2026-09-01'); // fixed so the derived Loan Period stays 6 months
     await page.locator('#loanDueDate').fill('2027-03-01');
     await page.locator('#loanAmount').fill(amount);
     await page.locator('#loanInterestRate').fill('12');
-    await page.locator('#loanPeriod').fill('6');
     await page.locator('#loanProcessingFee').fill('500');
     if (ornamentId) await page.locator(`#chk-orn-${ornamentId}`).check();
   }

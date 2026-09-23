@@ -42,11 +42,11 @@ test.describe('loan closure screen', () => {
 
     const loan = backend.table('Loans')[0];
     expect([loan.LoanStatus, loan.ClosureRemarks]).toEqual(['Closed', 'Paid in full']);
-    expect(backend.table('Ornaments').map(o => o.Status)).toEqual(['Released', 'Released']);
+    expect(backend.table('Ornaments').map(o => o.Status)).toEqual(['Available', 'Available']);
     expect(backend.table('BankAccounts')[0].UtilizedLoanAmount).toBe(0);
 
     await app.go('ornaments');
-    await expect(app.rows('ornamentsTable').filter({ hasText: 'Chain' })).toContainText('Released');
+    await expect(app.rows('ornamentsTable').filter({ hasText: 'Chain' })).toContainText('Available');
     await app.go('bank-accounts');
     await expect(app.rows('bankAccountsTable').first()).toContainText('₹5,00,000'); // fully available again
   });
